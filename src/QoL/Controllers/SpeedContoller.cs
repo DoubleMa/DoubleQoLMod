@@ -1,7 +1,6 @@
 ﻿using DoubleQoL.Config;
 using DoubleQoL.Game.Shortcuts;
 using DoubleQoL.Global;
-using DoubleQoL.QoL.Controllers;
 using Mafi;
 using Mafi.Core;
 using Mafi.Core.GameLoop;
@@ -18,7 +17,7 @@ using Mafi.Unity.UserInterface.Style;
 using System;
 using UnityEngine;
 
-namespace DoubleQoL.Cheats.Tools
+namespace DoubleQoL.QoL.Controllers
 {
     [GlobalDependency(RegistrationMode.AsAllInterfaces, false)]
     public class GameSpeedUi2 : AController
@@ -58,7 +57,7 @@ namespace DoubleQoL.Cheats.Tools
                 .PutTo(container, style.StatusBar.PauseButtonOffset);
             Btn decBtn = builder.NewBtnGeneral("DecSpeedBtn")
                 .SetText("-")
-                .SetButtonStyle(style.Global.MinusPrimaryBtn.ExtendText(ColorRgba.Black, UnityEngine.FontStyle.Bold, 16, true))
+                .SetButtonStyle(style.Global.MinusPrimaryBtn.ExtendText(ColorRgba.Black, FontStyle.Bold, 16, true))
                 .OnClick(() => DecSpeed())
                 .PutRelativeTo(parent, style.StatusBar.PauseIconSize, HorizontalPosition.Left, VerticalPosition.Middle, GetLeftOffset(0, size, offset));
             speedLabel = builder.NewTxt("0")
@@ -67,7 +66,7 @@ namespace DoubleQoL.Cheats.Tools
                 .PutRelativeTo(parent, size, HorizontalPosition.Left, VerticalPosition.Middle, GetLeftOffset(1, size, offset));
             Btn incBtn = builder.NewBtnGeneral("IncSpeedBtn")
             .SetText("+")
-            .SetButtonStyle(style.Global.MinusPrimaryBtn.Extend(null, null, ColorRgba.Green).ExtendText(ColorRgba.White, UnityEngine.FontStyle.Bold, 14, true))
+            .SetButtonStyle(style.Global.MinusPrimaryBtn.Extend(null, null, ColorRgba.Green).ExtendText(ColorRgba.White, FontStyle.Bold, 14, true))
             .OnClick(() => IncSpeed())
             .PutRelativeTo(parent, style.StatusBar.PauseIconSize, HorizontalPosition.Left, VerticalPosition.Middle, GetLeftOffset(2, size, offset));
 
@@ -80,7 +79,7 @@ namespace DoubleQoL.Cheats.Tools
 
         private void SetSpeed(int i)
         {
-            if ((_gameTime != null && _gameTime.IsGamePaused) || i == 0) _inputScheduler.ScheduleInputCmd(new SetSimPauseStateCmd(false));
+            if (_gameTime != null && _gameTime.IsGamePaused || i == 0) _inputScheduler.ScheduleInputCmd(new SetSimPauseStateCmd(false));
             else
             {
                 int temp = i.Between(0, 10);

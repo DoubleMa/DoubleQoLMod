@@ -1,18 +1,7 @@
 ﻿using DoubleQoL.Config;
 using HarmonyLib;
-using Mafi;
-using Mafi.Core;
-using Mafi.Core.Buildings.Mine;
-using Mafi.Core.Input;
-using Mafi.Core.Products;
-using Mafi.Core.Prototypes;
-using Mafi.Core.Syncers;
-using Mafi.Core.Vehicles.Commands;
-using Mafi.Core.Vehicles;
-using Mafi.Localization;
+using Mafi.Core.Entities.Dynamic;
 using Mafi.Unity;
-using Mafi.Unity.InputControl;
-using Mafi.Unity.InputControl.Inspectors;
 using Mafi.Unity.UiFramework;
 using Mafi.Unity.UiFramework.Components;
 using Mafi.Unity.UserInterface;
@@ -20,13 +9,7 @@ using Mafi.Unity.UserInterface.Components;
 using Mafi.Unity.UserInterface.Style;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using UnityEngine;
-using System.Xml.Linq;
-using Mafi.Core.Entities.Dynamic;
-using Mafi.Core.Entities;
 
 namespace DoubleQoL.Game.Patcher
 {

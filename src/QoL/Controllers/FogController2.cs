@@ -2,14 +2,13 @@
 using DoubleQoL.Extensions;
 using DoubleQoL.Game.Shortcuts;
 using DoubleQoL.Global;
-using DoubleQoL.QoL.Controllers;
 using Mafi;
 using Mafi.Core.GameLoop;
 using Mafi.Unity.InputControl;
 using Mafi.Unity.InputControl.TopStatusBar;
 using Mafi.Unity.Weather;
 
-namespace DoubleQoL.Cheats.Tools
+namespace DoubleQoL.QoL.Controllers
 {
     [GlobalDependency(RegistrationMode.AsAllInterfaces, false)]
     public class FogController2 : AToggleController

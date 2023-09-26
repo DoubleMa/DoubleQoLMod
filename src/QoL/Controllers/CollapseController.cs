@@ -1,14 +1,13 @@
 ﻿using DoubleQoL.Config;
 using DoubleQoL.Game.Patcher;
 using DoubleQoL.Game.Shortcuts;
-using DoubleQoL.QoL.Controllers;
 using Mafi;
 using Mafi.Core.GameLoop;
 using Mafi.Unity;
 using Mafi.Unity.InputControl;
 using Mafi.Unity.InputControl.TopStatusBar;
 
-namespace DoubleQoL.Cheats.Tools
+namespace DoubleQoL.QoL.Controllers
 {
     [GlobalDependency(RegistrationMode.AsAllInterfaces, false)]
     public class CollapseController : AToggleController

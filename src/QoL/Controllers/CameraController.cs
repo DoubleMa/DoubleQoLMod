@@ -1,7 +1,6 @@
 ﻿using DoubleQoL.Config;
 using DoubleQoL.Extensions;
 using DoubleQoL.Game.Shortcuts;
-using DoubleQoL.QoL.Controllers;
 using Mafi;
 using Mafi.Core.GameLoop;
 using Mafi.Unity;
@@ -9,7 +8,7 @@ using Mafi.Unity.Camera;
 using Mafi.Unity.InputControl;
 using Mafi.Unity.InputControl.TopStatusBar;
 
-namespace DoubleQoL.Cheats.Tools
+namespace DoubleQoL.QoL.Controllers
 {
     [GlobalDependency(RegistrationMode.AsAllInterfaces, false)]
     public class CameraController : AToggleController

@@ -1,13 +1,13 @@
-## DoubleQoL Mod
+## DoubleQoL
 
-A mod for Captain of Industry game https://www.captain-of-industry.com/.
+A mod for [Captain of Industry game](https://www.captain-of-industry.com/).
 
-Quality Of Life Features:
+### Features:
 
-- Add a game speed controller that can speed up the game up to x10.
-- Free camera mode with a 6000 max pivot distance
-- Enable/disable fog
-- Enable/disable building and transports collapse
+- Add a game speed controller that can speed up the game up to x10. [numb8-numb9]
+- Free camera mode with a 6000 max pivot distance. [F9]
+- Enable/disable fog. [F10]
+- Enable/disable building and transports collapse. [keypad9]
 
     <img src="./images/StatusBar.png" alt="StatusBar" width="auto">
 
