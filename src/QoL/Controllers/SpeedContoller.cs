@@ -1,6 +1,6 @@
 ﻿using DoubleQoL.Config;
+using DoubleQoL.Extensions;
 using DoubleQoL.Game.Shortcuts;
-using DoubleQoL.Global;
 using Mafi;
 using Mafi.Core;
 using Mafi.Core.GameLoop;
@@ -79,7 +79,8 @@ namespace DoubleQoL.QoL.Controllers
 
         private void SetSpeed(int i)
         {
-            if (_gameTime != null && _gameTime.IsGamePaused || i == 0) _inputScheduler.ScheduleInputCmd(new SetSimPauseStateCmd(false));
+            if (_gameTime != null && _gameTime.IsGamePaused) _inputScheduler.ScheduleInputCmd(new SetSimPauseStateCmd(false));
+            if (i == 0) _inputScheduler.ScheduleInputCmd(new SetSimPauseStateCmd(true));
             else
             {
                 int temp = i.Between(0, 10);

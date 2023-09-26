@@ -21,6 +21,9 @@ namespace DoubleQoL.Game.Patcher
         private HarmonyMethod mPostfix;
 
         public CollapsePatcher()
+        { }
+
+        public void Init()
         {
             harmony = new Harmony(CollapsePatcherID);
             methodInfos = new List<MethodInfo>

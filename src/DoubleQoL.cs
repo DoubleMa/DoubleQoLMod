@@ -18,7 +18,6 @@ namespace DoubleQoL
         public void Initialize(DependencyResolver resolver, bool gameWasLoaded)
         {
             var version = GetVersion();
-
             Logging.Log.Info($"Current {Name} mod version v{version.Major}.{version.Minor}.{version.Build}");
         }
 
@@ -36,6 +35,7 @@ namespace DoubleQoL
         {
             MineTowerPatcher.Instance.Init(protosDb);
             VehiclePatcher.Instance.Init();
+            CollapsePatcher.Instance.Init();
         }
     }
 }

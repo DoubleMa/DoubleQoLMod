@@ -1,5 +1,5 @@
-﻿using Mafi.Unity.InputControl;
-using UnityEngine;
+﻿using DoubleQoL.Config;
+using Mafi.Unity.InputControl;
 
 namespace DoubleQoL.Game.Shortcuts
 {
@@ -28,12 +28,12 @@ namespace DoubleQoL.Game.Shortcuts
 
         public DoubleQoLShortcutsMap() : base()
         {
-            IncSpeedKB = KeyBindings.FromKey(DoubleMaModKB, KeyCode.Alpha9);
-            DecSpeedKb = KeyBindings.FromKey(DoubleMaModKB, KeyCode.Alpha8);
-            FreeCameraKb = KeyBindings.FromKey(DoubleMaModKB, KeyCode.F9);
-            DisableFogKb = KeyBindings.FromKey(DoubleMaModKB, KeyCode.F10);
-            DisableCollapseKb = KeyBindings.FromKey(DoubleMaModKB, KeyCode.Keypad9);
-            DevKeyKb = KeyBindings.FromKey(DoubleMaModKB, KeyCode.F6);
+            IncSpeedKB = KeyBindings.FromKey(DoubleMaModKB, ConfigManager.Instance.KeyCodes_incSpeed.getKeyCodeValue());
+            DecSpeedKb = KeyBindings.FromKey(DoubleMaModKB, ConfigManager.Instance.KeyCodes_decSpeed.getKeyCodeValue());
+            FreeCameraKb = KeyBindings.FromKey(DoubleMaModKB, ConfigManager.Instance.KeyCodes_freeCamera.getKeyCodeValue());
+            DisableFogKb = KeyBindings.FromKey(DoubleMaModKB, ConfigManager.Instance.KeyCodes_fog.getKeyCodeValue());
+            DisableCollapseKb = KeyBindings.FromKey(DoubleMaModKB, ConfigManager.Instance.KeyCodes_collapse.getKeyCodeValue());
+            DevKeyKb = KeyBindings.FromKey(DoubleMaModKB, ConfigManager.Instance.KeyCodes_Dev.getKeyCodeValue());
         }
     }
 }

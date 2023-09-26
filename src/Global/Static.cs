@@ -1,5 +1,4 @@
 ﻿using Mafi.Unity.InputControl;
-using System;
 using UnityEngine;
 
 namespace DoubleQoL.Global
@@ -18,7 +17,12 @@ namespace DoubleQoL.Global
             PreventSpeedControl = false,
             Group = ControllerGroup.None,
         };
+    }
 
-        public static int Between(this int x, int min, int max) => Math.Max(min, Math.Min(max, x));
+    public static class IconPaths
+    {
+        public const string ToolbarYinYang = "Assets/DoubleQoL/Toolbar/yin-yang.512x512.png";
+        public const string StatusBarFog = "Assets/DoubleQoL/StatusBar/Fog.png";
+        public const string StatusBarDev = "Assets/DoubleQoL/StatusBar/Dev.png";
     }
 }
