@@ -17,7 +17,7 @@ Quality Of Life Features:
     
     <img src="./images/MineTowerView.png" alt="MineTowerView" width="auto" height="400">    <img src="./images/VehicleView.png" alt="VehicleView" width="auto" height="400">
 
-- Change the area size of towers like the MineTower and the ForestryTowe
+- Change the area size of towers like the MineTower and the ForestryTower
 
     <img src="./images/TowerArea.png" alt="TowerArea" width="auto" height="400">
   
