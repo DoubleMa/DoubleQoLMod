@@ -1,85 +1,57 @@
-﻿using DoubleQoL.Global;
+﻿using DoubleQoL.Extensions;
 using System;
 using System.Linq;
 using System.Xml.Linq;
 using UnityEngine;
 
-namespace DoubleQoL.Config
-{
-    internal class XElementWithComment
-    {
-        public string tag { get; private set; }
-        public string comment { get; private set; }
+namespace DoubleQoL.Config {
 
-        public XElementWithComment(string tag, string comment = null)
-        {
-            this.tag = tag;
-            this.comment = comment;
+    internal class XElementWithComment {
+        public string Tag { get; private set; }
+        public string Comment { get; private set; }
+
+        public XElementWithComment(string tag, string comment = null) {
+            Tag = tag;
+            Comment = comment;
         }
     }
 
-    internal class XSectionWithComment : XElementWithComment
-    {
-        public XElement xElement { get; protected set; }
+    internal class XSectionWithComment : XElementWithComment {
+        public XElement Element { get; protected set; }
 
-        public XSectionWithComment(string tag, string comment = null) : base(tag, comment)
-        {
-            xElement = ConfigLoader.Instance.GetSectionOrCreate(this);
+        public XSectionWithComment(string tag, string comment = null) : base(tag, comment) {
+            Element = ConfigLoader.Instance.GetSectionOrCreate(this);
         }
     }
 
-    internal class XKeyWithComment : XElementWithComment
-    {
-        public XSectionWithComment xSectionWithComment { get; private set; }
-        public string key { get; private set; }
-        public string defaultValue { get; private set; }
-        private string[] acceptedValues;
-        private int[] acceptedIntValues;
-        private string valueOrDefault;
+    internal class XKeyWithComment<T> : XElementWithComment where T : struct, IComparable, IConvertible {
+        public XSectionWithComment SectionWithComment { get; private set; }
+        public string Key { get; private set; }
+        public string StrValue { get; private set; }
+        private T[] AcceptedValues { get; }
+        public T DefaultValue { get; private set; }
+        public T Value { get; private set; }
 
-        public XKeyWithComment(XSectionWithComment xSectionWithComment, string key, string[] acceptedValues, string defaultValue, string comment = null) : base("add", comment)
-        {
-            this.xSectionWithComment = xSectionWithComment;
-            this.key = key;
-            this.defaultValue = defaultValue;
-            this.acceptedValues = acceptedValues;
-            valueOrDefault = acceptedOrDefault(ConfigLoader.Instance.GetValueOrCreate(this));
+        public XKeyWithComment(XSectionWithComment xSectionWithComment, string key, T[] acceptedValues, T defaultValue, string comment = null) : base("add", comment) {
+            SectionWithComment = xSectionWithComment;
+            Key = key;
+            DefaultValue = defaultValue;
+            AcceptedValues = acceptedValues;
+            StrValue = ConfigLoader.Instance.GetValueOrCreate(this);
+            Value = Convert(StrValue);
         }
 
-        public XKeyWithComment(XSectionWithComment xSectionWithComment, string key, int[] acceptedIntValues, string defaultValue, string comment = null) : base("add", comment)
-        {
-            this.xSectionWithComment = xSectionWithComment;
-            this.key = key;
-            this.defaultValue = defaultValue;
-            this.acceptedIntValues = acceptedIntValues;
-            valueOrDefault = acceptedOrDefault(ConfigLoader.Instance.GetValueOrCreate(this));
-        }
-
-        private bool accepted(string value) => acceptedValues == null || acceptedValues.Length == 0 || acceptedValues.Contains(value);
-
-        private string acceptedOrDefault(string value) => value != null && accepted(value) ? value : defaultValue;
-
-        public bool getBoolValue() => Convert.ToBoolean(valueOrDefault);
-
-        public KeyCode getKeyCodeValue()
-        {
-            var temp = Enum.TryParse(valueOrDefault, out KeyCode result);
-            return temp ? result : KeyCode.None; // shouldn't happen
-        }
-
-        public int getIntValue()
-        {
-            int result = int.Parse(defaultValue);
-            try
-            {
-                result = int.Parse(valueOrDefault);
+        private T Convert(string value) {
+            try {
+                if (typeof(T) == typeof(KeyCode) && Enum.TryParse(value, out KeyCode keyCode) && AcceptedValues.Contains((T)(object)keyCode)) return (T)(object)keyCode;
+                else if (typeof(T) == typeof(bool) && bool.TryParse(value, out bool boolValue) && AcceptedValues.Contains((T)(object)boolValue)) return (T)(object)boolValue;
+                else if (typeof(T) == typeof(int) && int.TryParse(value, out int intValue)) return (T)(object)intValue.Between(System.Convert.ToInt32(AcceptedValues[0]), System.Convert.ToInt32(AcceptedValues[1]));
             }
-            catch { }
-            if (acceptedIntValues.Length == 2) return result.Between(acceptedIntValues[0], acceptedIntValues[1]);
-            else if (acceptedIntValues.Length == 1) return Math.Max(result, acceptedIntValues[0]);
-            else return result;
-        }
+            catch (Exception) {
+                Logging.Log.Warning($"Error while reading and converting the config value of {Key}");
+            }
 
-        public string getStringValue() => valueOrDefault;
+            return DefaultValue;
+        }
     }
 }

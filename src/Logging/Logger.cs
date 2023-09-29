@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace DoubleQoL.Logging
-{
-    public static class Log
-    {
+namespace DoubleQoL.Logging {
+
+    public static class Log {
         private const string Prefix = "DoubleQoL_Mod: ";
 
         public static void Info(string message) => Mafi.Log.Info($"{Prefix}{message}");

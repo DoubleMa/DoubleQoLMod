@@ -1,7 +1,6 @@
 ﻿using DoubleQoL.Config;
+using DoubleQoL.Extensions;
 using DoubleQoL.Game.Shortcuts;
-using DoubleQoL.Global;
-using DoubleQoL.QoL.Controllers;
 using Mafi;
 using Mafi.Core;
 using Mafi.Core.GameLoop;
@@ -18,15 +17,14 @@ using Mafi.Unity.UserInterface.Style;
 using System;
 using UnityEngine;
 
-namespace DoubleQoL.Cheats.Tools
-{
-    [GlobalDependency(RegistrationMode.AsAllInterfaces, false)]
-    public class GameSpeedUi2 : AController
-    {
-        protected override bool IsEnabled => ConfigManager.Instance.QoLs_speed.getBoolValue();
+namespace DoubleQoL.QoL.Controllers {
 
-        private KeyBindings IncKeyBindings = DoubleQoLShortcutsMap.Instance.IncSpeedKB;
-        private KeyBindings DecKeyBindings = DoubleQoLShortcutsMap.Instance.DecSpeedKb;
+    [GlobalDependency(RegistrationMode.AsAllInterfaces, false)]
+    internal class GameSpeedUi2 : AController {
+        protected override bool IsEnabled => ConfigManager.Instance.QoLs_speed.Value;
+
+        private readonly KeyBindings IncKeyBindings = DoubleQoLShortcutsMap.Instance.IncSpeedKB;
+        private readonly KeyBindings DecKeyBindings = DoubleQoLShortcutsMap.Instance.DecSpeedKb;
 
         private readonly IInputScheduler _inputScheduler;
 
@@ -35,18 +33,15 @@ namespace DoubleQoL.Cheats.Tools
         private int tempSpeed = -1;
         private GameTime _gameTime;
 
-        public GameSpeedUi2(IInputScheduler inputScheduler, IGameLoopEvents gameLoopEvents, StatusBar statusBar, ShortcutsManager shortcutsManager) : base(statusBar, shortcutsManager)
-        {
+        public GameSpeedUi2(IInputScheduler inputScheduler, IGameLoopEvents gameLoopEvents, StatusBar statusBar, ShortcutsManager shortcutsManager) : base(statusBar, shortcutsManager) {
             _inputScheduler = inputScheduler;
-            if (IsEnabled)
-            {
+            if (IsEnabled) {
                 gameLoopEvents.InputUpdate.AddNonSaveable(this, InputUpdate);
                 gameLoopEvents.SyncUpdate.AddNonSaveable(this, new Action<GameTime>(SyncUpdate));
             }
         }
 
-        protected override void BuildUi(UiBuilder builder)
-        {
+        protected override void BuildUi(UiBuilder builder) {
             int num = 3;
             UiStyle style = builder.Style;
             Vector2 size = new Vector2(builder.Style.StatusBar.PauseIconSize.x, 30f);
@@ -58,7 +53,7 @@ namespace DoubleQoL.Cheats.Tools
                 .PutTo(container, style.StatusBar.PauseButtonOffset);
             Btn decBtn = builder.NewBtnGeneral("DecSpeedBtn")
                 .SetText("-")
-                .SetButtonStyle(style.Global.MinusPrimaryBtn.ExtendText(ColorRgba.Black, UnityEngine.FontStyle.Bold, 16, true))
+                .SetButtonStyle(style.Global.MinusPrimaryBtn.ExtendText(ColorRgba.Black, FontStyle.Bold, 16, true))
                 .OnClick(() => DecSpeed())
                 .PutRelativeTo(parent, style.StatusBar.PauseIconSize, HorizontalPosition.Left, VerticalPosition.Middle, GetLeftOffset(0, size, offset));
             speedLabel = builder.NewTxt("0")
@@ -67,7 +62,7 @@ namespace DoubleQoL.Cheats.Tools
                 .PutRelativeTo(parent, size, HorizontalPosition.Left, VerticalPosition.Middle, GetLeftOffset(1, size, offset));
             Btn incBtn = builder.NewBtnGeneral("IncSpeedBtn")
             .SetText("+")
-            .SetButtonStyle(style.Global.MinusPrimaryBtn.Extend(null, null, ColorRgba.Green).ExtendText(ColorRgba.White, UnityEngine.FontStyle.Bold, 14, true))
+            .SetButtonStyle(style.Global.MinusPrimaryBtn.Extend(null, null, ColorRgba.Green).ExtendText(ColorRgba.White, FontStyle.Bold, 14, true))
             .OnClick(() => IncSpeed())
             .PutRelativeTo(parent, style.StatusBar.PauseIconSize, HorizontalPosition.Left, VerticalPosition.Middle, GetLeftOffset(2, size, offset));
 
@@ -78,11 +73,10 @@ namespace DoubleQoL.Cheats.Tools
 
         private Offset GetLeftOffset(int index, Vector2 size, float offset) => Offset.Left((size.x + offset) * index);
 
-        private void SetSpeed(int i)
-        {
-            if ((_gameTime != null && _gameTime.IsGamePaused) || i == 0) _inputScheduler.ScheduleInputCmd(new SetSimPauseStateCmd(false));
-            else
-            {
+        private void SetSpeed(int i) {
+            if (_gameTime != null && _gameTime.IsGamePaused) _inputScheduler.ScheduleInputCmd(new SetSimPauseStateCmd(false));
+            if (i == 0) _inputScheduler.ScheduleInputCmd(new SetSimPauseStateCmd(true));
+            else {
                 int temp = i.Between(0, 10);
                 if (temp == tempSpeed) return;
                 tempSpeed = temp;
@@ -94,8 +88,7 @@ namespace DoubleQoL.Cheats.Tools
 
         private void DecSpeed() => SetSpeed((tempSpeed - 1).Between(0, 10));
 
-        private void SyncUpdate(GameTime gameTime)
-        {
+        private void SyncUpdate(GameTime gameTime) {
             if (_gameTime != gameTime) _gameTime = gameTime;
             if (gameTime.GameSpeedMult == currentSpeed) return;
             currentSpeed = gameTime.GameSpeedMult;
@@ -103,8 +96,7 @@ namespace DoubleQoL.Cheats.Tools
             speedLabel.SetText(currentSpeed.ToString());
         }
 
-        private void InputUpdate(GameTime time)
-        {
+        private void InputUpdate(GameTime time) {
             if (_shortcutsManager.IsDown(IncKeyBindings)) IncSpeed();
             else if (_shortcutsManager.IsDown(DecKeyBindings)) DecSpeed();
         }

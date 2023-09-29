@@ -1,25 +1,29 @@
-## DoubleQoL Mod
+## DoubleQoL
 
-A mod for Captain of Industry game https://www.captain-of-industry.com/.
+A mod for [Captain of Industry game](https://www.captain-of-industry.com/).
 
-Quality Of Life Features:
+### Features:
 
-- Add a game speed controller that can speed up the game up to x10.
-- Free camera mode with a 6000 max pivot distance
-- Enable/disable fog
-- Enable/disable building and transports collapse
+- Add a game speed controller that can speed up the game up to x10. [numb8-numb9]
+- Free camera mode with a 6000 max pivot distance. [F9]
+- Enable/disable fog. [F10]
+- Enable/disable building and transports collapse. [keypad9]
 
     <img src="./images/StatusBar.png" alt="StatusBar" width="auto">
 
 - Add a field in the MineTower view where you can prioritize a specific resource for all excavators
-- Add a field in the vehicle view where you can cancel all jobs
+- Add a btn in the vehicle view where you can cancel all jobs
 
     
     <img src="./images/MineTowerView.png" alt="MineTowerView" width="auto" height="400">    <img src="./images/VehicleView.png" alt="VehicleView" width="auto" height="400">
 
-- Change the area size of towers like the MineTower and the ForestryTowe
+- Change the area size of towers like the MineTower and the ForestryTower
 
     <img src="./images/TowerArea.png" alt="TowerArea" width="auto" height="400">
+  
+- Add a vehicle tool that can select and move all/specific vehicle
+
+    <img src="./images/VehicleTool.png" alt="TowerArea" width="auto" height="400">
   
 
 ## Installation

@@ -5,52 +5,30 @@ using Mafi.Core.Factory.Transports;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace DoubleQoL.Game.Patcher
-{
-    public class CollapsePatcher
-    {
+namespace DoubleQoL.Game.Patcher {
+
+    public class CollapsePatcher : APatcher {
         public static readonly CollapsePatcher Instance = new CollapsePatcher();
 
-        public const string CollapsePatcherCategory = "CollapsePatcherCategory";
-        public const string CollapsePatcherID = "com.collapse.patch";
-        public bool isActive { get; private set; } = false;
-        private Harmony harmony;
+        public override bool DefaultState => ConfigManager.Instance.DefaultState_collapse.Value;
+        public override bool Enabled => ConfigManager.Instance.QoLs_collapse.Value;
 
-        private List<MethodInfo> methodInfos;
-        private HarmonyMethod mPrefix;
-        private HarmonyMethod mPostfix;
-
-        public CollapsePatcher()
+        protected override List<MethodInfo> MethodInfos => new List<MethodInfo>
         {
-            harmony = new Harmony(CollapsePatcherID);
-            methodInfos = new List<MethodInfo>
-            {
-                 AccessTools.Method(typeof(LayoutEntityBase), "TryCollapseOnUnevenTerrain"),
-                 AccessTools.Method(typeof(Transport), "TryCollapseOnUnevenTerrain"),
-                 AccessTools.Method(typeof(TransportPillar), "TryCollapseOnUnevenTerrain"),
-                 AccessTools.Method(typeof(TransportsManager), "TryCollapseSubTransport")
-            };
-            mPrefix = new HarmonyMethod(AccessTools.Method(typeof(CollapsePatcher), "MyPrefix"));
-            mPostfix = new HarmonyMethod(AccessTools.Method(typeof(CollapsePatcher), "MyPostfix"));
+            AccessTools.Method(typeof(LayoutEntityBase), "TryCollapseOnUnevenTerrain"),
+            AccessTools.Method(typeof(Transport), "TryCollapseOnUnevenTerrain"),
+            AccessTools.Method(typeof(TransportPillar), "TryCollapseOnUnevenTerrain"),
+            AccessTools.Method(typeof(TransportsManager), "TryCollapseSubTransport")
+        };
 
-            Patch(ConfigManager.Instance.DefaultState_collapse.getBoolValue());
+        protected override HarmonyMethod MetPrefix => new HarmonyMethod(AccessTools.Method(typeof(CollapsePatcher), "MyPrefix"));
+
+        protected override HarmonyMethod MetPostfix => new HarmonyMethod(AccessTools.Method(typeof(CollapsePatcher), "MyPostfix"));
+
+        public CollapsePatcher() : base("Collapse") {
         }
 
-        public void Toggle() => Patch(!isActive);
-
-        public void Activate() => Patch(true);
-
-        public void Disable() => Patch(false);
-
-        private void Patch(bool enable = false)
-        {
-            if (isActive == enable || !ConfigManager.Instance.QoLs_collapse.getBoolValue()) return;
-            foreach (var m in methodInfos)
-            {
-                harmony.Unpatch(m, HarmonyPatchType.All, CollapsePatcherID);
-                if (enable) harmony.Patch(m, mPrefix, mPostfix);
-            }
-            isActive = enable;
+        public override void OnInit(object obj) {
         }
 
         private static bool MyPrefix() => false;

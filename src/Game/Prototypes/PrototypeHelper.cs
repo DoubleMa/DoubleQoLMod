@@ -11,30 +11,25 @@ using Mafi.Core.Mods;
 using Mafi.Core.Prototypes;
 using Mafi.Localization;
 
-namespace DoubleQoL.Game.Prototypes
-{
-    public class PrototypeHelper
-    {
+namespace DoubleQoL.Game.Prototypes {
+
+    public class PrototypeHelper {
         public static readonly PrototypeHelper Instance = new PrototypeHelper();
         private ProtoRegistrator registrator;
 
-        private PrototypeHelper()
-        { }
+        private PrototypeHelper() {
+        }
 
-        public void init(ProtoRegistrator registrator)
-        {
+        public void Init(ProtoRegistrator registrator) {
             this.registrator = registrator;
-            if (ConfigManager.Instance.QoLs_towerarea.getBoolValue())
-            {
+            if (ConfigManager.Instance.QoLs_towerarea.Value) {
                 TryChangeMineTowerArea();
                 TryChangeForestryTowerArea();
             }
         }
 
-        private void TryChangeMineTowerArea()
-        {
-            try
-            {
+        private void TryChangeMineTowerArea() {
+            try {
                 StaticEntityProto.ID mineTowerID = Ids.Buildings.MineTower;
                 registrator.PrototypesDb.RemoveOrThrow(mineTowerID);
                 registrator.MineTowerProtoBuilder
@@ -43,7 +38,7 @@ namespace DoubleQoL.Game.Prototypes
                     .SetCost(Costs.Buildings.MineTower)
                     .ShowTerrainDesignatorsOnCreation()
                     .SetLayout("(3)(3)(8)(8)", "(3)(8)(9)(9)", "(3)(8)(9)(9)", "(3)(3)(8)(8)")
-                    .SetMineArea(new MineTowerProto.MineArea(new RelTile2i(5, 2), new RelTile2i(60, 60), new RelTile1i(ConfigManager.Instance.DefaultState_towerarea.getIntValue() * 128)))
+                    .SetMineArea(new MineTowerProto.MineArea(new RelTile2i(5, 2), new RelTile2i(60, 60), new RelTile1i(ConfigManager.Instance.DefaultState_towerarea.Value * 128)))
                     .SetCategories(Ids.ToolbarCategories.BuildingsForVehicles)
                     .SetPrefabPath("Assets/Base/Buildings/MineTower.prefab")
                     .BuildAndAdd()
@@ -52,10 +47,8 @@ namespace DoubleQoL.Game.Prototypes
             catch { }
         }
 
-        private void TryChangeForestryTowerArea()
-        {
-            try
-            {
+        private void TryChangeForestryTowerArea() {
+            try {
                 StaticEntityProto.ID forestryTowerID = Ids.Buildings.ForestryTower;
                 registrator.PrototypesDb.RemoveOrThrow(forestryTowerID);
                 registrator.PrototypesDb
@@ -66,7 +59,7 @@ namespace DoubleQoL.Game.Prototypes
                     registrator.LayoutParser.ParseLayoutOrThrow("(9)(9)(9)(9)", "(9)(9)(9)(9)", "(9)(9)(9)(9)", "(9)(9)(9)(9)"),
                     Costs.Buildings.ForestryTower.MapToEntityCosts(registrator),
                     new ForestryTowerProto.ForestryArea(new RelTile2i(5, 2),
-                    new RelTile2i(60, 60), new RelTile1i(ConfigManager.Instance.DefaultState_towerarea.getIntValue() * 128)),
+                    new RelTile2i(60, 60), new RelTile1i(ConfigManager.Instance.DefaultState_towerarea.Value * 128)),
                     new LayoutEntityProto.Gfx("Assets/Base/Buildings/ForestryTower.prefab",
                     categories: new ImmutableArray<ToolbarCategoryProto>?(registrator.GetCategoriesProtos(Ids.ToolbarCategories.BuildingsForVehicles)), useInstancedRendering: true)))
                     .AddParam(new DrawArrowWileBuildingProtoParam(4f));

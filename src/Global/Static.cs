@@ -1,15 +1,14 @@
 ﻿using Mafi.Unity.InputControl;
-using System;
 using UnityEngine;
 
-namespace DoubleQoL.Global
-{
-    public static class Static
-    {
-        public static Vector2 WindowSize = new Vector2(680f, 400f);
+namespace DoubleQoL.Global {
 
-        public static ControllerConfig StandAloneControllerConfig = new ControllerConfig
-        {
+    public static class Static {
+        public static Vector2 WindowSize = new Vector2(680f, 400f);
+        public static int MaxMapHeight = 2748;
+        public static int MaxMapWidth = 2492;
+
+        public static ControllerConfig StandAloneControllerConfig = new ControllerConfig {
             IgnoreEscapeKey = true,
             DeactivateOnOtherControllerActive = false,
             AllowInspectorCursor = true,
@@ -19,6 +18,21 @@ namespace DoubleQoL.Global
             Group = ControllerGroup.None,
         };
 
-        public static int Between(this int x, int min, int max) => Math.Max(min, Math.Min(max, x));
+        public static ControllerConfig BlockShortcutsToolConfig = new ControllerConfig {
+            DeactivateOnNonUiClick = false,
+            AllowInspectorCursor = false,
+            DeactivateOnOtherControllerActive = true,
+            BlockShortcuts = true,
+            Group = ControllerGroup.Tool
+        };
+    }
+
+    public static class IconPaths {
+        public const string Toolbar_YinYang = "Assets/DoubleQoL/Toolbar/yinyang.png";
+        public const string Status_BarFog = "Assets/DoubleQoL/StatusBar/Fog.png";
+        public const string Status_BarDev = "Assets/DoubleQoL/StatusBar/Dev.png";
+        public const string Tool_Location = "Assets/DoubleQoL/Tool/Location.png";
+        public const string Tool_Select = "Assets/DoubleQoL/Tool/Select.png";
+        public const string Tool_MovingTruck = "Assets/DoubleQoL/Tool/MovingTruck.png";
     }
 }

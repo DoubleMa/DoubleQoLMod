@@ -7,11 +7,10 @@ using Mafi.Unity.UiFramework.Components;
 using Mafi.Unity.UserInterface;
 using UnityEngine;
 
-namespace DoubleQoL.QoL.Controllers
-{
-    public abstract class AToggleController : AController
-    {
-        private IGameLoopEvents _gameLoopEvents;
+namespace DoubleQoL.QoL.Controllers {
+
+    internal abstract class AToggleController : AController {
+        private readonly IGameLoopEvents _gameLoopEvents;
 
         protected abstract KeyBindings KeyBindings { get; }
         protected abstract bool DefaultState { get; }
@@ -21,27 +20,23 @@ namespace DoubleQoL.QoL.Controllers
 
         private ToggleBtn Btn;
 
-        public AToggleController(IGameLoopEvents gameLoopEvents, StatusBar statusBar, ShortcutsManager shortcutsManager) : base(statusBar, shortcutsManager)
-        {
+        public AToggleController(IGameLoopEvents gameLoopEvents, StatusBar statusBar, ShortcutsManager shortcutsManager) : base(statusBar, shortcutsManager) {
             _gameLoopEvents = gameLoopEvents;
             if (IsEnabled) _gameLoopEvents.InputUpdate.AddNonSaveable(this, InputUpdate);
         }
 
-        protected void init()
-        {
+        protected void Init() {
             if (IsEnabled && DefaultState != IsActive) Toggle();
         }
 
-        protected void Toggle()
-        {
+        protected void Toggle() {
             OnToggle();
             Btn?.SetIsOn(IsActive);
         }
 
         protected abstract void OnToggle();
 
-        protected override void BuildUi(UiBuilder builder)
-        {
+        protected override void BuildUi(UiBuilder builder) {
             Vector2 size = new Vector2(builder.Style.StatusBar.PauseIconSize.x, 30f);
             Offset offset = builder.Style.StatusBar.PauseButtonOffset;
             Panel container = builder.NewPanel("container")
@@ -63,8 +58,7 @@ namespace DoubleQoL.QoL.Controllers
             parent.SetVisibility(true);
         }
 
-        protected virtual void InputUpdate(GameTime time)
-        {
+        protected virtual void InputUpdate(GameTime time) {
             if (_shortcutsManager.IsDown(KeyBindings)) Toggle();
         }
     }
