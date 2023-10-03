@@ -17,15 +17,14 @@ using Mafi.Unity.UserInterface.Style;
 using System;
 using UnityEngine;
 
-namespace DoubleQoL.QoL.Controllers
-{
-    [GlobalDependency(RegistrationMode.AsAllInterfaces, false)]
-    public class GameSpeedUi2 : AController
-    {
-        protected override bool IsEnabled => ConfigManager.Instance.QoLs_speed.getBoolValue();
+namespace DoubleQoL.QoL.Controllers {
 
-        private KeyBindings IncKeyBindings = DoubleQoLShortcutsMap.Instance.IncSpeedKB;
-        private KeyBindings DecKeyBindings = DoubleQoLShortcutsMap.Instance.DecSpeedKb;
+    [GlobalDependency(RegistrationMode.AsAllInterfaces, false)]
+    internal class GameSpeedUi2 : AController {
+        protected override bool IsEnabled => ConfigManager.Instance.QoLs_speed.Value;
+
+        private readonly KeyBindings IncKeyBindings = DoubleQoLShortcutsMap.Instance.IncSpeedKB;
+        private readonly KeyBindings DecKeyBindings = DoubleQoLShortcutsMap.Instance.DecSpeedKb;
 
         private readonly IInputScheduler _inputScheduler;
 
@@ -34,18 +33,15 @@ namespace DoubleQoL.QoL.Controllers
         private int tempSpeed = -1;
         private GameTime _gameTime;
 
-        public GameSpeedUi2(IInputScheduler inputScheduler, IGameLoopEvents gameLoopEvents, StatusBar statusBar, ShortcutsManager shortcutsManager) : base(statusBar, shortcutsManager)
-        {
+        public GameSpeedUi2(IInputScheduler inputScheduler, IGameLoopEvents gameLoopEvents, StatusBar statusBar, ShortcutsManager shortcutsManager) : base(statusBar, shortcutsManager) {
             _inputScheduler = inputScheduler;
-            if (IsEnabled)
-            {
+            if (IsEnabled) {
                 gameLoopEvents.InputUpdate.AddNonSaveable(this, InputUpdate);
                 gameLoopEvents.SyncUpdate.AddNonSaveable(this, new Action<GameTime>(SyncUpdate));
             }
         }
 
-        protected override void BuildUi(UiBuilder builder)
-        {
+        protected override void BuildUi(UiBuilder builder) {
             int num = 3;
             UiStyle style = builder.Style;
             Vector2 size = new Vector2(builder.Style.StatusBar.PauseIconSize.x, 30f);
@@ -77,12 +73,10 @@ namespace DoubleQoL.QoL.Controllers
 
         private Offset GetLeftOffset(int index, Vector2 size, float offset) => Offset.Left((size.x + offset) * index);
 
-        private void SetSpeed(int i)
-        {
+        private void SetSpeed(int i) {
             if (_gameTime != null && _gameTime.IsGamePaused) _inputScheduler.ScheduleInputCmd(new SetSimPauseStateCmd(false));
             if (i == 0) _inputScheduler.ScheduleInputCmd(new SetSimPauseStateCmd(true));
-            else
-            {
+            else {
                 int temp = i.Between(0, 10);
                 if (temp == tempSpeed) return;
                 tempSpeed = temp;
@@ -94,8 +88,7 @@ namespace DoubleQoL.QoL.Controllers
 
         private void DecSpeed() => SetSpeed((tempSpeed - 1).Between(0, 10));
 
-        private void SyncUpdate(GameTime gameTime)
-        {
+        private void SyncUpdate(GameTime gameTime) {
             if (_gameTime != gameTime) _gameTime = gameTime;
             if (gameTime.GameSpeedMult == currentSpeed) return;
             currentSpeed = gameTime.GameSpeedMult;
@@ -103,8 +96,7 @@ namespace DoubleQoL.QoL.Controllers
             speedLabel.SetText(currentSpeed.ToString());
         }
 
-        private void InputUpdate(GameTime time)
-        {
+        private void InputUpdate(GameTime time) {
             if (_shortcutsManager.IsDown(IncKeyBindings)) IncSpeed();
             else if (_shortcutsManager.IsDown(DecKeyBindings)) DecSpeed();
         }
