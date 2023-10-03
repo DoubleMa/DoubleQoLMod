@@ -7,6 +7,7 @@ namespace DoubleQoL.Global {
         public static Vector2 WindowSize = new Vector2(680f, 400f);
         public static int MaxMapHeight = 2748;
         public static int MaxMapWidth = 2492;
+        public static int MaxMapSize = Mathf.Max(MaxMapHeight, MaxMapWidth);
 
         public static ControllerConfig StandAloneControllerConfig = new ControllerConfig {
             IgnoreEscapeKey = true,

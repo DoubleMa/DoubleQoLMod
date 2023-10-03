@@ -32,6 +32,7 @@ namespace DoubleQoL {
             MineTowerPatcher.Instance.Init(protosDb);
             VehiclePatcher.Instance.Init();
             CollapsePatcher.Instance.Init();
+            TerrainDesignationsPatcher.Instance.Init();
         }
     }
 }

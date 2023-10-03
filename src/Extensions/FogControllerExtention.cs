@@ -8,10 +8,7 @@ namespace DoubleQoL.Extensions {
 
     public static class FogControllerExtention {
 
-        private static Type GetFogControllerType() {
-            var type = typeof(UnityMod).Assembly.GetType("Mafi.Unity.Weather.FogController");
-            return type is null ? throw new Exception("Couldn't find the FogController type.") : type;
-        }
+        private static Type GetFogControllerType() => typeof(UnityMod).Assembly.GetType("Mafi.Unity.Weather.FogController") ?? throw new Exception("Couldn't find the FogController type.");
 
         public static bool IsFogEnabled(this FogController fogController) => GetFogGameObject(fogController).gameObject.activeSelf;
 

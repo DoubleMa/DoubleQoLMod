@@ -35,8 +35,8 @@ namespace DoubleQoL.Game.Patcher {
 
         public void Disable() => Patch(false);
 
-        private void Patch(bool enable = false) {
-            if (IsActive == enable || !Enabled) return;
+        protected virtual void Patch(bool enable = false) {
+            if (!Enabled || IsActive == enable) return;
             foreach (var m in MethodInfos) {
                 harmony.Unpatch(m, HarmonyPatchType.All, PatcherID);
                 if (enable) harmony.Patch(m, MetPrefix, MetPostfix);

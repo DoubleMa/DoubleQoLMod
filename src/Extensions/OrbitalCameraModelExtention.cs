@@ -8,10 +8,7 @@ namespace DoubleQoL.Extensions {
 
     public static class OrbitalCameraModelExtention {
 
-        private static Type GetOrbitalCameraModelType() {
-            var type = typeof(UnityMod).Assembly.GetType("Mafi.Unity.Camera.OrbitalCameraModel");
-            return type is null ? throw new Exception("Couldn't find the OrbitalCameraModel type.") : type;
-        }
+        private static Type GetOrbitalCameraModelType() => typeof(UnityMod).Assembly.GetType("Mafi.Unity.Camera.OrbitalCameraModel") ?? throw new Exception("Couldn't find the OrbitalCameraModel type.");
 
         public static void SetValues(this OrbitalCameraModel orbitalCameraModel) {
             var type = GetOrbitalCameraModelType();

@@ -25,10 +25,6 @@ namespace DoubleQoL.Game.Patcher {
         public static readonly MineTowerPatcher Instance = new MineTowerPatcher();
 
         private static readonly Type TempType = Assembly.Load("Mafi.Unity").GetType("Mafi.Unity.InputControl.Inspectors.Buildings.MineTowerWindowView");
-
-        public const string MineTowerPatcherCategory = "MineTowerPatcherCategory";
-        public const string MineTowerPatcherID = "com.minetower.patch";
-
         public override bool DefaultState => true;
 
         public override bool Enabled => ConfigManager.Instance.QoLs_minetower.Value;

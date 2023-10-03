@@ -28,7 +28,7 @@ namespace DoubleQoL.QoL.Tools {
 
     [GlobalDependency(RegistrationMode.AsAllInterfaces, false, false)]
     internal class VehicleTool : ASelectableEntityTool {
-        protected override RelTile1i MAX_AREA_EDGE_SIZE => new RelTile1i(Static.MaxMapHeight);
+        protected override RelTile1i MAX_AREA_EDGE_SIZE => new RelTile1i(Static.MaxMapSize);
         private static readonly ColorRgba COLOR_HIGHLIGHT_MOVING = ColorRgba.Green;
         private static readonly ColorRgba COLOR_HIGHLIGHT = new ColorRgba(16770068, 192);
         private static readonly ColorRgba COLOR_HIGHLIGHT_CONFIRM = ColorRgba.Blue;
