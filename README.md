@@ -19,11 +19,11 @@ A mod for [Captain of Industry game](https://www.captain-of-industry.com/).
 
 - Change the area size of terrain designations and towers (MineTower and ForestryTower)
 
-    <img src="./images/TowerArea.png" alt="TowerArea" width="auto" height="400"> <img src="./images/TerrainDesignations.png" alt="TowerArea" width="auto" height="400">
+    <img src="./images/TowerArea.png" alt="TowerArea" width="auto" height="300"> <img src="./images/TerrainDesignations.png" alt="TowerArea" width="auto" height="300">
   
 - Add a vehicle tool that can select and move all/specific vehicle
 
-    <img src="./images/VehicleTool.png" alt="TowerArea" width="auto" height="400">
+    <img src="./images/VehicleTool.png" alt="TowerArea" width="auto" height="300">
   
 
 ## Installation
