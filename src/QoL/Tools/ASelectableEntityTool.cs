@@ -77,17 +77,19 @@ namespace DoubleQoL.QoL.Tools {
         protected class ToolToggleBtn {
             public string Name { get; }
             public string Icon { get; }
+            public bool ForceIgnoreModifier { get; }
             public Action<bool> OnClick { get; }
             public KeyBindings KeyBindings { get; }
             public string Tooltip { get; }
             public ToggleBtn ToggleBtn { get; set; }
 
-            public ToolToggleBtn(string name, string icon, Action<bool> onClick, KeyBindings keyBindings, string tooltip) {
+            public ToolToggleBtn(string name, string icon, Action<bool> onClick, KeyBindings keyBindings, string tooltip, bool forceIgnoreModifier = false) {
                 Name = name;
                 Icon = icon;
                 OnClick = onClick;
                 KeyBindings = keyBindings;
                 Tooltip = tooltip;
+                ForceIgnoreModifier = forceIgnoreModifier;
             }
         }
 
@@ -103,7 +105,7 @@ namespace DoubleQoL.QoL.Tools {
                 Toolbar.AddToolbox(this, this.GetWidth());
             }
 
-            public void CheckIsOn(bool ignoreModifier = false) => ToolToggleBtns.ForEach(b => b.ToggleBtn?.SetIsOn(b.KeyBindings.IsPrimaryOn(ignoreModifier)));
+            public void CheckIsOn(bool ignoreModifier = false) => ToolToggleBtns.ForEach(b => b.ToggleBtn?.SetIsOn(b.KeyBindings.IsPrimaryOn(ignoreModifier || b.ForceIgnoreModifier)));
         }
     }
 }

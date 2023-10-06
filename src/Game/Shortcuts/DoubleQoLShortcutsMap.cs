@@ -6,55 +6,58 @@ namespace DoubleQoL.Game.Shortcuts {
 
     public class DoubleQoLShortcutsMap : ShortcutsMap {
         public static readonly DoubleQoLShortcutsMap Instance = new DoubleQoLShortcutsMap();
-        public const KbCategory DoubleQoLKB = new KbCategory();
 
-        [Kb(DoubleQoLKB, "IncSpeed", "Increase Game Speed", null, true, false)]
+        [Kb(KbCategory.Speed, "IncSpeed", "Increase Game Speed", null, true, false)]
         public KeyBindings IncSpeedKB { get; set; }
 
-        [Kb(DoubleQoLKB, "DecSpeed", "Decrease Game Speed", null, true, false)]
+        [Kb(KbCategory.Speed, "DecSpeed", "Decrease Game Speed", null, true, false)]
         public KeyBindings DecSpeedKb { get; set; }
 
-        [Kb(DoubleQoLKB, "FreeCamera", "Disable/Enable Free Camera", null, true, false)]
+        [Kb(KbCategory.Camera, "FreeCamera", "Disable/Enable Free Camera", null, true, false)]
         public KeyBindings FreeCameraKb { get; set; }
 
-        [Kb(DoubleQoLKB, "DisableFog", "Disable/Enable Fog", null, true, false)]
+        [Kb(KbCategory.Camera, "DisableFog", "Disable/Enable Fog", null, true, false)]
         public KeyBindings DisableFogKb { get; set; }
 
-        [Kb(DoubleQoLKB, "DisableCollapse", "Disable/Enable Collapse", null, true, false)]
+        [Kb(KbCategory.General, "DisableCollapse", "Disable/Enable Collapse", null, true, false)]
         public KeyBindings DisableCollapseKb { get; set; }
 
-        [Kb(DoubleQoLKB, "VehicleTool", "Activate Vehicle Tool", null, true, false)]
+        [Kb(KbCategory.Tools, "VehicleTool", "Activate Vehicle Tool", null, true, false)]
         public KeyBindings VehicleToolKb { get; set; }
 
-        [Kb(DoubleQoLKB, "VehicleExcavatorsTool", "Move Excavators", null, true, false)]
+        [Kb(KbCategory.Tools, "VehicleExcavatorsTool", "Move Excavators", null, true, false)]
         public KeyBindings VehicleExcavatorToolKb { get; set; }
 
-        [Kb(DoubleQoLKB, "VehicleDumpTool", "Move Dump trucks", null, true, false)]
+        [Kb(KbCategory.Tools, "VehicleDumpTool", "Move Dump trucks", null, true, false)]
         public KeyBindings VehicleDumpToolKb { get; set; }
 
-        [Kb(DoubleQoLKB, "VehicleTankTool", "Move Tank trucks", null, true, false)]
+        [Kb(KbCategory.Tools, "VehicleTankTool", "Move Tank Trucks", null, true, false)]
         public KeyBindings VehicleTankToolKb { get; set; }
 
-        [Kb(DoubleQoLKB, "VehicleTrucksTool", "Move trucks", null, true, false)]
+        [Kb(KbCategory.Tools, "VehicleTrucksTool", "Move Trucks", null, true, false)]
         public KeyBindings VehicleTrucksToolKb { get; set; }
 
-        [Kb(DoubleQoLKB, "DevMode", "Disable/Enable Dev Mode", null, true, false)]
+        [Kb(KbCategory.Tools, "ClearTruckCargoTool", "Clear Truck Cargo", null, true, false)]
+        public KeyBindings ClearTruckCargoToolKb { get; set; }
+
+        [Kb(KbCategory.General, "DevMode", "Disable/Enable Dev Mode", null, true, false)]
         public KeyBindings DevKeyKb { get; set; }
 
         public DoubleQoLShortcutsMap() : base() {
-            IncSpeedKB = KeyBindings.FromKey(DoubleQoLKB, ConfigManager.Instance.KeyCodes_incSpeed.Value);
-            DecSpeedKb = KeyBindings.FromKey(DoubleQoLKB, ConfigManager.Instance.KeyCodes_decSpeed.Value);
-            FreeCameraKb = KeyBindings.FromKey(DoubleQoLKB, ConfigManager.Instance.KeyCodes_freeCamera.Value);
-            DisableFogKb = KeyBindings.FromKey(DoubleQoLKB, ConfigManager.Instance.KeyCodes_fog.Value);
-            DisableCollapseKb = KeyBindings.FromKey(DoubleQoLKB, ConfigManager.Instance.KeyCodes_collapse.Value);
-            VehicleToolKb = KeyBindings.FromKey(DoubleQoLKB, ConfigManager.Instance.KeyCodes_vehicletool.Value);
+            IncSpeedKB = KeyBindings.FromKey(KbCategory.Speed, ConfigManager.Instance.KeyCodes_incSpeed.Value);
+            DecSpeedKb = KeyBindings.FromKey(KbCategory.Speed, ConfigManager.Instance.KeyCodes_decSpeed.Value);
+            FreeCameraKb = KeyBindings.FromKey(KbCategory.Camera, ConfigManager.Instance.KeyCodes_freeCamera.Value);
+            DisableFogKb = KeyBindings.FromKey(KbCategory.Camera, ConfigManager.Instance.KeyCodes_fog.Value);
+            DisableCollapseKb = KeyBindings.FromKey(KbCategory.General, ConfigManager.Instance.KeyCodes_collapse.Value);
+            VehicleToolKb = KeyBindings.FromKey(KbCategory.Tools, ConfigManager.Instance.KeyCodes_vehicletool.Value);
 
-            VehicleTrucksToolKb = KeyBindings.FromKey(DoubleQoLKB, KeyCode.Q);
-            VehicleExcavatorToolKb = KeyBindings.FromKey(DoubleQoLKB, KeyCode.E);
-            VehicleTankToolKb = KeyBindings.FromKey(DoubleQoLKB, KeyCode.R);
-            VehicleDumpToolKb = KeyBindings.FromKey(DoubleQoLKB, KeyCode.F);
+            VehicleTrucksToolKb = KeyBindings.FromKey(KbCategory.Tools, KeyCode.Q);
+            VehicleExcavatorToolKb = KeyBindings.FromKey(KbCategory.Tools, KeyCode.E);
+            VehicleTankToolKb = KeyBindings.FromKey(KbCategory.Tools, KeyCode.R);
+            VehicleDumpToolKb = KeyBindings.FromKey(KbCategory.Tools, KeyCode.F);
+            ClearTruckCargoToolKb = KeyBindings.FromPrimaryKeys(KbCategory.Tools, KeyCode.LeftShift, KeyCode.R);
 
-            DevKeyKb = KeyBindings.FromKey(DoubleQoLKB, ConfigManager.Instance.KeyCodes_Dev.Value);
+            DevKeyKb = KeyBindings.FromKey(KbCategory.General, ConfigManager.Instance.KeyCodes_Dev.Value);
         }
     }
 }

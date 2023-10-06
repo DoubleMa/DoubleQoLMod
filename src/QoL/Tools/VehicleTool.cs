@@ -1,6 +1,7 @@
 ﻿using DoubleQoL.Extensions;
 using DoubleQoL.Game.Shortcuts;
 using DoubleQoL.Global;
+using DoubleQoL.Global.Utils;
 using Mafi;
 using Mafi.Base;
 using Mafi.Collections;
@@ -14,6 +15,7 @@ using Mafi.Core.Input;
 using Mafi.Core.Prototypes;
 using Mafi.Core.Vehicles;
 using Mafi.Core.Vehicles.Commands;
+using Mafi.Core.Vehicles.Trucks;
 using Mafi.Localization;
 using Mafi.Unity;
 using Mafi.Unity.Entities;
@@ -36,6 +38,7 @@ namespace DoubleQoL.QoL.Tools {
         private readonly IVehiclesManager _vehiclesManager;
         private readonly Lyst<Vehicle> Vehicles;
         private readonly Lyst<Vehicle> MovedVehicles;
+        protected override bool IgnoreModifiers => false;
 
         private readonly Lyst<VehicleTypeInfo> vehicleTypeInfos = new Lyst<VehicleTypeInfo>()
         {
@@ -76,8 +79,9 @@ namespace DoubleQoL.QoL.Tools {
             Vehicles = new Lyst<Vehicle>();
             MovedVehicles = new Lyst<Vehicle>();
             ClearSelectionOnDeactivateOnly();
-            Lyst<ToolToggleBtn> toolToggleBtns = new Lyst<ToolToggleBtn>() { new ToolToggleBtn("Select", IconPaths.Tool_Select, _ => { }, shortcutsManager.PrimaryAction, "Select and move vehicles") };
-            vehicleTypeInfos.ForEach(vti => toolToggleBtns.Add(new ToolToggleBtn(vti.Name, vti.IconPath, _ => { }, vti.Trigger, $"Move all {vti.Name}s")));
+            Lyst<ToolToggleBtn> toolToggleBtns = new Lyst<ToolToggleBtn>() { new ToolToggleBtn("Select", IconPaths.Tool_Select, _ => { }, shortcutsManager.PrimaryAction, "Select and move vehicles", true) };
+            vehicleTypeInfos.ForEach(vti => toolToggleBtns.Add(new ToolToggleBtn(vti.Name, vti.IconPath, _ => { }, vti.Trigger, $"Select/Move {vti.Name}s")));
+            toolToggleBtns.Add(new ToolToggleBtn("Clear truck cargo", "Assets/Unity/UserInterface/General/Trash128.png", _ => { }, DoubleQoLShortcutsMap.Instance.ClearTruckCargoToolKb, "Try to clear the cargo of selected trucks"));
             SetToolbox(toolToggleBtns);
         }
 
@@ -100,19 +104,27 @@ namespace DoubleQoL.QoL.Tools {
             HighLightAllConfirm();
         }
 
-        public void MoveVehicles() {
-            if (ShortcutsManager.IsPrimaryActionUp && IsClick.Value && m_terrainCursor.TryComputeCurrentPosition(out var position)) HandleMoveAll(position);
+        public void HandleInput() {
+            if (ShortcutsManager.IsPrimaryActionUp && IsClick.Value && m_terrainCursor.TryComputeCurrentPosition(out var position)) HandleMoveAllVehicles(position);
+            if (DoubleQoLShortcutsMap.Instance.ClearTruckCargoToolKb.IsPrimaryOn(IgnoreModifiers)) HandleCLearAllCargos();
         }
 
-        private void HandleMoveAll(Tile3f position) {
+        private void HandleMoveAllVehicles(Tile3f position) {
             ClearMoved();
             GetVehicles().ForEach(v => MoveVehicle(v, position));
         }
+
+        private void HandleCLearAllCargos() => GetVehicles().ForEach(v => TryClearCargo(v));
 
         private void MoveVehicle(Vehicle v, Tile3f position) {
             _inputScheduler.ScheduleInputCmd(new NavigateVehicleToPositionCmd(v, position.Xy.Tile2i));
             HighLightVehicleMoved(v);
             MovedVehicles.Add(v);
+        }
+
+        public void TryClearCargo(Vehicle v) {
+            if (!(v is Truck)) return;
+            _inputScheduler.ScheduleInputCmd(new DiscardVehicleCargoCmd(v));
         }
 
         public void Clear() {
@@ -144,7 +156,7 @@ namespace DoubleQoL.QoL.Tools {
         protected override bool Matches(IAreaSelectableEntity entity, bool isAreaSelection, bool isLeftClick) {
             if (!(entity is Vehicle)) return false;
             Lyst<VehicleTypeInfo> activeVehicleTypeInfo = GetActiveVehicleTypeInfo();
-            if (activeVehicleTypeInfo.IsEmpty) return true;
+            if (activeVehicleTypeInfo.IsEmpty) return IgnoreModifiers || !InputHelper.IsModifierDown();
             Vehicle v = (Vehicle)entity;
             foreach (var vti in activeVehicleTypeInfo) if (vti.CheckID(v)) return true;
 
@@ -173,7 +185,7 @@ namespace DoubleQoL.QoL.Tools {
         }
 
         public override bool InputUpdate(IInputScheduler inputScheduler) {
-            MoveVehicles();
+            HandleInput();
             return base.InputUpdate(inputScheduler);
         }
 

@@ -64,7 +64,7 @@ namespace DoubleQoL.Config {
             QoLs_speed = new XKeyWithComment<bool>(QoLs, "speed", AcceptedBool, true, "Add Game Speed controller");
             QoLs_camera = new XKeyWithComment<bool>(QoLs, "camera", AcceptedBool, true, "Free Camera with a 6000 max Pivot Distance");
             QoLs_fog = new XKeyWithComment<bool>(QoLs, "fog", AcceptedBool, true, "Enable/disable fog");
-            QoLs_collapse = new XKeyWithComment<bool>(QoLs, "collapse", AcceptedBool, true, "Enable/disable building and transports collapse");
+            QoLs_collapse = new XKeyWithComment<bool>(QoLs, "collapse", AcceptedBool, false, "\r\n\t\tEnable/disable building and transports collapse\r\n\t\tDefault: false\r\n\t");
             QoLs_minetower = new XKeyWithComment<bool>(QoLs, "minetower", AcceptedBool, true, "Add a field in the MineTower view where you can prioritize a specific resource for all excavators");
             QoLs_vehicle = new XKeyWithComment<bool>(QoLs, "vehicle", AcceptedBool, true, "Add a field in the vehicle view where you can cancel all jobs");
             QoLs_towerarea = new XKeyWithComment<bool>(QoLs, "towerarea", AcceptedBool, true, "Change the area size of towers like the MineTower and the ForestryTower");
