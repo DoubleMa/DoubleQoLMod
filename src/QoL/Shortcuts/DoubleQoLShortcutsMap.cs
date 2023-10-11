@@ -2,9 +2,9 @@
 using Mafi.Unity.InputControl;
 using UnityEngine;
 
-namespace DoubleQoL.Game.Shortcuts {
+namespace DoubleQoL.QoL.Shortcuts {
 
-    public class DoubleQoLShortcutsMap : ShortcutsMap {
+    internal class DoubleQoLShortcutsMap {
         public static readonly DoubleQoLShortcutsMap Instance = new DoubleQoLShortcutsMap();
 
         [Kb(KbCategory.Speed, "IncSpeed", "Increase Game Speed", null, true, false)]
@@ -43,7 +43,7 @@ namespace DoubleQoL.Game.Shortcuts {
         [Kb(KbCategory.General, "DevMode", "Disable/Enable Dev Mode", null, true, false)]
         public KeyBindings DevKeyKb { get; set; }
 
-        public DoubleQoLShortcutsMap() : base() {
+        private DoubleQoLShortcutsMap() : base() {
             IncSpeedKB = KeyBindings.FromKey(KbCategory.Speed, ConfigManager.Instance.KeyCodes_incSpeed.Value);
             DecSpeedKb = KeyBindings.FromKey(KbCategory.Speed, ConfigManager.Instance.KeyCodes_decSpeed.Value);
             FreeCameraKb = KeyBindings.FromKey(KbCategory.Camera, ConfigManager.Instance.KeyCodes_freeCamera.Value);

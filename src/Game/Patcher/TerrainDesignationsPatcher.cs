@@ -3,28 +3,19 @@ using HarmonyLib;
 using Mafi;
 using Mafi.Core.Terrain.Designation;
 using Mafi.Unity.Mine;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace DoubleQoL.Game.Patcher {
 
-    public class TerrainDesignationsPatcher : APatcher {
+    internal class TerrainDesignationsPatcher : APatcher {
         public static readonly TerrainDesignationsPatcher Instance = new TerrainDesignationsPatcher();
         public override bool DefaultState => true;
-
         public override bool Enabled => ConfigManager.Instance.QoLs_terraindesignations.Value;
-
-        protected override List<MethodInfo> MethodInfos => new List<MethodInfo> { AccessTools.Method(typeof(TerrainDesignationsManager), "GetCanonicalDesignationRange") };
-
-        protected override HarmonyMethod MetPrefix => new HarmonyMethod(AccessTools.Method(typeof(TerrainDesignationsPatcher), "MyPrefix"));
-
-        protected override HarmonyMethod MetPostfix => new HarmonyMethod(AccessTools.Method(typeof(TerrainDesignationsPatcher), "MyPostfix"));
-
         private static int MaxSize => ConfigManager.Instance.DefaultState_terraindesignations.Value;
         private static readonly int MAX_AREA_SIZE_ADD = sbyte.MaxValue;
         private static readonly int MAX_AREA_SIZE_REMOVE = 191;
 
         private TerrainDesignationsPatcher() : base("TerrainDesignations") {
+            AddBlockedMethod(AccessTools.Method(typeof(TerrainDesignationsManager), "GetCanonicalDesignationRange"), AccessTools.Method(GetType(), "MyPostfix"));
         }
 
         protected override void Patch(bool enable = false) {
@@ -34,11 +25,6 @@ namespace DoubleQoL.Game.Patcher {
             AccessTools.Field(typeof(TerrainDesignationController), "MAX_AREA_SIZE_REMOVE")?.SetValue(null, new RelTile1i(enable ? MaxSize : MAX_AREA_SIZE_REMOVE));
             base.Patch(enable);
         }
-
-        public override void OnInit(object obj) {
-        }
-
-        private static bool MyPrefix() => false;
 
         private static void MyPostfix(Tile2i fromCoord, Tile2i toCoord, ref Tile2i minCoord, ref Tile2i maxCoord) {
             minCoord = TerrainDesignation.GetOrigin(fromCoord.Min(toCoord));

@@ -1,7 +1,8 @@
-﻿using DoubleQoL.Extensions;
-using DoubleQoL.Game.Shortcuts;
+﻿using DoubleQoL.Config;
+using DoubleQoL.Extensions;
 using DoubleQoL.Global;
 using DoubleQoL.Global.Utils;
+using DoubleQoL.QoL.Shortcuts;
 using Mafi;
 using Mafi.Base;
 using Mafi.Collections;
@@ -59,22 +60,9 @@ namespace DoubleQoL.QoL.Tools {
             IEntitiesManager entitiesManager,
             NewInstanceOf<EntityHighlighter> highlighter,
             ToolbarController toolbarController,
-            IInputScheduler inputScheduler,
             TerrainCursor terrainCursor,
             IVehiclesManager vehiclesManager) :
-            base(
-                protosDb,
-                unlockedProtosDb,
-                shortcutsManager,
-                inputManager,
-                cursorPickingManager,
-                cursorManager,
-                areaSelectionToolFactory,
-                entitiesManager,
-                highlighter,
-                toolbarController,
-                inputScheduler,
-                terrainCursor) {
+            base(protosDb, unlockedProtosDb, shortcutsManager, inputManager, cursorPickingManager, cursorManager, areaSelectionToolFactory, entitiesManager, highlighter, toolbarController, terrainCursor) {
             _vehiclesManager = vehiclesManager;
             Vehicles = new Lyst<Vehicle>();
             MovedVehicles = new Lyst<Vehicle>();
@@ -104,27 +92,27 @@ namespace DoubleQoL.QoL.Tools {
             HighLightAllConfirm();
         }
 
-        public void HandleInput() {
-            if (ShortcutsManager.IsPrimaryActionUp && IsClick.Value && m_terrainCursor.TryComputeCurrentPosition(out var position)) HandleMoveAllVehicles(position);
-            if (DoubleQoLShortcutsMap.Instance.ClearTruckCargoToolKb.IsPrimaryOn(IgnoreModifiers)) HandleCLearAllCargos();
+        public void HandleInput(IInputScheduler inputScheduler) {
+            if (ShortcutsManager.IsPrimaryActionUp && IsClick && m_terrainCursor.TryComputeCurrentPosition(out var position)) HandleMoveAllVehicles(inputScheduler, position);
+            if (DoubleQoLShortcutsMap.Instance.ClearTruckCargoToolKb.IsPrimaryOn(IgnoreModifiers)) HandleCLearAllCargos(inputScheduler);
         }
 
-        private void HandleMoveAllVehicles(Tile3f position) {
+        private void HandleMoveAllVehicles(IInputScheduler inputScheduler, Tile3f position) {
             ClearMoved();
-            GetVehicles().ForEach(v => MoveVehicle(v, position));
+            GetVehicles().ForEach(v => MoveVehicle(inputScheduler, v, position));
         }
 
-        private void HandleCLearAllCargos() => GetVehicles().ForEach(v => TryClearCargo(v));
+        private void HandleCLearAllCargos(IInputScheduler inputScheduler) => GetVehicles().ForEach(v => TryClearCargo(inputScheduler, v));
 
-        private void MoveVehicle(Vehicle v, Tile3f position) {
-            _inputScheduler.ScheduleInputCmd(new NavigateVehicleToPositionCmd(v, position.Xy.Tile2i));
+        private void MoveVehicle(IInputScheduler inputScheduler, Vehicle v, Tile3f position) {
+            inputScheduler.ScheduleInputCmd(new NavigateVehicleToPositionCmd(v, position.Xy.Tile2i));
             HighLightVehicleMoved(v);
             MovedVehicles.Add(v);
         }
 
-        public void TryClearCargo(Vehicle v) {
+        public void TryClearCargo(IInputScheduler inputScheduler, Vehicle v) {
             if (!(v is Truck)) return;
-            _inputScheduler.ScheduleInputCmd(new DiscardVehicleCargoCmd(v));
+            inputScheduler.ScheduleInputCmd(new DiscardVehicleCargoCmd(v));
         }
 
         public void Clear() {
@@ -159,7 +147,6 @@ namespace DoubleQoL.QoL.Tools {
             if (activeVehicleTypeInfo.IsEmpty) return IgnoreModifiers || !InputHelper.IsModifierDown();
             Vehicle v = (Vehicle)entity;
             foreach (var vti in activeVehicleTypeInfo) if (vti.CheckID(v)) return true;
-
             return false;
         }
 
@@ -178,24 +165,25 @@ namespace DoubleQoL.QoL.Tools {
             if (selectedEntities.IsNotEmpty()) AddVehicles(selectedEntities);
         }
 
-        protected override bool OnSecondaryActionUp(IInputScheduler inputScheduler) {
-            if (Vehicles.IsEmpty) return base.OnSecondaryActionUp(inputScheduler);
+        protected override bool OnSecondaryActionUp() {
+            if (Vehicles.IsEmpty) return base.OnSecondaryActionUp();
             Clear();
             return false;
         }
 
         public override bool InputUpdate(IInputScheduler inputScheduler) {
-            HandleInput();
+            HandleInput(inputScheduler);
             return base.InputUpdate(inputScheduler);
         }
 
         public override void RegisterUi(UiBuilder builder) {
-            _toolbarController
-                .AddLeftMenuButton(Loc.Str("VehicleTool", "Vehicle Tool", "title of a tool that is used to select and move vehicles").TranslatedString, this, IconPaths.Tool_MovingTruck, 80f, m => DoubleQoLShortcutsMap.Instance.VehicleToolKb)
-                .AddTooltip(new LocStrFormatted("Select One or multiple vehicles to move them"));
-
-            InitializeUi(builder, null, builder.Audio.ButtonClick, COLOR_HIGHLIGHT, COLOR_HIGHLIGHT_CONFIRM);
-            base.RegisterUi(builder);
+            if (ConfigManager.Instance.QoLs_vehicletool.Value) {
+                _toolbarController
+                    .AddLeftMenuButton(Loc.Str("VehicleTool", "Vehicle Tool", "title of a tool that is used to select and move vehicles").TranslatedString, this, Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg, 80f, m => DoubleQoLShortcutsMap.Instance.VehicleToolKb)
+                    .AddTooltip(new LocStrFormatted("Select One or multiple vehicles to move them"));
+                InitializeUi(builder, new Mafi.Unity.UiFramework.Styles.CursorStyle(nameof(Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg), Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg, new UnityEngine.Vector2(14f, 14f)), builder.Audio.ButtonClick, COLOR_HIGHLIGHT, COLOR_HIGHLIGHT_CONFIRM);
+                base.RegisterUi(builder);
+            }
         }
 
         private class VehicleTypeInfo {

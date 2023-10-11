@@ -11,7 +11,6 @@ using Mafi.Unity.Entities;
 using Mafi.Unity.InputControl;
 using Mafi.Unity.InputControl.AreaTool;
 using Mafi.Unity.InputControl.Cursors;
-using Mafi.Unity.InputControl.Factory;
 using Mafi.Unity.InputControl.Toolbar;
 using Mafi.Unity.UiFramework;
 using Mafi.Unity.UiFramework.Components;
@@ -22,8 +21,6 @@ namespace DoubleQoL.QoL.Tools {
 
     internal abstract class ASelectableEntityTool : ABaseEntityCursorInputController<IAreaSelectableEntity> {
         protected readonly ToolbarController _toolbarController;
-        protected readonly IInputScheduler _inputScheduler;
-        protected readonly EntityHighlighter _highlighter;
         protected AToolbox Toolbox { get; private set; }
         protected virtual bool IgnoreModifiers => true;
 
@@ -38,13 +35,10 @@ namespace DoubleQoL.QoL.Tools {
             IEntitiesManager entitiesManager,
             NewInstanceOf<EntityHighlighter> highlighter,
             ToolbarController toolbarController,
-            IInputScheduler inputScheduler,
             TerrainCursor terrainCursor,
             Lyst<ToolToggleBtn> toolToggleBtns = null) :
-            base(protosDb, unlockedProtosDb, shortcutsManager, inputManager, cursorPickingManager, cursorManager, areaSelectionToolFactory, entitiesManager, highlighter, terrainCursor, (Option<NewInstanceOf<TransportTrajectoryHighlighter>>)Option.None, null) {
+            base(protosDb, unlockedProtosDb, shortcutsManager, inputManager, cursorPickingManager, cursorManager, areaSelectionToolFactory, entitiesManager, highlighter, terrainCursor, Option.None, null) {
             _toolbarController = toolbarController;
-            _inputScheduler = inputScheduler;
-            _highlighter = highlighter.Instance;
             SetToolbox(toolToggleBtns);
         }
 

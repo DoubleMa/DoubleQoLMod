@@ -1,8 +1,8 @@
 ﻿using DoubleQoL.Config;
 using DoubleQoL.Extensions;
-using DoubleQoL.Game.Shortcuts;
-using DoubleQoL.Global;
+using DoubleQoL.QoL.Shortcuts;
 using Mafi;
+using Mafi.Base;
 using Mafi.Core.GameLoop;
 using Mafi.Unity.InputControl;
 using Mafi.Unity.InputControl.TopStatusBar;
@@ -16,7 +16,7 @@ namespace DoubleQoL.QoL.Controllers {
         protected override bool IsEnabled => ConfigManager.Instance.QoLs_fog.Value;
         protected override bool DefaultState => ConfigManager.Instance.DefaultState_fog.Value;
         protected override KeyBindings KeyBindings => DoubleQoLShortcutsMap.Instance.DisableFogKb;
-        protected override string BtnIcon => IconPaths.Status_BarFog;
+        protected override string BtnIcon => Assets.Base.Icons.Weather.Cloudy_svg;
         protected override float Order => StatusBarRightSideOrder.GAME_SPEED + 3;
         public override bool IsActive => _fogController != null && _fogController.IsFogEnabled();
 

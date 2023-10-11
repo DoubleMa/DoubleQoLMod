@@ -1,5 +1,4 @@
-﻿using DoubleQoL.General.Utils;
-using Mafi;
+﻿using Mafi;
 using Mafi.Collections;
 using Mafi.Collections.ReadonlyCollections;
 using Mafi.Core.Entities;
@@ -24,7 +23,10 @@ using UnityEngine.EventSystems;
 
 namespace DoubleQoL.QoL.Tools {
 
-    public abstract class ABaseEntityCursorInputController<T> : IToolbarItemInputController, IUnityInputController, IUnityUi where T : class, IRenderedEntity, IAreaSelectableEntity {
+    /// <summary>
+    /// This class is adapted from code provided in <see cref="Mafi.Unity.InputControl.Tools.BaseEntityCursorInputController{T}"/>.
+    /// </summary>
+    internal abstract class ABaseEntityCursorInputController<T> : IToolbarItemInputController, IUnityInputController, IUnityUi where T : class, IRenderedEntity, IAreaSelectableEntity {
         protected virtual RelTile1i MAX_AREA_EDGE_SIZE => new RelTile1i(300);
         protected readonly ShortcutsManager ShortcutsManager;
         private readonly UnlockedProtosDbForUi m_unlockedProtosDb;
@@ -32,7 +34,7 @@ namespace DoubleQoL.QoL.Tools {
         private readonly CursorPickingManager m_picker;
         private readonly CursorManager m_cursorManager;
         private readonly IEntitiesManager m_entitiesManager;
-        private readonly EntityHighlighter m_highlighter;
+        protected readonly EntityHighlighter _highlighter;
         protected readonly TerrainCursor m_terrainCursor;
         private readonly Option<TransportTrajectoryHighlighter> m_transportTrajectoryHighlighter;
         private readonly Lyst<AudioSource> m_sounds;
@@ -64,7 +66,7 @@ namespace DoubleQoL.QoL.Tools {
         public bool IsActive { get; private set; }
         protected bool WasPrimaryActionDown { get; private set; }
 
-        protected ActionVariable<bool> IsClick = new ActionVariable<bool>(false);
+        protected bool IsClick = false;
 
         protected ABaseEntityCursorInputController(
           ProtosDb protosDb,
@@ -90,7 +92,7 @@ namespace DoubleQoL.QoL.Tools {
             m_picker = cursorPickingManager;
             m_cursorManager = cursorManager;
             m_entitiesManager = entitiesManager;
-            m_highlighter = highlighter.Instance;
+            _highlighter = highlighter.Instance;
             m_terrainCursor = terrainCursor;
             m_transportTrajectoryHighlighter = (Option<TransportTrajectoryHighlighter>)transportTrajectoryHighlighter.ValueOrNull?.Instance;
             m_lockedByProto = lockByProto.HasValue ? (Option<Proto>)protosDb.GetOrThrow<Proto>(lockByProto.Value) : Option<Proto>.None;
@@ -171,7 +173,7 @@ namespace DoubleQoL.QoL.Tools {
 
         protected void HideCursor() => m_cursor.ValueOrNull?.Hide();
 
-        protected virtual bool OnSecondaryActionUp(IInputScheduler inputScheduler) {
+        protected virtual bool OnSecondaryActionUp() {
             DeactivateSelf();
             return true;
         }
@@ -181,7 +183,7 @@ namespace DoubleQoL.QoL.Tools {
                 Logging.Log.Error("Input update for non-active controller!");
                 return false;
             }
-            if (ShortcutsManager.IsSecondaryActionUp && !m_rightClickAreaColor.HasValue && OnSecondaryActionUp(inputScheduler)) return true;
+            if (ShortcutsManager.IsSecondaryActionUp && !m_rightClickAreaColor.HasValue && OnSecondaryActionUp()) return true;
 
             bool isFirstUpdate = m_isFirstUpdate;
             m_isFirstUpdate = false;
@@ -312,14 +314,14 @@ namespace DoubleQoL.QoL.Tools {
 
         protected virtual void ClearSelection() {
             m_selectedEntities.Clear();
-            m_highlighter.ClearAllHighlights();
+            _highlighter.ClearAllHighlights();
             m_transportTrajectoryHighlighter.ValueOrNull?.ClearAllHighlights();
             m_selectedPartialTransports.Clear();
         }
 
         private void UpdateSelectionSync(RectangleTerrainArea2i area, bool leftClick) {
-            IsClick.Value = area.AreaTiles <= 1;
-            if (!IsClick.Value) ClearSelection();
+            IsClick = area.AreaTiles <= 1;
+            if (!IsClick) ClearSelection();
             foreach (T entity in m_entitiesManager.GetAllEntitiesOfType<T>()) {
                 if (entity.IsSelected(area) && Matches(entity, true, leftClick)) {
                     if (m_enablePartialTransportsSelection && entity is Transport originalTransport) {
@@ -335,8 +337,7 @@ namespace DoubleQoL.QoL.Tools {
                                 m_transportTrajectoryHighlighter.ValueOrNull?.HighlightTrajectory(transportTrajectory, m_colorHighlight);
                             }
                     }
-                    else
-                        addEntity(entity);
+                    else addEntity(entity);
                 }
             }
             m_partialTrajsTmp.Clear();
@@ -344,7 +345,7 @@ namespace DoubleQoL.QoL.Tools {
 
             void addEntity(T entity) {
                 m_selectedEntities.Add(entity);
-                m_highlighter.Highlight(entity, m_colorHighlight);
+                _highlighter.Highlight(entity, m_colorHighlight);
             }
         }
     }

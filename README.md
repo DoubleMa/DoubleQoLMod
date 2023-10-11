@@ -6,10 +6,14 @@ A mod for [Captain of Industry game](https://www.captain-of-industry.com/).
 
 - Add a game speed controller that can speed up the game up to x10. [numb8-numb9]
 - Free camera mode with a 6000 max pivot distance. [F9]
-- Enable/disable fog. [F10]
-- Enable/disable building and transports collapse. [keypad9]
+- Enable or disable fog. [F10]
+- Enable or disable building and transports collapse. [keypad9]
 
     <img src="./images/StatusBar.png" alt="StatusBar" width="auto">
+
+- Add more info under the statusbar [Right-click on any of the health, unity, or truck icons]
+
+    <img src="./images/StatusBarDetails.png" alt="StatusBarDetails" width="auto" height="300">
 
 - Add a field in the MineTower view where you can prioritize a specific resource for all excavators
 - Add a btn in the vehicle view where you can cancel all jobs
@@ -30,18 +34,16 @@ A mod for [Captain of Industry game](https://www.captain-of-industry.com/).
 
 1. Download the latest zip file from the GitHub Release.
 2. Extract the zip file to the `%USERPROFILE%\AppData\Roaming\Captain of Industry\Mods` directory.
-3. In the game settings under the Miscellaneous tab toggle Modding button.
-4. When you start a new game make sure to select DoubleQoL under "Mods to Include" section or if you're loading an old save make sure to click on Mods in the loading view and select DoubleQoL
-
-  
+3. In the game settings, under the Miscellaneous tab, toggle "Modding" button.
+4. When you start a new game, make sure to select DoubleQoL under the "Mods to Include" section. If you're loading an old save, be sure to click on "Mods" in the loading view and select DoubleQoL.
 
 ## Configuration
 
-The zip file include a `DoubleQoL.dll.config` file with it. You can disable/enable any QoL feature or/and change the control key of each one.
+The zip file includes a `DoubleQoL.dll.config` file. You can enable/disable any QoL feature and change the control key for each one.
 
-1. QoLs Section is where you can enable/disable a QoL.
-2. KeyCodes Section is where you can change the KeyCode of each supported QoL.
-3. DefaultState Section is where you can set the default state of some QoL when you start the game.
+1. The "QoLs" section allows you to enable or disable a QoL.
+2. The "KeyCodes" section allows you to change the KeyCode for each supported QoL.
+3. The "DefaultState" section lets you set the default state for specific QoL features when you start the game.
 
   
 

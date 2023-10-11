@@ -22,12 +22,13 @@ namespace DoubleQoL.Config {
         };
 
         private readonly bool[] AcceptedBool = { true, false };
+        private readonly string[] AcceptedTrucks = { "TruckT1", "TruckT2", "TruckT3Loose", "TruckT3Fluid" };
+        private readonly string[] AcceptedNonTrucks = { "ExcavatorT1", "ExcavatorT2", "ExcavatorT3", "TreeHarvesterT1", "TreeHarvesterT2", "TreePlanterT1" };
 
         private readonly XSectionWithComment AppSettings;
         private readonly XSectionWithComment QoLs;
         private readonly XSectionWithComment KeyCodes;
         private readonly XSectionWithComment DefaultState;
-
         public XKeyWithComment<bool> AppSettings_isDev { get; }
         public XKeyWithComment<bool> QoLs_speed { get; }
         public XKeyWithComment<bool> QoLs_camera { get; }
@@ -38,6 +39,7 @@ namespace DoubleQoL.Config {
         public XKeyWithComment<bool> QoLs_vehicletool { get; }
         public XKeyWithComment<bool> QoLs_towerarea { get; }
         public XKeyWithComment<bool> QoLs_terraindesignations { get; }
+        public XKeyWithComment<bool> QoLs_statusbar { get; }
 
         public XKeyWithComment<KeyCode> KeyCodes_incSpeed { get; }
         public XKeyWithComment<KeyCode> KeyCodes_decSpeed { get; }
@@ -52,6 +54,9 @@ namespace DoubleQoL.Config {
         public XKeyWithComment<bool> DefaultState_collapse { get; }
         public XKeyWithComment<int> DefaultState_towerarea { get; }
         public XKeyWithComment<int> DefaultState_terraindesignations { get; }
+        public XKeyWithComment<bool> DefaultState_statusbar { get; }
+        public XKeyWithComment<string> DefaultState_trucktoshow { get; }
+        public XKeyWithComment<string> DefaultState_nontrucktoshow { get; }
 
         private ConfigManager() {
             AppSettings = new XSectionWithComment("AppSettings");
@@ -70,6 +75,7 @@ namespace DoubleQoL.Config {
             QoLs_towerarea = new XKeyWithComment<bool>(QoLs, "towerarea", AcceptedBool, true, "Change the area size of towers like the MineTower and the ForestryTower");
             QoLs_terraindesignations = new XKeyWithComment<bool>(QoLs, "terraindesignations", AcceptedBool, true, "Change the area size of terrain designations");
             QoLs_vehicletool = new XKeyWithComment<bool>(QoLs, "vehicletool", AcceptedBool, true, "A tool to select and move vehicles to one location");
+            QoLs_statusbar = new XKeyWithComment<bool>(QoLs, "statusbar", AcceptedBool, true, "\r\n\t\tAdd more info under the statusbar.\r\n\t\tRight-click any of the health, unity, or truck icons in the statusbar to activate it\r\n\t");
 
             KeyCodes_incSpeed = new XKeyWithComment<KeyCode>(KeyCodes, "incSpeed", AcceptedKeyCodes, KeyCode.Alpha9, "\r\n\t\tKeyCode to increase game speed (note make sure you choose different keys from the one in game like plus and minus)\r\n\t\tDefault: Alpha9\r\n\t");
             KeyCodes_decSpeed = new XKeyWithComment<KeyCode>(KeyCodes, "decSpeed", AcceptedKeyCodes, KeyCode.Alpha8, "\r\n\t\tKeyCode to decrease game speed (note make sure you choose different keys from the one in game like plus and minus)\r\n\t\tDefault: Alpha8\r\n\t");
@@ -84,6 +90,9 @@ namespace DoubleQoL.Config {
             DefaultState_collapse = new XKeyWithComment<bool>(DefaultState, "collapse", AcceptedBool, false, "Default: false");
             DefaultState_towerarea = new XKeyWithComment<int>(DefaultState, "towerarea", new int[] { 1, 22 }, 2, "\r\n\t\tAccepted values: 1 - 22\r\n\t\tDefault: 2\r\n\t");
             DefaultState_terraindesignations = new XKeyWithComment<int>(DefaultState, "terraindesignations", new int[] { 192, Static.MaxMapSize }, Static.MaxMapSize, $"\r\n\t\tAccepted values: 192 - {Static.MaxMapSize}\r\n\t\tDefault: {Static.MaxMapSize}\r\n\t");
+            DefaultState_statusbar = new XKeyWithComment<bool>(DefaultState, "statusbar", AcceptedBool, false, "\r\n\t\tDefault state of the statusbar details\r\n\t\tDefault: false\r\n\t");
+            DefaultState_trucktoshow = new XKeyWithComment<string>(DefaultState, "trucktoshow", AcceptedTrucks, "TruckT1, TruckT2, TruckT3Loose, TruckT3Fluid", "\r\n\t\tType of trucks to show in the statusbar.\r\n\t\tAccepted values: TruckT1, TruckT2, TruckT3Loose, TruckT3Fluid\r\n\t\tDefault: TruckT1, TruckT2, TruckT3Loose, TruckT3Fluid\r\n\t");
+            DefaultState_nontrucktoshow = new XKeyWithComment<string>(DefaultState, "nontrucktoshow", AcceptedNonTrucks, "ExcavatorT1, ExcavatorT2, ExcavatorT3, TreeHarvesterT1, TreeHarvesterT2, TreePlanterT1", "\r\n\t\tType of non-trucks to show in the statusbar.\r\n\t\tAccepted values: ExcavatorT1, ExcavatorT2, ExcavatorT3, TreeHarvesterT1, TreeHarvesterT2, TreePlanterT1\r\n\t\tDefault: ExcavatorT1, ExcavatorT2, ExcavatorT3, TreeHarvesterT1, TreeHarvesterT2, TreePlanterT1\r\n\t");
         }
     }
 }

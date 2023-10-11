@@ -1,5 +1,6 @@
 ﻿using DoubleQoL.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using UnityEngine;
@@ -24,7 +25,7 @@ namespace DoubleQoL.Config {
         }
     }
 
-    internal class XKeyWithComment<T> : XElementWithComment where T : struct, IComparable, IConvertible {
+    internal class XKeyWithComment<T> : XElementWithComment where T : IComparable, IConvertible {
         public XSectionWithComment SectionWithComment { get; private set; }
         public string Key { get; private set; }
         public string StrValue { get; private set; }
@@ -46,12 +47,32 @@ namespace DoubleQoL.Config {
                 if (typeof(T) == typeof(KeyCode) && Enum.TryParse(value, out KeyCode keyCode) && AcceptedValues.Contains((T)(object)keyCode)) return (T)(object)keyCode;
                 else if (typeof(T) == typeof(bool) && bool.TryParse(value, out bool boolValue) && AcceptedValues.Contains((T)(object)boolValue)) return (T)(object)boolValue;
                 else if (typeof(T) == typeof(int) && int.TryParse(value, out int intValue)) return (T)(object)intValue.Between(System.Convert.ToInt32(AcceptedValues[0]), System.Convert.ToInt32(AcceptedValues[1]));
+                else if (typeof(T) == typeof(string)) return (T)(object)value;
             }
             catch (Exception) {
                 Logging.Log.Warning($"Error while reading and converting the config value of {Key}");
             }
 
             return DefaultValue;
+        }
+
+        public string[] ConvertToStringArray() {
+            string[] acceptedValues = AcceptedValues as string[];
+
+            try {
+                string[] array = Value.ToString().Split(',');
+                List<string> stringList = new List<string>();
+                foreach (var item in array) {
+                    string str = item.CleanString();
+                    if (acceptedValues.Contains(str)) stringList.Add(str);
+                }
+                return stringList.ToArray();
+            }
+            catch (Exception) {
+                Logging.Log.Warning($"Error while reading and converting the config value of {Key}");
+            }
+
+            return acceptedValues;
         }
     }
 }

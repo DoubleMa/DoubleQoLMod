@@ -1,4 +1,4 @@
-﻿using DoubleQoL.Game.Patcher;
+﻿using DoubleQoL.Game.Patcher.Helper;
 using DoubleQoL.Game.Prototypes;
 using Mafi;
 using Mafi.Collections;
@@ -14,11 +14,13 @@ namespace DoubleQoL {
         public int Version => 1;
         public bool IsUiOnly => false;
 
-        private static Version GetVersion() => new Version(1, 1, 1);
+        private static Version GetVersion() => new Version(1, 2, 0);
 
         public void Initialize(DependencyResolver resolver, bool gameWasLoaded) {
             var version = GetVersion();
             Logging.Log.Info($"Current {Name} mod version v{version.Major}.{version.Minor}.{version.Build}");
+            //resolver.EnsureResolved(typeof(PatcherHelper), typeof(PatcherHelper));
+            resolver.Instantiate<PatcherHelper>();
         }
 
         public void ChangeConfigs(Lyst<IConfig> configs) {
@@ -29,10 +31,6 @@ namespace DoubleQoL {
         }
 
         public void RegisterDependencies(DependencyResolverBuilder depBuilder, ProtosDb protosDb, bool wasLoaded) {
-            MineTowerPatcher.Instance.Init(protosDb);
-            VehiclePatcher.Instance.Init();
-            CollapsePatcher.Instance.Init();
-            TerrainDesignationsPatcher.Instance.Init();
         }
     }
 }

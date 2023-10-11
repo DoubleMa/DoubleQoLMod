@@ -41,7 +41,7 @@ namespace DoubleQoL.Config {
             return null;
         }
 
-        public string GetValueOrCreate<T>(XKeyWithComment<T> x) where T : struct, IComparable, IConvertible {
+        public string GetValueOrCreate<T>(XKeyWithComment<T> x) where T : IComparable, IConvertible {
             XElement xSection = x.SectionWithComment.Element;
             if (xSection == null) return x.DefaultValue.ToString();
             try {

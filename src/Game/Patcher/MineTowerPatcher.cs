@@ -1,4 +1,5 @@
 ﻿using DoubleQoL.Config;
+using DoubleQoL.Game.Patcher.Helper;
 using HarmonyLib;
 using Mafi;
 using Mafi.Core.Buildings.Mine;
@@ -14,44 +15,31 @@ using Mafi.Unity.UserInterface;
 using Mafi.Unity.UserInterface.Components;
 using Mafi.Unity.UserInterface.Style;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
 namespace DoubleQoL.Game.Patcher {
 
-    public class MineTowerPatcher : APatcher {
+    internal class MineTowerPatcher : APatcher {
         public static readonly MineTowerPatcher Instance = new MineTowerPatcher();
-
-        private static readonly Type TempType = Assembly.Load("Mafi.Unity").GetType("Mafi.Unity.InputControl.Inspectors.Buildings.MineTowerWindowView");
         public override bool DefaultState => true;
-
         public override bool Enabled => ConfigManager.Instance.QoLs_minetower.Value;
-
-        protected override List<MethodInfo> MethodInfos => new List<MethodInfo> { AccessTools.Method(TempType, "AddCustomItems") };
-
-        protected override HarmonyMethod MetPrefix => new HarmonyMethod(AccessTools.Method(typeof(MineTowerPatcher), "MyPrefix"));
-
-        protected override HarmonyMethod MetPostfix => new HarmonyMethod(AccessTools.Method(typeof(MineTowerPatcher), "MyPostfix"));
-
+        private static Type Typ;
         private static IOrderedEnumerable<LooseProductProto> _looseProductProtos;
         private static LooseProductProto _selectedLooseProductProto;
         private static ProtosDb _protosDb;
 
         private MineTowerPatcher() : base("MineTower") {
+            Typ = Assembly.Load("Mafi.Unity").GetType("Mafi.Unity.InputControl.Inspectors.Buildings.MineTowerWindowView");
+            AddAllowedMethod(AccessTools.Method(Typ, "AddCustomItems"), AccessTools.Method(GetType(), "MyPostfix"));
         }
 
-        public override void OnInit(object obj) {
-            if (!(obj is ProtosDb)) throw new ArgumentException("MineTowerPatcher need a ProtosDb argument");
-            ProtosDb protosDb = (ProtosDb)obj;
-            if (_protosDb != null) return;
-            _protosDb = protosDb;
-            _looseProductProtos = protosDb.Filter<LooseProductProto>(proto => proto.CanBeLoadedOnTruck && proto.CanBeOnTerrain).OrderBy(x => x);
+        public override void OnInit() {
+            _protosDb = PatcherHelper.Instance.ProtosDb;
+            _looseProductProtos = _protosDb.Filter<LooseProductProto>(proto => proto.CanBeLoadedOnTruck && proto.CanBeOnTerrain).OrderBy(x => x);
             _selectedLooseProductProto = _looseProductProtos.ElementAt(0);
         }
-
-        private static bool MyPrefix() => true;
 
         private static void MyPostfix(StaticEntityInspectorBase<MineTower> __instance, ref StackContainer itemContainer) {
             AccessTools.FieldRef<StaticEntityInspectorBase<MineTower>, UiBuilder> builder = AccessTools.FieldRefAccess<StaticEntityInspectorBase<MineTower>, UiBuilder>("Builder");
@@ -92,7 +80,7 @@ namespace DoubleQoL.Game.Patcher {
         }
 
         private static void SetProductPriority(StaticEntityInspectorBase<MineTower> __instance) {
-            MineTower tower = (MineTower)AccessTools.PropertyGetter(TempType, "Entity").Invoke(__instance, null);
+            MineTower tower = (MineTower)AccessTools.PropertyGetter(Typ, "Entity").Invoke(__instance, null);
             if (tower == null || _selectedLooseProductProto == null) return;
             foreach (var ex in tower.AllAssignedExcavators) ex.SetPrioritizeProduct(_selectedLooseProductProto);
         }

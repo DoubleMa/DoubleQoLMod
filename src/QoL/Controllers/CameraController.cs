@@ -1,6 +1,6 @@
 ﻿using DoubleQoL.Config;
 using DoubleQoL.Extensions;
-using DoubleQoL.Game.Shortcuts;
+using DoubleQoL.QoL.Shortcuts;
 using Mafi;
 using Mafi.Core.GameLoop;
 using Mafi.Unity;
