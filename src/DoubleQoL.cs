@@ -14,7 +14,7 @@ namespace DoubleQoL {
         public int Version => 1;
         public bool IsUiOnly => false;
 
-        private static Version GetVersion() => new Version(1, 2, 0);
+        private static Version GetVersion() => new Version(1, 2, 1);
 
         public void Initialize(DependencyResolver resolver, bool gameWasLoaded) {
             var version = GetVersion();

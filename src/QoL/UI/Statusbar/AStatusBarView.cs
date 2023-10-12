@@ -43,7 +43,6 @@ namespace DoubleQoL.QoL.UI.Statusbar {
             UpdaterBuilder updaterBuilder = UpdaterBuilder.Start();
             OnRegisteringUi(builder, updaterBuilder);
             SetOnClick();
-            InfoTileExp.SetExpended(ConfigManager.Instance.DefaultState_statusbar.Value);
             _updater = updaterBuilder.Build(SyncFreq);
             _gameLoop.SyncUpdate.AddNonSaveable(this, x => _updater.SyncUpdate());
             _gameLoop.RenderUpdate.AddNonSaveable(this, x => _updater.RenderUpdate());
