@@ -18,7 +18,7 @@ namespace DoubleQoL.Game.Patcher.Helper {
             LogisticsStatusBarView = logisticsStatusBarView;
             PopulationStatusBarView = populationStatusBarView;
             UnityStatusBarView = unityStatusBarView;
-            if (Instance is null) Instance = this;
+            Instance = this;
             InitPatchers();
         }
 

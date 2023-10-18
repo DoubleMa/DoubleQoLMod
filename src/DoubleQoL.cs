@@ -14,13 +14,13 @@ namespace DoubleQoL {
         public int Version => 1;
         public bool IsUiOnly => false;
 
-        private static Version GetVersion() => new Version(1, 2, 1);
+        private static Version GetVersion() => new Version(1, 2, 2);
 
         public void Initialize(DependencyResolver resolver, bool gameWasLoaded) {
             var version = GetVersion();
             Logging.Log.Info($"Current {Name} mod version v{version.Major}.{version.Minor}.{version.Build}");
             //resolver.EnsureResolved(typeof(PatcherHelper), typeof(PatcherHelper));
-            resolver.Instantiate<PatcherHelper>();
+            //resolver.Instantiate<PatcherHelper>();
         }
 
         public void ChangeConfigs(Lyst<IConfig> configs) {
@@ -31,6 +31,7 @@ namespace DoubleQoL {
         }
 
         public void RegisterDependencies(DependencyResolverBuilder depBuilder, ProtosDb protosDb, bool wasLoaded) {
+            depBuilder.RegisterDependency<PatcherHelper>().AsSelf();
         }
     }
 }
