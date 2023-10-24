@@ -3,7 +3,7 @@ using Mafi.Core.Prototypes;
 
 namespace DoubleQoL.Extensions {
 
-    public static class VehicleExtension {
+    internal static class VehicleExtension {
 
         public static Proto.ID GetProtoID(this Vehicle vehicle) => vehicle.Prototype.Id;
 

@@ -1,7 +1,9 @@
-﻿using DoubleQoL.Game.Patcher.Helper;
+﻿using DoubleQoL.Extensions;
+using DoubleQoL.Game.Patcher.Helper;
 using HarmonyLib;
+using Mafi;
+using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace DoubleQoL.Game.Patcher {
 
@@ -15,8 +17,9 @@ namespace DoubleQoL.Game.Patcher {
         private Harmony harmony;
         protected List<MethodToPatch> MethodInfos { get; }
 
-        public static readonly MethodInfo PrefixAllow = AccessTools.Method(typeof(APatcher), "MyPrefixAllow");
-        public static readonly MethodInfo PrefixBlock = AccessTools.Method(typeof(APatcher), "MyPrefixBlock");
+        public static readonly HarmonyMethod PrefixAllow = typeof(APatcher).GetHarmonyMethod("MyPrefixAllow");
+        public static readonly HarmonyMethod PrefixBlock = typeof(APatcher).GetHarmonyMethod("MyPrefixBlock");
+        private static DependencyResolver Resolver;
 
         private static bool MyPrefixAllow() => true;
 
@@ -28,13 +31,16 @@ namespace DoubleQoL.Game.Patcher {
             MethodInfos = new List<MethodToPatch>();
         }
 
-        public void Init() {
+        public void Init(DependencyResolver resolver) {
+            Resolver = resolver;
             harmony = new Harmony(PatcherID);
-            OnInit();
+            OnInit(resolver);
             Patch(DefaultState);
         }
 
-        public virtual void OnInit() {
+        protected static T GetInstance<T>() where T : class => Resolver?.GetResolvedInstance<T>().Value;
+
+        public virtual void OnInit(DependencyResolver resolver) {
         }
 
         public void Toggle() => Patch(!IsActive);
@@ -46,19 +52,24 @@ namespace DoubleQoL.Game.Patcher {
         protected virtual void Patch(bool enable = false) {
             if (!Enabled || IsActive == enable) return;
             foreach (var m in MethodInfos) {
-                if (m.MethodInfo is null) continue;
-                harmony.Unpatch(m.MethodInfo, HarmonyPatchType.All, PatcherID);
-                if (enable) harmony.Patch(m.MethodInfo, m.Prefix, m.Postfix);
+                var mt = m?.ToPatch?.method;
+                if (mt is null) continue;
+                harmony.Unpatch(mt, HarmonyPatchType.All, PatcherID);
+                if (enable) harmony.Patch(mt, m.Prefix, m.Postfix);
             }
             IsActive = enable;
         }
 
-        protected void AddMethod(MethodInfo methodInfo, MethodInfo prefix, MethodInfo postfix) => MethodInfos.Add(new MethodToPatch(methodInfo, new HarmonyMethod(prefix), new HarmonyMethod(postfix)));
+        protected void AddMethod(HarmonyMethod methodInfo, HarmonyMethod prefix, HarmonyMethod postfix) => MethodInfos.Add(new MethodToPatch(methodInfo, prefix, postfix));
 
-        protected void AddMethod(MethodInfo methodInfo, MethodInfo postfix, bool allow) => AddMethod(methodInfo, allow ? PrefixAllow : PrefixBlock, postfix);
+        protected void AddMethod(Type t, string method, HarmonyMethod prefix, HarmonyMethod postfix) => AddMethod(t.GetHarmonyMethod(method), prefix, postfix);
 
-        protected void AddAllowedMethod(MethodInfo methodInfo, MethodInfo postfix) => AddMethod(methodInfo, postfix, true);
+        protected void AddMethod<T>(string method, HarmonyMethod prefix, HarmonyMethod postfix) => AddMethod(typeof(T), method, prefix, postfix);
 
-        protected void AddBlockedMethod(MethodInfo methodInfo, MethodInfo postfix) => AddMethod(methodInfo, postfix, false);
+        protected void AddMethod(HarmonyMethod methodInfo, HarmonyMethod postfix, bool allow = false) => AddMethod(methodInfo, allow ? PrefixAllow : PrefixBlock, postfix);
+
+        protected void AddMethod(Type t, string method, HarmonyMethod postfix, bool allow = false) => AddMethod(t.GetHarmonyMethod(method), postfix, allow);
+
+        protected void AddMethod<T>(string method, HarmonyMethod postfix, bool allow = false) => AddMethod(typeof(T), method, postfix, allow);
     }
 }

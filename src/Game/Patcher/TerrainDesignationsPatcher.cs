@@ -1,8 +1,9 @@
 ﻿using DoubleQoL.Config;
-using HarmonyLib;
+using DoubleQoL.Extensions;
 using Mafi;
 using Mafi.Core.Terrain.Designation;
 using Mafi.Unity.Mine;
+using System;
 
 namespace DoubleQoL.Game.Patcher {
 
@@ -15,14 +16,14 @@ namespace DoubleQoL.Game.Patcher {
         private static readonly int MAX_AREA_SIZE_REMOVE = 191;
 
         private TerrainDesignationsPatcher() : base("TerrainDesignations") {
-            AddBlockedMethod(AccessTools.Method(typeof(TerrainDesignationsManager), "GetCanonicalDesignationRange"), AccessTools.Method(GetType(), "MyPostfix"));
+            AddMethod<TerrainDesignationsManager>("GetCanonicalDesignationRange", this.GetHarmonyMethod("MyPostfix"));
         }
 
         protected override void Patch(bool enable = false) {
             if (!Enabled || IsActive == enable) return;
-
-            AccessTools.Field(typeof(TerrainDesignationController), "MAX_AREA_SIZE_ADD")?.SetValue(null, new RelTile1i(enable ? MaxSize : MAX_AREA_SIZE_ADD));
-            AccessTools.Field(typeof(TerrainDesignationController), "MAX_AREA_SIZE_REMOVE")?.SetValue(null, new RelTile1i(enable ? MaxSize : MAX_AREA_SIZE_REMOVE));
+            Type typ = typeof(TerrainDesignationController);
+            typ.SetField(null, "MAX_AREA_SIZE_ADD", new RelTile1i(enable ? MaxSize : MAX_AREA_SIZE_ADD));
+            typ.SetField(null, "MAX_AREA_SIZE_REMOVE", new RelTile1i(enable ? MaxSize : MAX_AREA_SIZE_REMOVE));
             base.Patch(enable);
         }
 

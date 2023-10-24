@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DoubleQoL.Extensions {
 
-    public static class FogControllerExtention {
+    internal static class FogControllerExtention {
 
         private static Type GetFogControllerType() => typeof(UnityMod).Assembly.GetType("Mafi.Unity.Weather.FogController") ?? throw new Exception("Couldn't find the FogController type.");
 

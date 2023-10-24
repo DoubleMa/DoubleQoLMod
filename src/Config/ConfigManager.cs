@@ -7,7 +7,7 @@ namespace DoubleQoL.Config {
         public static readonly ConfigManager Instance = new ConfigManager();
 
         private readonly KeyCode[] AcceptedKeyCodes = {
-              KeyCode.Backspace, KeyCode.Delete, KeyCode.Tab, KeyCode.Return, KeyCode.Pause, KeyCode.Escape, KeyCode.Space,
+              KeyCode.None, KeyCode.Backspace, KeyCode.Delete, KeyCode.Tab, KeyCode.Return, KeyCode.Pause, KeyCode.Escape, KeyCode.Space,
               KeyCode.Keypad0, KeyCode.Keypad1, KeyCode.Keypad2, KeyCode.Keypad3, KeyCode.Keypad4, KeyCode.Keypad5, KeyCode.Keypad6, KeyCode.Keypad7, KeyCode.Keypad8, KeyCode.Keypad9, KeyCode.KeypadPeriod, KeyCode.KeypadDivide, KeyCode.KeypadMultiply, KeyCode.KeypadMinus, KeyCode.KeypadPlus, KeyCode.KeypadEnter, KeyCode.KeypadEquals,
               KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.RightArrow, KeyCode.LeftArrow, KeyCode.Insert, KeyCode.Home, KeyCode.End, KeyCode.PageUp, KeyCode.PageDown,
               KeyCode.F1, KeyCode.F2, KeyCode.F3, KeyCode.F4, KeyCode.F5, KeyCode.F6, KeyCode.F7, KeyCode.F8, KeyCode.F9, KeyCode.F10, KeyCode.F11, KeyCode.F12, KeyCode.F13, KeyCode.F14, KeyCode.F15,
@@ -81,7 +81,7 @@ namespace DoubleQoL.Config {
             KeyCodes_decSpeed = new XKeyWithComment<KeyCode>(KeyCodes, "decSpeed", AcceptedKeyCodes, KeyCode.Alpha8, "\r\n\t\tKeyCode to decrease game speed (note make sure you choose different keys from the one in game like plus and minus)\r\n\t\tDefault: Alpha8\r\n\t");
             KeyCodes_freeCamera = new XKeyWithComment<KeyCode>(KeyCodes, "freeCamera", AcceptedKeyCodes, KeyCode.F9, "\r\n\t\tKeyCode to enable/disable freeCamera\r\n\t\tDefault: F9\r\n\t");
             KeyCodes_fog = new XKeyWithComment<KeyCode>(KeyCodes, "fog", AcceptedKeyCodes, KeyCode.F10, "\r\n\t\tKeyCode to enable/disable fog\r\n\t\tDefault: F10\r\n\t");
-            KeyCodes_collapse = new XKeyWithComment<KeyCode>(KeyCodes, "collapse", AcceptedKeyCodes, KeyCode.Keypad9, "\r\n\t\tKeyCode to enable/disable building and transport collapse\r\n\t\tDefault: Keypad9\r\n\t");
+            KeyCodes_collapse = new XKeyWithComment<KeyCode>(KeyCodes, "collapse", AcceptedKeyCodes, KeyCode.None, "\r\n\t\tKeyCode to enable/disable building and transport collapse\r\n\t\tDefault: None\r\n\t");
             KeyCodes_vehicletool = new XKeyWithComment<KeyCode>(KeyCodes, "vehicletool", AcceptedKeyCodes, KeyCode.Comma, "\r\n\t\tKeyCode to enable/disable vehicle tool\r\n\t\tDefault: Comma\r\n\t");
             KeyCodes_Dev = new XKeyWithComment<KeyCode>(KeyCodes, "dev", AcceptedKeyCodes, KeyCode.F6, "Enable/Disable dev mode (ignore this, it's only for testing)");
 

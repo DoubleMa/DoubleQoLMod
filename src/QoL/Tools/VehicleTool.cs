@@ -69,7 +69,8 @@ namespace DoubleQoL.QoL.Tools {
             ClearSelectionOnDeactivateOnly();
             Lyst<ToolToggleBtn> toolToggleBtns = new Lyst<ToolToggleBtn>() { new ToolToggleBtn("Select", IconPaths.Tool_Select, _ => { }, shortcutsManager.PrimaryAction, "Select and move vehicles", true) };
             vehicleTypeInfos.ForEach(vti => toolToggleBtns.Add(new ToolToggleBtn(vti.Name, vti.IconPath, _ => { }, vti.Trigger, $"Select/Move {vti.Name}s")));
-            toolToggleBtns.Add(new ToolToggleBtn("Clear truck cargo", "Assets/Unity/UserInterface/General/Trash128.png", _ => { }, DoubleQoLShortcutsMap.Instance.ClearTruckCargoToolKb, "Try to clear the cargo of selected trucks"));
+            toolToggleBtns.Add(new ToolToggleBtn("Clear truck cargo", Mafi.Unity.Assets.Unity.UserInterface.General.Trash128_png, _ => { }, DoubleQoLShortcutsMap.Instance.ClearTruckCargoToolKb, "Try to clear the cargo of selected trucks"));
+            toolToggleBtns.Add(new ToolToggleBtn("Recover vehicle", Mafi.Unity.Assets.Unity.UserInterface.General.RecoverVehicle_svg, _ => { }, DoubleQoLShortcutsMap.Instance.RecoverVehicleToolKb, "Recover the selected vehicles"));
             SetToolbox(toolToggleBtns);
         }
 
@@ -95,6 +96,7 @@ namespace DoubleQoL.QoL.Tools {
         public void HandleInput(IInputScheduler inputScheduler) {
             if (ShortcutsManager.IsPrimaryActionUp && IsClick && m_terrainCursor.TryComputeCurrentPosition(out var position)) HandleMoveAllVehicles(inputScheduler, position);
             if (DoubleQoLShortcutsMap.Instance.ClearTruckCargoToolKb.IsPrimaryOn(IgnoreModifiers)) HandleCLearAllCargos(inputScheduler);
+            if (DoubleQoLShortcutsMap.Instance.RecoverVehicleToolKb.IsPrimaryOn(IgnoreModifiers)) HandleRecoverAllVehicles(inputScheduler);
         }
 
         private void HandleMoveAllVehicles(IInputScheduler inputScheduler, Tile3f position) {
@@ -104,6 +106,8 @@ namespace DoubleQoL.QoL.Tools {
 
         private void HandleCLearAllCargos(IInputScheduler inputScheduler) => GetVehicles().ForEach(v => TryClearCargo(inputScheduler, v));
 
+        private void HandleRecoverAllVehicles(IInputScheduler inputScheduler) => GetVehicles().ForEach(v => TryRecoverVehicle(inputScheduler, v));
+
         private void MoveVehicle(IInputScheduler inputScheduler, Vehicle v, Tile3f position) {
             inputScheduler.ScheduleInputCmd(new NavigateVehicleToPositionCmd(v, position.Xy.Tile2i));
             HighLightVehicleMoved(v);
@@ -111,9 +115,10 @@ namespace DoubleQoL.QoL.Tools {
         }
 
         public void TryClearCargo(IInputScheduler inputScheduler, Vehicle v) {
-            if (!(v is Truck)) return;
-            inputScheduler.ScheduleInputCmd(new DiscardVehicleCargoCmd(v));
+            if (v is Truck) inputScheduler.ScheduleInputCmd(new DiscardVehicleCargoCmd(v));
         }
+
+        public void TryRecoverVehicle(IInputScheduler inputScheduler, Vehicle v) => inputScheduler.ScheduleInputCmd(new RecoverVehicleCmd(v));
 
         public void Clear() {
             _highlighter.ClearAllHighlights();

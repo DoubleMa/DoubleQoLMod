@@ -1,4 +1,4 @@
-﻿using DoubleQoL.Game.Patcher.Helper;
+﻿using DoubleQoL.Game.Patcher;
 using DoubleQoL.Game.Prototypes;
 using Mafi;
 using Mafi.Collections;
@@ -10,17 +10,20 @@ using System;
 namespace DoubleQoL {
 
     public sealed class DoubleQoL : IMod {
+        public static Version ModVersion = new Version(1, 3, 0);
         public string Name => "DoubleQoL";
         public int Version => 1;
         public bool IsUiOnly => false;
 
-        private static Version GetVersion() => new Version(1, 2, 2);
-
         public void Initialize(DependencyResolver resolver, bool gameWasLoaded) {
-            var version = GetVersion();
-            Logging.Log.Info($"Current {Name} mod version v{version.Major}.{version.Minor}.{version.Build}");
-            //resolver.EnsureResolved(typeof(PatcherHelper), typeof(PatcherHelper));
-            //resolver.Instantiate<PatcherHelper>();
+            Logging.Log.Info($"Current {Name} version v{ModVersion.ToString(3)}");
+            MineTowerPatcher.Instance.Init(resolver);
+            VehiclePatcher.Instance.Init(resolver);
+            CollapsePatcher.Instance.Init(resolver);
+            TerrainDesignationsPatcher.Instance.Init(resolver);
+            LogisticsStatusBarPatcher.Instance.Init(resolver);
+            PopulationStatusBarPatcher.Instance.Init(resolver);
+            ResearchPopupControllerPatcher.Instance.Init(resolver);
         }
 
         public void ChangeConfigs(Lyst<IConfig> configs) {
@@ -31,7 +34,6 @@ namespace DoubleQoL {
         }
 
         public void RegisterDependencies(DependencyResolverBuilder depBuilder, ProtosDb protosDb, bool wasLoaded) {
-            depBuilder.RegisterDependency<PatcherHelper>().AsSelf();
         }
     }
 }

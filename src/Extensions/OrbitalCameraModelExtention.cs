@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace DoubleQoL.Extensions {
 
-    public static class OrbitalCameraModelExtention {
+    internal static class OrbitalCameraModelExtention {
 
         private static Type GetOrbitalCameraModelType() => typeof(UnityMod).Assembly.GetType("Mafi.Unity.Camera.OrbitalCameraModel") ?? throw new Exception("Couldn't find the OrbitalCameraModel type.");
 

@@ -1,5 +1,5 @@
 ﻿using DoubleQoL.Config;
-using HarmonyLib;
+using DoubleQoL.Extensions;
 using Mafi.Core.Entities.Static.Layout;
 using Mafi.Core.Factory.Transports;
 
@@ -11,11 +11,11 @@ namespace DoubleQoL.Game.Patcher {
         public override bool Enabled => ConfigManager.Instance.QoLs_collapse.Value;
 
         public CollapsePatcher() : base("Collapse") {
-            var Postfix = AccessTools.Method(GetType(), "MyPostfix");
-            AddBlockedMethod(AccessTools.Method(typeof(LayoutEntityBase), "TryCollapseOnUnevenTerrain"), Postfix);
-            AddBlockedMethod(AccessTools.Method(typeof(Transport), "TryCollapseOnUnevenTerrain"), Postfix);
-            AddBlockedMethod(AccessTools.Method(typeof(TransportPillar), "TryCollapseOnUnevenTerrain"), Postfix);
-            AddBlockedMethod(AccessTools.Method(typeof(TransportsManager), "TryCollapseSubTransport"), Postfix);
+            var Postfix = this.GetHarmonyMethod("MyPostfix");
+            AddMethod<LayoutEntityBase>("TryCollapseOnUnevenTerrain", Postfix);
+            AddMethod<Transport>("TryCollapseOnUnevenTerrain", Postfix);
+            AddMethod<TransportPillar>("TryCollapseOnUnevenTerrain", Postfix);
+            AddMethod<TransportsManager>("TryCollapseSubTransport", Postfix);
         }
 
         private static void MyPostfix(ref bool __result) => __result = false;

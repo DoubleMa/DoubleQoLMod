@@ -1,6 +1,6 @@
 ﻿using DoubleQoL.Config;
-using DoubleQoL.Game.Patcher.Helper;
-using HarmonyLib;
+using DoubleQoL.Extensions;
+using DoubleQoL.QoL.UI.Statusbar;
 using Mafi.Unity.UiFramework;
 using System;
 using System.Reflection;
@@ -15,11 +15,11 @@ namespace DoubleQoL.Game.Patcher {
 
         public LogisticsStatusBarPatcher() : base("LogisticsStatusBar") {
             Typ = Assembly.Load("Mafi.Unity").GetType("Mafi.Unity.InputControl.Levelling.LogisticsStatusBarView");
-            AddBlockedMethod(AccessTools.Method(Typ, "Mafi.Unity.UiFramework.IUnityUi.RegisterUi"), AccessTools.Method(GetType(), "MyPostfix"));
+            AddMethod(Typ, "Mafi.Unity.UiFramework.IUnityUi.RegisterUi", this.GetHarmonyMethod("MyPostfix"));
         }
 
         private static void MyPostfix(IUnityUi __instance) {
-            PatcherHelper.Instance.LogisticsStatusBarView.OnClick((Action)AccessTools.Field(Typ, "m_onClick").GetValue(__instance));
+            GetInstance<LogisticsStatusBarView>()?.OnClick(Typ.GetField<Action>(__instance, "m_onClick"));
         }
     }
 }

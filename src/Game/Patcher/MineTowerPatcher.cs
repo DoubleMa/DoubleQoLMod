@@ -1,5 +1,5 @@
 ﻿using DoubleQoL.Config;
-using DoubleQoL.Game.Patcher.Helper;
+using DoubleQoL.Extensions;
 using HarmonyLib;
 using Mafi;
 using Mafi.Core.Buildings.Mine;
@@ -13,7 +13,6 @@ using Mafi.Unity.UiFramework;
 using Mafi.Unity.UiFramework.Components;
 using Mafi.Unity.UserInterface;
 using Mafi.Unity.UserInterface.Components;
-using Mafi.Unity.UserInterface.Style;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -28,25 +27,20 @@ namespace DoubleQoL.Game.Patcher {
         private static Type Typ;
         private static IOrderedEnumerable<LooseProductProto> _looseProductProtos;
         private static LooseProductProto _selectedLooseProductProto;
-        private static ProtosDb _protosDb;
 
         private MineTowerPatcher() : base("MineTower") {
             Typ = Assembly.Load("Mafi.Unity").GetType("Mafi.Unity.InputControl.Inspectors.Buildings.MineTowerWindowView");
-            AddAllowedMethod(AccessTools.Method(Typ, "AddCustomItems"), AccessTools.Method(GetType(), "MyPostfix"));
+            AddMethod(Typ, "AddCustomItems", this.GetHarmonyMethod("MyPostfix"), true);
         }
 
-        public override void OnInit() {
-            _protosDb = PatcherHelper.Instance.ProtosDb;
-            _looseProductProtos = _protosDb.Filter<LooseProductProto>(proto => proto.CanBeLoadedOnTruck && proto.CanBeOnTerrain).OrderBy(x => x);
+        public override void OnInit(DependencyResolver resolver) {
+            _looseProductProtos = resolver?.GetResolvedInstance<ProtosDb>().Value?.Filter<LooseProductProto>(proto => proto.CanBeLoadedOnTruck && proto.CanBeOnTerrain).OrderBy(x => x);
             _selectedLooseProductProto = _looseProductProtos.ElementAt(0);
         }
 
         private static void MyPostfix(StaticEntityInspectorBase<MineTower> __instance, ref StackContainer itemContainer) {
-            AccessTools.FieldRef<StaticEntityInspectorBase<MineTower>, UiBuilder> builder = AccessTools.FieldRefAccess<StaticEntityInspectorBase<MineTower>, UiBuilder>("Builder");
-            AccessTools.FieldRef<StaticEntityInspectorBase<MineTower>, UiStyle> style = AccessTools.FieldRefAccess<StaticEntityInspectorBase<MineTower>, UiStyle>("Style");
-
-            UiBuilder Builder = builder(__instance);
-            UiStyle Style = style(__instance);
+            UiBuilder Builder = __instance.GetFieldRef<ItemDetailWindowView, UiBuilder>("Builder");
+            if (Builder is null) return;
             var tabContainer = Builder.NewStackContainer("container")
             .SetStackingDirection(StackContainer.Direction.TopToBottom)
             .SetSizeMode(StackContainer.SizeMode.Dynamic)
@@ -70,7 +64,7 @@ namespace DoubleQoL.Game.Patcher {
             productDropdown.AppendTo(mineTowerContainer, new Vector2(200, 28f), ContainerPosition.MiddleOrCenter);
 
             var prioritizeBtn = Builder.NewBtnPrimary("button")
-                .SetButtonStyle(Style.Global.PrimaryBtn)
+                .SetButtonStyle(Builder.Style.Global.PrimaryBtn)
                 .SetText(new LocStrFormatted("prioritize"))
                 .AddToolTip("prioritize the product to all the excavators")
                 .OnClick(() => SetProductPriority(__instance));

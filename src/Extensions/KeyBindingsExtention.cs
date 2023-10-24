@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DoubleQoL.Extensions {
 
-    public static class KeyBindingsExtention {
+    internal static class KeyBindingsExtention {
 
         public static bool IsModifier(this KeyCode keyCode) => InputHelper.ModifierKeys.Contains(keyCode);
 

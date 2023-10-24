@@ -1,6 +1,6 @@
 ﻿using DoubleQoL.Config;
-using DoubleQoL.Game.Patcher.Helper;
-using HarmonyLib;
+using DoubleQoL.Extensions;
+using DoubleQoL.QoL.UI.Statusbar;
 using Mafi.Unity.InputControl.Toolbar.MenuPopup;
 
 namespace DoubleQoL.Game.Patcher {
@@ -11,20 +11,20 @@ namespace DoubleQoL.Game.Patcher {
         public override bool Enabled => ConfigManager.Instance.QoLs_statusbar.Value;
 
         public ResearchPopupControllerPatcher() : base("ResearchPopup") {
-            AddAllowedMethod(AccessTools.Method(typeof(ResearchPopupController), "Activate"), AccessTools.Method(GetType(), "MyPostActivatefix"));
-            AddAllowedMethod(AccessTools.Method(typeof(ResearchPopupController), "Deactivate"), AccessTools.Method(GetType(), "MyPostDeactivatefix"));
+            AddMethod<ResearchPopupController>("Activate", this.GetHarmonyMethod("MyPostActivatefix"), true);
+            AddMethod<ResearchPopupController>("Deactivate", this.GetHarmonyMethod("MyPostDeactivatefix"), true);
         }
 
         private static void MyPostActivatefix() {
-            PatcherHelper.Instance.PopulationStatusBarView.InfoTileExp.ToHideListener(true);
-            PatcherHelper.Instance.LogisticsStatusBarView.InfoTileExp.ToHideListener(true);
-            PatcherHelper.Instance.UnityStatusBarView.InfoTileExp.ToHideListener(true);
+            GetInstance<PopulationStatusBarView>()?.InfoTileExp.ToHideListener(true);
+            GetInstance<LogisticsStatusBarView>()?.InfoTileExp.ToHideListener(true);
+            GetInstance<UnityStatusBarView>()?.InfoTileExp.ToHideListener(true);
         }
 
         private static void MyPostDeactivatefix() {
-            PatcherHelper.Instance.PopulationStatusBarView.InfoTileExp.ToHideListener(false);
-            PatcherHelper.Instance.LogisticsStatusBarView.InfoTileExp.ToHideListener(false);
-            PatcherHelper.Instance.UnityStatusBarView.InfoTileExp.ToHideListener(false);
+            GetInstance<PopulationStatusBarView>()?.InfoTileExp.ToHideListener(false);
+            GetInstance<LogisticsStatusBarView>()?.InfoTileExp.ToHideListener(false);
+            GetInstance<UnityStatusBarView>()?.InfoTileExp.ToHideListener(false);
         }
     }
 }
