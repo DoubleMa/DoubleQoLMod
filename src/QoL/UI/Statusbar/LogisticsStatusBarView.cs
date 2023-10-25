@@ -1,5 +1,6 @@
 ﻿using DoubleQoL.Config;
 using DoubleQoL.Extensions;
+using DoubleQoL.Game.Patcher;
 using DoubleQoL.QoL.UI.Statusbar.Component;
 using DoubleQoL.QoL.UI.Statusbar.Logistics;
 using Mafi;
@@ -16,16 +17,15 @@ namespace DoubleQoL.QoL.UI.Statusbar {
 
     [GlobalDependency(RegistrationMode.AsEverything)]
     internal class LogisticsStatusBarView : AStatusBarView {
-        protected override float Order => 2f;
+        protected override float Order => 1f;
         protected override SyncFrequency SyncFreq => SyncFrequency.OncePerSec;
+        protected override bool IsEnabled => LogisticsStatusBarPatcher.Instance?.Enabled ?? false;
 
         private readonly VehiclesManager _vehiclesManager;
         private readonly EntitiesManager _entitiesManager;
         private readonly VehicleBuffersRegistry _vehicleBuffersRegistry;
 
-        public LogisticsStatusBarView(IGameLoopEvents gameLoop, StatusBar statusBar,
-            EntitiesManager entitiesManager, VehiclesManager vehiclesManager, VehicleBuffersRegistry vehicleBuffersRegistry)
-            : base(gameLoop, statusBar) {
+        public LogisticsStatusBarView(IGameLoopEvents gameLoop, StatusBar statusBar, EntitiesManager entitiesManager, VehiclesManager vehiclesManager, VehicleBuffersRegistry vehicleBuffersRegistry) : base(gameLoop, statusBar) {
             _vehiclesManager = vehiclesManager;
             _entitiesManager = entitiesManager;
             _vehicleBuffersRegistry = vehicleBuffersRegistry;

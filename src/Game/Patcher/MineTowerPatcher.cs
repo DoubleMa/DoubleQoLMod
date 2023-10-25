@@ -1,6 +1,5 @@
 ﻿using DoubleQoL.Config;
 using DoubleQoL.Extensions;
-using HarmonyLib;
 using Mafi;
 using Mafi.Core.Buildings.Mine;
 using Mafi.Core.Products;
@@ -20,15 +19,14 @@ using UnityEngine;
 
 namespace DoubleQoL.Game.Patcher {
 
-    internal class MineTowerPatcher : APatcher {
-        public static readonly MineTowerPatcher Instance = new MineTowerPatcher();
+    internal class MineTowerPatcher : APatcher<MineTowerPatcher> {
         public override bool DefaultState => true;
         public override bool Enabled => ConfigManager.Instance.QoLs_minetower.Value;
         private static Type Typ;
         private static IOrderedEnumerable<LooseProductProto> _looseProductProtos;
         private static LooseProductProto _selectedLooseProductProto;
 
-        private MineTowerPatcher() : base("MineTower") {
+        public MineTowerPatcher() : base("MineTower") {
             Typ = Assembly.Load("Mafi.Unity").GetType("Mafi.Unity.InputControl.Inspectors.Buildings.MineTowerWindowView");
             AddMethod(Typ, "AddCustomItems", this.GetHarmonyMethod("MyPostfix"), true);
         }
@@ -74,7 +72,7 @@ namespace DoubleQoL.Game.Patcher {
         }
 
         private static void SetProductPriority(StaticEntityInspectorBase<MineTower> __instance) {
-            MineTower tower = (MineTower)AccessTools.PropertyGetter(Typ, "Entity").Invoke(__instance, null);
+            MineTower tower = __instance.InvokeGetter<MineTower>("Entity");
             if (tower == null || _selectedLooseProductProto == null) return;
             foreach (var ex in tower.AllAssignedExcavators) ex.SetPrioritizeProduct(_selectedLooseProductProto);
         }

@@ -7,8 +7,7 @@ using System.Reflection;
 
 namespace DoubleQoL.Game.Patcher {
 
-    internal class LogisticsStatusBarPatcher : APatcher {
-        public static readonly LogisticsStatusBarPatcher Instance = new LogisticsStatusBarPatcher();
+    internal class LogisticsStatusBarPatcher : APatcher<LogisticsStatusBarPatcher> {
         public override bool DefaultState => true;
         public override bool Enabled => ConfigManager.Instance.QoLs_statusbar.Value;
         private static Type Typ;
@@ -18,8 +17,6 @@ namespace DoubleQoL.Game.Patcher {
             AddMethod(Typ, "Mafi.Unity.UiFramework.IUnityUi.RegisterUi", this.GetHarmonyMethod("MyPostfix"));
         }
 
-        private static void MyPostfix(IUnityUi __instance) {
-            GetInstance<LogisticsStatusBarView>()?.OnClick(Typ.GetField<Action>(__instance, "m_onClick"));
-        }
+        private static void MyPostfix(IUnityUi __instance) => GetResolvedInstance<LogisticsStatusBarView>()?.OnClick(__instance.GetField<Action>("m_onClick"));
     }
 }

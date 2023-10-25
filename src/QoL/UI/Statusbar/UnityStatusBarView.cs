@@ -1,4 +1,5 @@
 ﻿using DoubleQoL.Extensions;
+using DoubleQoL.Game.Patcher;
 using DoubleQoL.QoL.UI.Statusbar.Component;
 using Mafi;
 using Mafi.Collections;
@@ -13,14 +14,13 @@ namespace DoubleQoL.QoL.UI.Statusbar {
 
     [GlobalDependency(RegistrationMode.AsEverything)]
     internal class UnityStatusBarView : AStatusBarView {
-        protected override float Order => 1f;
+        protected override float Order => 0f;
         protected override SyncFrequency SyncFreq => SyncFrequency.Critical;
+        protected override bool IsEnabled => PopulationStatusBarPatcher.Instance?.Enabled ?? false;
 
         private readonly UpointsManager _upointsManager;
 
-        public UnityStatusBarView(IGameLoopEvents gameLoop, StatusBar statusBar,
-            UpointsManager upointsManager)
-            : base(gameLoop, statusBar) {
+        public UnityStatusBarView(IGameLoopEvents gameLoop, StatusBar statusBar, UpointsManager upointsManager) : base(gameLoop, statusBar) {
             _upointsManager = upointsManager;
         }
 

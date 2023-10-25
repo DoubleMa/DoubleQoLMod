@@ -5,8 +5,7 @@ using Mafi.Unity.InputControl.Toolbar.MenuPopup;
 
 namespace DoubleQoL.Game.Patcher {
 
-    internal class ResearchPopupControllerPatcher : APatcher {
-        public static readonly ResearchPopupControllerPatcher Instance = new ResearchPopupControllerPatcher();
+    internal class ResearchPopupControllerPatcher : APatcher<ResearchPopupControllerPatcher> {
         public override bool DefaultState => true;
         public override bool Enabled => ConfigManager.Instance.QoLs_statusbar.Value;
 
@@ -16,15 +15,15 @@ namespace DoubleQoL.Game.Patcher {
         }
 
         private static void MyPostActivatefix() {
-            GetInstance<PopulationStatusBarView>()?.InfoTileExp.ToHideListener(true);
-            GetInstance<LogisticsStatusBarView>()?.InfoTileExp.ToHideListener(true);
-            GetInstance<UnityStatusBarView>()?.InfoTileExp.ToHideListener(true);
+            GetResolvedInstance<PopulationStatusBarView>()?.InfoTileExp.ToHideListener(true);
+            GetResolvedInstance<LogisticsStatusBarView>()?.InfoTileExp.ToHideListener(true);
+            GetResolvedInstance<UnityStatusBarView>()?.InfoTileExp.ToHideListener(true);
         }
 
         private static void MyPostDeactivatefix() {
-            GetInstance<PopulationStatusBarView>()?.InfoTileExp.ToHideListener(false);
-            GetInstance<LogisticsStatusBarView>()?.InfoTileExp.ToHideListener(false);
-            GetInstance<UnityStatusBarView>()?.InfoTileExp.ToHideListener(false);
+            GetResolvedInstance<PopulationStatusBarView>()?.InfoTileExp.ToHideListener(false);
+            GetResolvedInstance<LogisticsStatusBarView>()?.InfoTileExp.ToHideListener(false);
+            GetResolvedInstance<UnityStatusBarView>()?.InfoTileExp.ToHideListener(false);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace DoubleQoL.Global {
         public static readonly int MaxMapWidth = 2492;
         public static readonly int MaxMapSize = Mathf.Max(MaxMapHeight, MaxMapWidth);
 
-        public static readonly Vector2 InfoTileSize = new Vector2(100f, 90f);
+        public static readonly Vector2 InfoTileSize = new Vector2(100f, 80f);
 
         public static readonly ControllerConfig StandAloneControllerConfig = new ControllerConfig {
             IgnoreEscapeKey = true,

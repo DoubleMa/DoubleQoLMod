@@ -7,8 +7,7 @@ using System.Reflection;
 
 namespace DoubleQoL.Game.Patcher {
 
-    internal class PopulationStatusBarPatcher : APatcher {
-        public static readonly PopulationStatusBarPatcher Instance = new PopulationStatusBarPatcher();
+    internal class PopulationStatusBarPatcher : APatcher<PopulationStatusBarPatcher> {
         public override bool DefaultState => true;
         public override bool Enabled => ConfigManager.Instance.QoLs_statusbar.Value;
         private static Type Typ;
@@ -19,9 +18,9 @@ namespace DoubleQoL.Game.Patcher {
         }
 
         private static void MyPostfix(IUnityUi __instance) {
-            Action onCLick = Typ.GetField<Action>(__instance, "m_onClick");
-            GetInstance<PopulationStatusBarView>()?.OnClick(onCLick);
-            GetInstance<UnityStatusBarView>()?.OnClick(onCLick);
+            Action onCLick = __instance.GetField<Action>("m_onClick");
+            GetResolvedInstance<PopulationStatusBarView>()?.OnClick(onCLick);
+            GetResolvedInstance<UnityStatusBarView>()?.OnClick(onCLick);
         }
     }
 }

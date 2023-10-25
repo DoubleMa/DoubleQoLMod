@@ -1,4 +1,5 @@
-﻿using Mafi.Core;
+﻿using DoubleQoL.Extensions;
+using Mafi.Core;
 using Mafi.Core.GameLoop;
 using Mafi.Unity.InputControl;
 using Mafi.Unity.InputControl.TopStatusBar;
@@ -59,7 +60,7 @@ namespace DoubleQoL.QoL.Controllers {
         }
 
         protected virtual void InputUpdate(GameTime time) {
-            if (_shortcutsManager.IsDown(KeyBindings)) Toggle();
+            if (_shortcutsManager.IsDownNone(KeyBindings)) Toggle();
         }
     }
 }

@@ -97,8 +97,8 @@ namespace DoubleQoL.QoL.Controllers {
         }
 
         private void InputUpdate(GameTime time) {
-            if (_shortcutsManager.IsDown(IncKeyBindings)) IncSpeed();
-            else if (_shortcutsManager.IsDown(DecKeyBindings)) DecSpeed();
+            if (_shortcutsManager.IsDownNone(IncKeyBindings)) IncSpeed();
+            else if (_shortcutsManager.IsDownNone(DecKeyBindings)) DecSpeed();
         }
     }
 }

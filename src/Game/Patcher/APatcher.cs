@@ -7,7 +7,16 @@ using System.Collections.Generic;
 
 namespace DoubleQoL.Game.Patcher {
 
-    internal abstract class APatcher {
+    internal abstract class APatcher<P> where P : APatcher<P>, new() {
+        private static P instance;
+        public static P Instance => GetInstance();
+
+        private static P GetInstance() {
+            try { if (instance == null) instance = new P(); }
+            catch (Exception e) { Logging.Log.Warning(e.Message); }
+            return instance;
+        }
+
         public string Category { get; }
         public string PatcherID { get; }
         public bool IsActive { get; private set; } = false;
@@ -17,13 +26,19 @@ namespace DoubleQoL.Game.Patcher {
         private Harmony harmony;
         protected List<MethodToPatch> MethodInfos { get; }
 
-        public static readonly HarmonyMethod PrefixAllow = typeof(APatcher).GetHarmonyMethod("MyPrefixAllow");
-        public static readonly HarmonyMethod PrefixBlock = typeof(APatcher).GetHarmonyMethod("MyPrefixBlock");
+        public static readonly HarmonyMethod PrefixAllow = typeof(APatcher<P>).GetHarmonyMethod("MyPrefixAllow");
+        public static readonly HarmonyMethod PrefixBlock = typeof(APatcher<P>).GetHarmonyMethod("MyPrefixBlock");
+        public static readonly HarmonyMethod PostfixTrue = typeof(APatcher<P>).GetHarmonyMethod("MyPostfixTrue");
+        public static readonly HarmonyMethod PostfixFalse = typeof(APatcher<P>).GetHarmonyMethod("MyPostfixFalse");
         private static DependencyResolver Resolver;
 
         private static bool MyPrefixAllow() => true;
 
         private static bool MyPrefixBlock() => false;
+
+        private static void MyPostfixFalse(ref bool __result) => __result = false;
+
+        private static void MyPostfixTrue(ref bool __result) => __result = true;
 
         public APatcher(string name) {
             Category = $"{name}PatcherCategory";
@@ -38,10 +53,10 @@ namespace DoubleQoL.Game.Patcher {
             Patch(DefaultState);
         }
 
-        protected static T GetInstance<T>() where T : class => Resolver?.GetResolvedInstance<T>().Value;
-
         public virtual void OnInit(DependencyResolver resolver) {
         }
+
+        protected static T GetResolvedInstance<T>() where T : class => Resolver?.GetResolvedInstance<T>().Value;
 
         public void Toggle() => Patch(!IsActive);
 

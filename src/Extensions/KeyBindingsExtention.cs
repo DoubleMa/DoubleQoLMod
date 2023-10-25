@@ -16,13 +16,19 @@ namespace DoubleQoL.Extensions {
 
         public static bool HasModifiers(this KeyBindings keyBindings) => keyBindings.GetModifiers().Count > 0;
 
-        public static bool IsPrimaryOn(this KeyBindings keyBindings, ShortcutsManager shortcutsManager, bool ignoreModifiers = false) => shortcutsManager.IsOn(keyBindings) && (ignoreModifiers || (keyBindings.HasModifiers() || !InputHelper.IsModifierDown()));
+        public static bool IsNone(this KeyBinding keyBinding) => keyBinding.IsEmpty || keyBinding.IsCode(KeyCode.None);
+
+        public static bool IsNone(this KeyBindings keyBindings) => keyBindings.Primary.IsNone() && keyBindings.Secondary.IsNone();
+
+        public static bool IsPrimaryOn(this KeyBindings keyBindings, ShortcutsManager shortcutsManager, bool ignoreModifiers = false) => !keyBindings.Primary.IsNone() && shortcutsManager.IsOn(keyBindings) && (ignoreModifiers || (keyBindings.HasModifiers() || !InputHelper.IsModifierDown()));
 
         public static bool IsPrimaryOn(this KeyBindings keyBindings, bool ignoreModifiers = false) {
-            if (keyBindings.Primary.IsEmpty) return false;
+            if (keyBindings.Primary.IsEmpty || keyBindings.Primary.IsNone()) return false;
             if (!ignoreModifiers && !keyBindings.HasModifiers() && InputHelper.IsModifierDown()) return false;
             foreach (var key in keyBindings.Primary.Keys) if (!Input.GetKey(key)) return false;
             return true;
         }
+
+        public static bool IsDownNone(this ShortcutsManager shortcutsManager, KeyBindings keyBindings) => !keyBindings.IsNone() && shortcutsManager.IsDown(keyBindings);
     }
 }

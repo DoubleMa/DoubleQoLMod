@@ -7,7 +7,6 @@ A mod for [Captain of Industry game](https://www.captain-of-industry.com/).
 - Add a game speed controller that can speed up the game up to x10. [numb8-numb9]
 - Free camera mode with a 6000 max pivot distance. [F9]
 - Enable or disable fog. [F10]
-- Enable or disable building and transports collapse. [keypad9]
 
     <img src="./images/StatusBar.png" alt="StatusBar" width="auto">
 
@@ -21,7 +20,7 @@ A mod for [Captain of Industry game](https://www.captain-of-industry.com/).
     
     <img src="./images/MineTowerView.png" alt="MineTowerView" width="auto" height="400">    <img src="./images/VehicleView.png" alt="VehicleView" width="auto" height="400">
 
-- Change the area size of terrain designations and towers (MineTower and ForestryTower)
+- Change the area size of terrain designations, selection tools and towers (MineTower and ForestryTower)
 
     <img src="./images/TowerArea.png" alt="TowerArea" width="auto" height="300"> <img src="./images/TerrainDesignations.png" alt="TowerArea" width="auto" height="300">
   

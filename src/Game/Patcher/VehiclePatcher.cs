@@ -10,12 +10,11 @@ using System;
 
 namespace DoubleQoL.Game.Patcher {
 
-    internal class VehiclePatcher : APatcher {
-        public static readonly VehiclePatcher Instance = new VehiclePatcher();
+    internal class VehiclePatcher : APatcher<VehiclePatcher> {
         public override bool DefaultState => true;
         public override bool Enabled => ConfigManager.Instance.QoLs_vehicle.Value;
 
-        private VehiclePatcher() : base("Vehicle") {
+        public VehiclePatcher() : base("Vehicle") {
             AddMethod<ItemDetailWindowView>("AddRecoverVehicleBtn", this.GetHarmonyMethod("MyPostfix"), true);
         }
 

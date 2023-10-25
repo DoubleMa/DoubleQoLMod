@@ -27,9 +27,12 @@ namespace DoubleQoL.QoL.Controllers {
 
         protected override void OnToggle() {
             if (_cameraModel is null) return;
-            bool b = !IsActive;
-            _cameraModel.SetMode(b ? CameraMode.Unconstrained : CameraMode.DefaultGameplay);
-            if (b) _cameraModel.SetValues();
+            if (IsActive) _cameraModel.SetMode(CameraMode.DefaultGameplay);
+            else {
+                _cameraModel.SetMode(CameraMode.Unconstrained);
+                _cameraModel.SetField("m_maxPivotDistance", new RelTile1f(6000));
+                _cameraModel.SetField("m_minHeightAboveTerrain", new RelTile1f(-100));
+            }
         }
     }
 }

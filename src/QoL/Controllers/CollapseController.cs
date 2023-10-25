@@ -16,12 +16,12 @@ namespace DoubleQoL.QoL.Controllers {
         protected override KeyBindings KeyBindings => DoubleQoLShortcutsMap.Instance.DisableCollapseKb;
         protected override string BtnIcon => Assets.Unity.UserInterface.EntityIcons.BuildingCollapse_svg;
         protected override float Order => StatusBarRightSideOrder.GAME_SPEED + 4;
-        public override bool IsActive => CollapsePatcher.Instance.IsActive;
+        public override bool IsActive => CollapsePatcher.Instance?.IsActive ?? false;
 
         public CollapseController(IGameLoopEvents gameLoopEvents, StatusBar statusBar, ShortcutsManager shortcutsManager) : base(gameLoopEvents, statusBar, shortcutsManager) {
             Init();
         }
 
-        protected override void OnToggle() => CollapsePatcher.Instance.Toggle();
+        protected override void OnToggle() => CollapsePatcher.Instance?.Toggle();
     }
 }

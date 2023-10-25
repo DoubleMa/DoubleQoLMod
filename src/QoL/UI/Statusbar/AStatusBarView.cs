@@ -20,6 +20,7 @@ namespace DoubleQoL.QoL.UI.Statusbar {
         internal InfoTileExpended InfoTileExp;
         protected abstract float Order { get; }
         protected abstract SyncFrequency SyncFreq { get; }
+        protected abstract bool IsEnabled { get; }
 
         public AStatusBarView(IGameLoopEvents gameLoop, StatusBar statusBar) : base() {
             _gameLoop = gameLoop;
@@ -39,7 +40,7 @@ namespace DoubleQoL.QoL.UI.Statusbar {
         protected abstract void OnRegisteringUi(UiBuilder builder, UpdaterBuilder updaterBuilder);
 
         void IUnityUi.RegisterUi(UiBuilder builder) {
-            if (!ConfigManager.Instance.QoLs_statusbar.Value) return;
+            if (!ConfigManager.Instance.QoLs_statusbar.Value || !IsEnabled) return;
             UpdaterBuilder updaterBuilder = UpdaterBuilder.Start();
             OnRegisteringUi(builder, updaterBuilder);
             SetOnClick();

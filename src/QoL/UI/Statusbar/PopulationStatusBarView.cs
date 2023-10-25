@@ -1,4 +1,5 @@
-﻿using DoubleQoL.QoL.UI.Statusbar.Component;
+﻿using DoubleQoL.Game.Patcher;
+using DoubleQoL.QoL.UI.Statusbar.Component;
 using Mafi;
 using Mafi.Collections;
 using Mafi.Core.GameLoop;
@@ -13,13 +14,12 @@ namespace DoubleQoL.QoL.UI.Statusbar {
 
     [GlobalDependency(RegistrationMode.AsEverything)]
     internal class PopulationStatusBarView : AStatusBarView {
-        protected override float Order => 0f;
+        protected override float Order => -1f; // well
         protected override SyncFrequency SyncFreq => SyncFrequency.Critical;
+        protected override bool IsEnabled => PopulationStatusBarPatcher.Instance?.Enabled ?? false;
         private readonly PopsHealthManager _popsHealthManager;
 
-        public PopulationStatusBarView(IGameLoopEvents gameLoop, StatusBar statusBar,
-            PopsHealthManager popsHealthManager)
-            : base(gameLoop, statusBar) {
+        public PopulationStatusBarView(IGameLoopEvents gameLoop, StatusBar statusBar, PopsHealthManager popsHealthManager) : base(gameLoop, statusBar) {
             _popsHealthManager = popsHealthManager;
         }
 

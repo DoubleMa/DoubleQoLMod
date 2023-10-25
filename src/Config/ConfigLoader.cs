@@ -62,5 +62,17 @@ namespace DoubleQoL.Config {
             Save();
             return x.DefaultValue.ToString();
         }
+
+        public bool ReplaceKey(string toReplace, string newKey) {
+            try {
+                var toModify = root.Descendants("add").Where(e => e.Attribute("key")?.Value == toReplace).ToList();
+                if (toModify.Count == 0) return false;
+                foreach (var e in toModify) e.Attribute("key").Value = newKey;
+                Save();
+                return true;
+            }
+            catch { }
+            return false;
+        }
     }
 }
