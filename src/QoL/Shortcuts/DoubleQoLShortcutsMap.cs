@@ -19,9 +19,6 @@ namespace DoubleQoL.QoL.Shortcuts {
         [Kb(KbCategory.Camera, "DisableFog", "Disable/Enable Fog", null, true, false)]
         public KeyBindings DisableFogKb { get; set; }
 
-        [Kb(KbCategory.General, "DisableCollapse", "Disable/Enable Collapse", null, true, false)]
-        public KeyBindings DisableCollapseKb { get; set; }
-
         [Kb(KbCategory.Tools, "VehicleTool", "Activate Vehicle Tool", null, true, false)]
         public KeyBindings VehicleToolKb { get; set; }
 
@@ -51,7 +48,6 @@ namespace DoubleQoL.QoL.Shortcuts {
             DecSpeedKb = KeyBindings.FromKey(KbCategory.Speed, ConfigManager.Instance.KeyCodes_decSpeed.Value);
             FreeCameraKb = KeyBindings.FromKey(KbCategory.Camera, ConfigManager.Instance.KeyCodes_freeCamera.Value);
             DisableFogKb = KeyBindings.FromKey(KbCategory.Camera, ConfigManager.Instance.KeyCodes_fog.Value);
-            DisableCollapseKb = KeyBindings.FromKey(KbCategory.General, ConfigManager.Instance.KeyCodes_collapse.Value);
             VehicleToolKb = KeyBindings.FromKey(KbCategory.Tools, ConfigManager.Instance.KeyCodes_vehicletool.Value);
 
             VehicleTrucksToolKb = KeyBindings.FromKey(KbCategory.Tools, KeyCode.Q);

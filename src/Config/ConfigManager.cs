@@ -33,7 +33,6 @@ namespace DoubleQoL.Config {
         public XKeyWithComment<bool> QoLs_speed { get; }
         public XKeyWithComment<bool> QoLs_camera { get; }
         public XKeyWithComment<bool> QoLs_fog { get; }
-        public XKeyWithComment<bool> QoLs_collapse { get; }
         public XKeyWithComment<bool> QoLs_minetower { get; }
         public XKeyWithComment<bool> QoLs_vehicle { get; }
         public XKeyWithComment<bool> QoLs_vehicletool { get; }
@@ -45,13 +44,11 @@ namespace DoubleQoL.Config {
         public XKeyWithComment<KeyCode> KeyCodes_decSpeed { get; }
         public XKeyWithComment<KeyCode> KeyCodes_freeCamera { get; }
         public XKeyWithComment<KeyCode> KeyCodes_fog { get; }
-        public XKeyWithComment<KeyCode> KeyCodes_collapse { get; }
         public XKeyWithComment<KeyCode> KeyCodes_Dev { get; }
         public XKeyWithComment<KeyCode> KeyCodes_vehicletool { get; }
 
         public XKeyWithComment<bool> DefaultState_freeCamera { get; }
         public XKeyWithComment<bool> DefaultState_fog { get; }
-        public XKeyWithComment<bool> DefaultState_collapse { get; }
         public XKeyWithComment<int> DefaultState_towerarea { get; }
         public XKeyWithComment<int> DefaultState_edgesizelimit { get; }
         public XKeyWithComment<bool> DefaultState_statusbar { get; }
@@ -69,7 +66,6 @@ namespace DoubleQoL.Config {
             QoLs_speed = new XKeyWithComment<bool>(QoLs, "speed", AcceptedBool, true, "Add Game Speed controller");
             QoLs_camera = new XKeyWithComment<bool>(QoLs, "camera", AcceptedBool, true, "Free Camera with a 6000 max Pivot Distance");
             QoLs_fog = new XKeyWithComment<bool>(QoLs, "fog", AcceptedBool, true, "Enable/disable fog");
-            QoLs_collapse = new XKeyWithComment<bool>(QoLs, "collapse", AcceptedBool, false, "\r\n\t\tEnable/disable building and transports collapse\r\n\t\tDefault: false\r\n\t");
             QoLs_minetower = new XKeyWithComment<bool>(QoLs, "minetower", AcceptedBool, true, "Add a field in the MineTower view where you can prioritize a specific resource for all excavators");
             QoLs_vehicle = new XKeyWithComment<bool>(QoLs, "vehicle", AcceptedBool, true, "Add a field in the vehicle view where you can cancel all jobs");
             QoLs_towerarea = new XKeyWithComment<bool>(QoLs, "towerarea", AcceptedBool, true, "Change the area size of towers like the MineTower and the ForestryTower");
@@ -81,13 +77,11 @@ namespace DoubleQoL.Config {
             KeyCodes_decSpeed = new XKeyWithComment<KeyCode>(KeyCodes, "decSpeed", AcceptedKeyCodes, KeyCode.Alpha8, "\r\n\t\tKeyCode to decrease game speed (note make sure you choose different keys from the one in game like plus and minus)\r\n\t\tDefault: Alpha8\r\n\t");
             KeyCodes_freeCamera = new XKeyWithComment<KeyCode>(KeyCodes, "freeCamera", AcceptedKeyCodes, KeyCode.F9, "\r\n\t\tKeyCode to enable/disable freeCamera\r\n\t\tDefault: F9\r\n\t");
             KeyCodes_fog = new XKeyWithComment<KeyCode>(KeyCodes, "fog", AcceptedKeyCodes, KeyCode.F10, "\r\n\t\tKeyCode to enable/disable fog\r\n\t\tDefault: F10\r\n\t");
-            KeyCodes_collapse = new XKeyWithComment<KeyCode>(KeyCodes, "collapse", AcceptedKeyCodes, KeyCode.None, "\r\n\t\tKeyCode to enable/disable building and transport collapse\r\n\t\tDefault: None\r\n\t");
             KeyCodes_vehicletool = new XKeyWithComment<KeyCode>(KeyCodes, "vehicletool", AcceptedKeyCodes, KeyCode.Comma, "\r\n\t\tKeyCode to enable/disable vehicle tool\r\n\t\tDefault: Comma\r\n\t");
             KeyCodes_Dev = new XKeyWithComment<KeyCode>(KeyCodes, "dev", AcceptedKeyCodes, KeyCode.F6, "Enable/Disable dev mode (ignore this, it's only for testing)");
 
             DefaultState_freeCamera = new XKeyWithComment<bool>(DefaultState, "freeCamera", AcceptedBool, false, "Default: false");
             DefaultState_fog = new XKeyWithComment<bool>(DefaultState, "fog", AcceptedBool, true, "Default: true");
-            DefaultState_collapse = new XKeyWithComment<bool>(DefaultState, "collapse", AcceptedBool, false, "Default: false");
             DefaultState_towerarea = new XKeyWithComment<int>(DefaultState, "towerarea", new int[] { 1, 22 }, 22, "\r\n\t\tAccepted values: 1 - 22\r\n\t\tDefault: 22\r\n\t");
             DefaultState_edgesizelimit = new XKeyWithComment<int>(DefaultState, "terraindesignations", new int[] { 10, Static.MaxMapSize }, Static.MaxMapSize, $"\r\n\t\tAccepted values: 10 - {Static.MaxMapSize}\r\n\t\tDefault: {Static.MaxMapSize}\r\n\t");
             DefaultState_statusbar = new XKeyWithComment<bool>(DefaultState, "statusbar", AcceptedBool, false, "\r\n\t\tDefault state of the statusbar details\r\n\t\tDefault: false\r\n\t");
