@@ -77,15 +77,26 @@ namespace DoubleQoL.Game.Blueprints {
             m_errorText.SetColor(m_builder.Style.Global.GreenForDark);
         }
 
+        public void OnUploadSuccess() {
+            m_errorText.SetText("Blueprint uploaded");
+            m_errorText.SetColor(m_builder.Style.Global.GreenForDark);
+            Hide();
+        }
+
+        public void OnUploadFailed(string error = null) {
+            m_errorText.SetText($"Failed to upload blueprint: {error ?? ""}");
+            m_errorText.SetColor(m_builder.Style.Global.DangerClr);
+            m_uploadBtn.Show();
+        }
+
         private void uploadString() {
             string systemCopyBuffer = GUIUtility.systemCopyBuffer;
             setStringToPreview(systemCopyBuffer);
             m_errorText.Show();
             if (m_onImport(systemCopyBuffer)) {
-                m_errorText.SetText("Uploading blueprint");
+                m_errorText.SetText("Uploading blueprint...");
                 m_errorText.SetColor(m_builder.Style.Global.GreenForDark);
-                m_importBtn.Hide();
-                Hide();
+                m_uploadBtn.Hide();
             }
             else {
                 m_errorText.SetText("Failed to parse or upload blueprint");

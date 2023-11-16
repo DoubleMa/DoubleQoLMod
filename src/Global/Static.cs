@@ -33,5 +33,8 @@ namespace DoubleQoL.Global {
     public static class IconPaths {
         public const string Status_BarDev = "Assets/DoubleQoL/StatusBar/Dev.png";
         public const string Tool_Select = "Assets/DoubleQoL/Tool/Select.png";
+        public const string General_Download = "Assets/DoubleQoL/General/download.png";
+        public const string General_Upload = "Assets/DoubleQoL/General/upload.png";
+        public const string General_Star = "Assets/DoubleQoL/General/star.png";
     }
 }

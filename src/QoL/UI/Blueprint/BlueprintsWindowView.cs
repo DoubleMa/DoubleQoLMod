@@ -16,6 +16,7 @@ namespace DoubleQoL.QoL.UI.Blueprint {
     internal class BlueprintsWindowView : WindowView {
         private TabsContainer _tabsContainer;
         private readonly DependencyResolver _dependencyResolver;
+        public BlueprintsLocalView BlueprintsLocalView { get; private set; }
 
         internal BlueprintsWindowView(DependencyResolver dependencyResolver) : base("Blueprints") {
             _dependencyResolver = dependencyResolver;
@@ -29,7 +30,8 @@ namespace DoubleQoL.QoL.UI.Blueprint {
             PositionSelfToCenter();
             MakeMovable();
             _tabsContainer = Builder.NewTabsContainer(size.x.RoundToInt(), size.y.RoundToInt()).PutTo(GetContentPanel());
-            _tabsContainer.AddTab("Local", null, _dependencyResolver.Instantiate<BlueprintsLocalView>());
+            BlueprintsLocalView = _dependencyResolver.Instantiate<BlueprintsLocalView>();
+            _tabsContainer.AddTab("Local", null, BlueprintsLocalView);
             foreach (var server in ConfigManager.Instance.blueprint_Servers) {
                 var t = _dependencyResolver.Instantiate<BlueprintsStoreView>();
                 t.SetServer(server);
