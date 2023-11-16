@@ -6,14 +6,13 @@ using Mafi.Base;
 using Mafi.Core.GameLoop;
 using Mafi.Unity.InputControl;
 using Mafi.Unity.InputControl.TopStatusBar;
-using Mafi.Unity.Weather;
 using UnityEngine;
 
 namespace DoubleQoL.QoL.Controllers {
 
     [GlobalDependency(RegistrationMode.AsAllInterfaces, false)]
-    internal class FogController2 : AToggleController {
-        private readonly FogController _fogController;
+    internal class FogController : AToggleController {
+        private readonly Mafi.Unity.Weather.FogController _fogController;
         protected override bool IsEnabled => ConfigManager.Instance.QoLs_fog.Value;
         protected override bool DefaultState => ConfigManager.Instance.DefaultState_fog.Value;
         protected override KeyBindings KeyBindings => DoubleQoLShortcutsMap.Instance.DisableFogKb;
@@ -21,7 +20,7 @@ namespace DoubleQoL.QoL.Controllers {
         protected override float Order => StatusBarRightSideOrder.GAME_SPEED + 3;
         public override bool IsActive => _fogController != null && _fogController.GetField<GameObject>("m_fogQuad").gameObject.activeSelf;
 
-        public FogController2(FogController fogController, IGameLoopEvents gameLoopEvents, StatusBar statusBar, ShortcutsManager shortcutsManager) : base(gameLoopEvents, statusBar, shortcutsManager) {
+        public FogController(Mafi.Unity.Weather.FogController fogController, IGameLoopEvents gameLoopEvents, StatusBar statusBar, ShortcutsManager shortcutsManager) : base(gameLoopEvents, statusBar, shortcutsManager) {
             _fogController = fogController;
             Init();
         }

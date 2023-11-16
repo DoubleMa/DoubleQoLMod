@@ -13,7 +13,7 @@ namespace DoubleQoL.Game.Patcher {
 
         private static P GetInstance() {
             try { if (instance == null) instance = new P(); }
-            catch (Exception e) { Logging.Log.Warning(e.Message); }
+            catch (Exception e) { Logging.Log.Warning(e.StackTrace); }
             return instance;
         }
 
@@ -30,6 +30,7 @@ namespace DoubleQoL.Game.Patcher {
         public static readonly HarmonyMethod PrefixBlock = typeof(APatcher<P>).GetHarmonyMethod("MyPrefixBlock");
         public static readonly HarmonyMethod PostfixTrue = typeof(APatcher<P>).GetHarmonyMethod("MyPostfixTrue");
         public static readonly HarmonyMethod PostfixFalse = typeof(APatcher<P>).GetHarmonyMethod("MyPostfixFalse");
+        public static readonly HarmonyMethod PostfixEmpty = typeof(APatcher<P>).GetHarmonyMethod("MyPostEmpty");
         private static DependencyResolver Resolver;
 
         private static bool MyPrefixAllow() => true;
@@ -39,6 +40,9 @@ namespace DoubleQoL.Game.Patcher {
         private static void MyPostfixFalse(ref bool __result) => __result = false;
 
         private static void MyPostfixTrue(ref bool __result) => __result = true;
+
+        private static void MyPostEmpty() {
+        }
 
         public APatcher(string name) {
             Category = $"{name}PatcherCategory";

@@ -25,9 +25,12 @@
 	</ItemDefinitionGroup>
 	<ItemGroup>
 	  <PackageReference Include="Lib.Harmony" Version="2.2.2" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 	<ItemGroup>
 		<Reference Include="System" />
+		<Reference Include="System.Configuration" />
+		<Reference Include="System.Net.Http" />
 		<Reference Include="Mafi">
 			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\Mafi.dll</HintPath>
 			<Private>false</Private>
@@ -48,77 +51,324 @@
 			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\netstandard.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
-		<Reference Include="System.Configuration" />
-		<Reference Include="UnityEngine">
-			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.dll</HintPath>
+		<Reference Include="Unity.InternalAPIEngineBridge.003">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\Unity.InternalAPIEngineBridge.003.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
-		<Reference Include="UnityEngine.AssetBundleModule">
-			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+		<Reference Include="Unity.MemoryProfiler">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\Unity.MemoryProfiler.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
-		<Reference Include="UnityEngine.CoreModule">
-			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+		<Reference Include="Unity.Postprocessing.Runtime">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\Unity.Postprocessing.Runtime.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
-		<Reference Include="UnityEngine.InputLegacyModule">
-			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+		<Reference Include="Unity.Recorder.Base">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\Unity.Recorder.Base.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
-		<Reference Include="UnityEngine.ParticleSystemModule">
-			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+		<Reference Include="Unity.Recorder">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\Unity.Recorder.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
-		<Reference Include="UnityEngine.PhysicsModule">
-			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+		<Reference Include="Unity.TextMeshPro">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Unity.Timeline">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\Unity.Timeline.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Unity.VectorGraphics">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\Unity.VectorGraphics.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.AccessibilityModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.AccessibilityModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.AIModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.AIModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.AndroidJNIModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.AndroidJNIModule.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.AnimationModule">
 			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
-		<Reference Include="UnityEngine.ScreenCaptureModule">
-			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.ScreenCaptureModule.dll</HintPath>
+		<Reference Include="UnityEngine.ARModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.ARModule.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
-		<Reference Include="UnityEngine.TextRenderingModule">
-			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
-			<Private>false</Private>
-		</Reference>
-		<Reference Include="UnityEngine.UIModule">
-			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UIModule.dll</HintPath>
-			<Private>false</Private>
-		</Reference>
-		<Reference Include="UnityEngine.TerrainPhysicsModule">
-			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.TerrainPhysicsModule.dll</HintPath>
-			<Private>false</Private>
-		</Reference>
-		<Reference Include="UnityEngine.UIElementsModule">
-			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
-			<Private>false</Private>
-		</Reference>
-		<Reference Include="UnityEngine.VideoModule">
-			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
+		<Reference Include="UnityEngine.AssetBundleModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.AudioModule">
 			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
+		<Reference Include="UnityEngine.ClothModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.ClothModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.ClusterInputModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.ClusterInputModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.ClusterRendererModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.ClusterRendererModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.ContentLoadModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.ContentLoadModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.CoreModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.CrashReportingModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.CrashReportingModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.DirectorModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.DirectorModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.DSPGraphModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.DSPGraphModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.GameCenterModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.GameCenterModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.GIModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.GIModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.GridModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.GridModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.HotReloadModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.HotReloadModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
 		<Reference Include="UnityEngine.ImageConversionModule">
 			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.IMGUIModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.InputLegacyModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.InputModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.InputModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.JSONSerializeModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.LocalizationModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.LocalizationModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.NVIDIAModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.NVIDIAModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.ParticleSystemModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.PerformanceReportingModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.PerformanceReportingModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.Physics2DModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.PhysicsModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.ProfilerModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.ProfilerModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.PropertiesModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.PropertiesModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.ScreenCaptureModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.ScreenCaptureModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.SharedInternalsModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.SharedInternalsModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.SpatialTracking">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.SpatialTracking.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.SpriteMaskModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.SpriteMaskModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.SpriteShapeModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.SpriteShapeModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.StreamingModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.StreamingModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.SubstanceModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.SubstanceModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.SubsystemsModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.SubsystemsModule.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.TerrainModule">
 			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.TerrainModule.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
+		<Reference Include="UnityEngine.TerrainPhysicsModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.TextCoreFontEngineModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.TextCoreFontEngineModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.TextCoreTextEngineModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.TextCoreTextEngineModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.TextRenderingModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.TilemapModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.TilemapModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.TLSModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.TLSModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
 		<Reference Include="UnityEngine.UI">
 			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UI.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
-		<Reference Include="Unity.VectorGraphics">
-			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\Unity.VectorGraphics.dll</HintPath>
+		<Reference Include="UnityEngine.UIElementsModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UIModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UmbraModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UmbraModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UnityAnalyticsCommonModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UnityAnalyticsCommonModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UnityAnalyticsModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UnityConnectModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UnityConnectModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UnityCurlModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UnityCurlModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UnityTestProtocolModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UnityWebRequestAudioModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UnityWebRequestModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UnityWebRequestTextureModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UnityWebRequestWWWModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.VehiclesModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.VehiclesModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.VFXModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.VFXModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.VideoModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.VirtualTexturingModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.VirtualTexturingModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.VRModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.VRModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.WindModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.WindModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.XR.LegacyInputHelpers">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.XR.LegacyInputHelpers.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.XRModule">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\UnityEngine.XRModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Facepunch.Steamworks.Win64">
+			<HintPath>$(COI_ROOT)\Captain of Industry_Data\Managed\Facepunch.Steamworks.Win64.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
 	</ItemGroup>

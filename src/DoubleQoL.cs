@@ -37,6 +37,7 @@ namespace DoubleQoL {
             LogisticsStatusBarPatcher.Instance?.Init(resolver);
             PopulationStatusBarPatcher.Instance?.Init(resolver);
             ResearchPopupControllerPatcher.Instance?.Init(resolver);
+            BlueprintsControllerPatcher.Instance?.Init(resolver);
         }
     }
 }

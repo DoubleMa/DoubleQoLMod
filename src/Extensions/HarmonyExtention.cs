@@ -16,7 +16,9 @@ namespace DoubleQoL.Extensions {
 
         public static MethodInfo ATGetMethod(this Type type, string methodName) => AccessTools.Method(type, methodName) ?? throw new MissingMethodException($"Method '{methodName}' not found in type '{type.FullName}'.");
 
-        public static MethodInfo ATGetProperty(this Type type, string propertyName) => AccessTools.PropertyGetter(type, propertyName) ?? throw new MissingFieldException($"Property getter for '{propertyName}' not found in type '{type.FullName}'.");
+        public static MethodInfo ATGetPropertyGetter(this Type type, string propertyName) => AccessTools.PropertyGetter(type, propertyName) ?? throw new MissingFieldException($"Property getter for '{propertyName}' not found in type '{type.FullName}'.");
+
+        public static MethodInfo ATGetPropertySetter(this Type type, string propertyName) => AccessTools.PropertySetter(type, propertyName) ?? throw new MissingFieldException($"Property setter for '{propertyName}' not found in type '{type.FullName}'.");
 
         public static T GetField<T>(this Type type, object instance, string fieldName) => (T)type.ATGetField(fieldName).GetValue(instance);
 
@@ -32,6 +34,12 @@ namespace DoubleQoL.Extensions {
 
         public static U InvokeMethod<U>(this object instance, string methodName, params object[] parameters) => (U)instance.GetType().ATGetMethod(methodName).Invoke(instance, parameters);
 
-        public static T InvokeGetter<T>(this object instance, string propertyName) => (T)instance.GetType().ATGetProperty(propertyName).Invoke(instance, null);
+        public static void InvokeStaticMethod(this Type type, string methodName, params object[] parameters) => type.ATGetMethod(methodName).Invoke(null, parameters);
+
+        public static U InvokeStaticMethod<U>(this Type type, string methodName, params object[] parameters) => (U)type.ATGetMethod(methodName).Invoke(null, parameters);
+
+        public static T InvokeGetter<T>(this object instance, string propertyName) => (T)instance.GetType().ATGetPropertyGetter(propertyName).Invoke(instance, null);
+
+        public static void InvokeSetter<T>(this object instance, string propertyName, T value) => instance.GetType().ATGetPropertySetter(propertyName).Invoke(instance, new object[] { value });
     }
 }
