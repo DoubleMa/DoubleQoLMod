@@ -23,6 +23,7 @@ using Mafi.Unity.UiFramework.Components.Tabs;
 using Mafi.Unity.UserInterface.Components;
 using Steamworks;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -37,37 +38,38 @@ namespace DoubleQoL.Game.Blueprints {
         public static readonly int SPACING = 2;
         public static readonly int COLUMNS_COUNT = 5;
         public static readonly Vector2 SIZE = new Vector2(BlueprintView.WIDTH * COLUMNS_COUNT + (COLUMNS_COUNT - 1) * SPACING + 10 + 16, 630f);
-        internal readonly QoLBlueprintsLibrary _blueprintsLibrary;
+
         private readonly IUnityInputMgr m_inputMgr;
+        private readonly LazyResolve<BlueprintsController> m_controller;
+        internal readonly QoLBlueprintsLibrary _blueprintsLibrary;
+        private readonly UnlockedProtosDbForUi m_unlockedProtosDb;
         private readonly BlueprintCreationController m_blueprintCreationController;
         private readonly CaptainOfficeManager m_captainOfficeManager;
-        private readonly UnlockedProtosDbForUi m_unlockedProtosDb;
-        private readonly LazyResolve<BlueprintsController> m_controller;
+        private readonly BlueprintsWindowView _parent;
         private DeleteBlueprintConfirmDialog m_confirmDeleteDialog;
         private BlueprintCopyPasteDialog m_blueprintCopyPasteDialog;
         private BlueprintDescriptionDialog m_blueprintDescDialog;
         private ViewsCacheHomogeneous<BlueprintView> m_viewsCache;
         private GridContainer m_gridContainer;
         private StackContainer m_rightTopBar;
-        private Txt m_locationView;
-        private Btn m_placeItBtn;
-        private Panel m_insertPanel;
         private ScrollableContainer m_scrollableContainer;
+        private Panel m_insertPanel;
         private Panel m_officeNotAvailable;
-        private TxtField m_searchField;
-        private Btn m_infoBtn;
-        private Tooltip m_infoBtnTooltip;
+        private Txt m_locationView;
         private Txt m_officeNotAvailableTxt;
+        private Btn m_placeItBtn;
+        private Btn m_infoBtn;
+        private TxtField m_searchField;
+        private Tooltip m_infoBtnTooltip;
         private readonly string m_captainOfficeName;
-        private readonly BlueprintsWindowView _parent;
-        private int m_indexToMoveTo;
         private Option<BlueprintView> m_selectedItem;
         private Option<BlueprintView> m_viewBeingDragged;
         private Option<BlueprintView> m_lastHoveredView;
         private Option<IBlueprintItem> m_newItem;
-        public abstract bool isLocal { get; }
         private Option<ServerInfo> _server;
+        public abstract bool IsLocal { get; }
         private IBlueprintsFolder CurrentFolder { get; set; }
+        private int m_indexToMoveTo;
 
         internal BlueprintsView(IUnityInputMgr inputMgr,
             LazyResolve<BlueprintsController> controller,
@@ -81,7 +83,7 @@ namespace DoubleQoL.Game.Blueprints {
             m_inputMgr = inputMgr;
             m_controller = controller;
             _blueprintsLibrary = blueprintsLibrary.Instance;
-            if (!isLocal) _blueprintsLibrary.InvokeMethod("TestOnly_DisableSerialization");
+            if (!IsLocal) _blueprintsLibrary.InvokeMethod("TestOnly_DisableSerialization");
             else {
                 CurrentFolder = _blueprintsLibrary.Root;
                 _blueprintsLibrary.SaveCurrentRoot(_blueprintsLibrary.Root);
@@ -95,23 +97,26 @@ namespace DoubleQoL.Game.Blueprints {
         }
 
         public void SetServer(ServerInfo server) {
-            if (isLocal) return;
+            if (IsLocal) return;
             _server = server;
             LoadData();
         }
 
         private async Task LoadDataAsync() {
             try {
-                if (isLocal) return;
-                var data = await _server.Value.ReadAndParseJsonFromUrlAsync();
-                if (data == null) return;
+                if (IsLocal) return;
+                var respond = await _server.Value.GetAllBlueprints();
+                if (!respond.IsSuccess) return;
                 _blueprintsLibrary.Clear();
                 m_searchField.ClearInput();
                 CurrentFolder = _blueprintsLibrary.Root;
-                foreach (var kvp in data) {
-                    var folder = _blueprintsLibrary.AddNewFolder(_blueprintsLibrary.Root);
-                    folder.InvokeSetter("Name", kvp.Value.Name);
-                    foreach (var item in kvp.Value.Data) _blueprintsLibrary.TryAddBlueprintFromString(folder, item, out var result);
+                Dictionary<int, IBlueprintsFolder> players = new Dictionary<int, IBlueprintsFolder>();
+                foreach (var blueprint in respond.Data.Blueprints) {
+                    if (!players.TryGetValue(blueprint.Owner_id, out var folder)) {
+                        folder = _blueprintsLibrary.AddNewFolder(_blueprintsLibrary.Root);
+                        folder.InvokeSetter("Name", respond.Data.Owners[blueprint.Owner_id + ""]);
+                    }
+                    _blueprintsLibrary.TryAddBlueprintFromString(folder, blueprint.Data, out _);
                 }
                 _blueprintsLibrary.SaveCurrentRoot();
             }
@@ -124,49 +129,38 @@ namespace DoubleQoL.Game.Blueprints {
             Task.Run(async () => await LoadDataAsync());
         }
 
-        private void startSearch() {
-            if (isLocal) return;
-            var text = m_searchField.GetText();
-            if (string.IsNullOrEmpty(text)) {
-                _blueprintsLibrary.RestoreSavedRoot();
-                return;
-            }
-            _blueprintsLibrary.UpdateRoot(_blueprintsLibrary.SearchItems(text));
-            CurrentFolder = _blueprintsLibrary.Root;
-        }
-
         protected override void BuildUi() {
             Panel mainPanel = Builder.NewPanel("main", this).SetSize(SIZE);
-            m_confirmDeleteDialog = new DeleteBlueprintConfirmDialog(Builder, new Action(onDeleteConfirm));
-            m_blueprintCopyPasteDialog = new BlueprintCopyPasteDialog(Builder, new Func<string, bool>(onStringImportClick));
-            if (!isLocal) m_blueprintCopyPasteDialog.SetMessage(new LocStrFormatted("Failed to parse and upload the string"));
-            m_blueprintDescDialog = new BlueprintDescriptionDialog(Builder, new Action<string>(onDescriptionApply));
-            m_viewsCache = new ViewsCacheHomogeneous<BlueprintView>(() => new BlueprintView(m_gridContainer, this, m_unlockedProtosDb, Builder, new Action<BlueprintView>(onItemSelected), new Action<BlueprintView>(onBlueprintDoubleClick), isLocal));
+            m_confirmDeleteDialog = new DeleteBlueprintConfirmDialog(Builder, new Action(OnDeleteConfirm));
+            m_blueprintCopyPasteDialog = new BlueprintCopyPasteDialog(Builder, new Func<string, bool>(OnStringImportClick));
+            if (!IsLocal) m_blueprintCopyPasteDialog.SetMessage(new LocStrFormatted("Failed to parse and upload the string"));
+            m_blueprintDescDialog = new BlueprintDescriptionDialog(Builder, new Action<string>(OnDescriptionApply));
+            m_viewsCache = new ViewsCacheHomogeneous<BlueprintView>(() => new BlueprintView(m_gridContainer, this, m_unlockedProtosDb, Builder, new Action<BlueprintView>(OnItemSelected), new Action<BlueprintView>(OnBlueprintDoubleClick), IsLocal));
             int num1 = 30;
             int num2 = 52;
             StackContainer leftTopOf = Builder.NewStackContainer("TopLeftBar").SetStackingDirection(StackContainer.Direction.LeftToRight).SetSizeMode(StackContainer.SizeMode.Dynamic).SetItemSpacing(10f).PutToLeftTopOf(mainPanel, new Vector2(0.0f, 30f), Offset.All(10f));
-            m_searchField = Builder.NewTxtField("searchfield").SetPlaceholderText("Search").EnableSelectionOnFocus().SetOnValueChangedAction(startSearch).SetVisibility(!isLocal).AppendTo(leftTopOf, num2 * 5);
-            Btn fromSelectionBtn = Builder.NewBtnPrimary("FromSelection", leftTopOf).SetIcon(Assets.Unity.UserInterface.General.SelectArea_svg, Offset.All(4f)).AddToolTip(Tr.Blueprint_NewFromSelectionTooltip).OnClick(() => m_blueprintCreationController.ActivateForSelection(new Action<ImmutableArray<EntityConfigData>>(onNewBlueprintRequested))).SetVisibility(isLocal).AppendTo(leftTopOf, num2);
-            Btn newFolderBtn = Builder.NewBtnGeneral("NewFolder", leftTopOf).SetIcon(Assets.Unity.UserInterface.General.NewFolder_svg, Offset.All(4f)).AddToolTip(Tr.NewFolder__Tooltip).OnClick(new Action(createNewFolder)).SetVisibility(isLocal).AppendTo(leftTopOf, num2);
-            Btn fromStrBtn = Builder.NewBtnGeneral("FromString", leftTopOf).SetIcon(Assets.Unity.UserInterface.General.ImportFromString_svg, Offset.All(4f)).AddToolTip(Tr.Blueprint_NewFromStringTooltip).OnClick(() => m_blueprintCopyPasteDialog.ShowForStringImport()).SetVisibility(isLocal).AppendTo(leftTopOf, num2);
-            Btn uploadBtn = Builder.NewBtnGeneral("UploadString", leftTopOf).SetIcon(IconPaths.General_Upload, Offset.All(4f)).AddToolTip("Upload a blueprint or folder").OnClick(() => m_blueprintCopyPasteDialog.ShowForStringUpload()).SetVisibility(!isLocal).AppendTo(leftTopOf, num2);
-            Btn refreshBtn = Builder.NewBtnGeneral("Refresh", leftTopOf).SetIcon(Assets.Unity.UserInterface.General.Repeat_svg, Offset.All(4f)).AddToolTip("Refresh Store").OnClick(LoadData).SetVisibility(!isLocal).AppendTo(leftTopOf, num2);
+            m_searchField = Builder.NewTxtField("searchfield").SetPlaceholderText("Search").EnableSelectionOnFocus().SetOnValueChangedAction(StartSearch).SetVisibility(!IsLocal).AppendTo(leftTopOf, num2 * 5);
+            Btn fromSelectionBtn = Builder.NewBtnPrimary("FromSelection", leftTopOf).SetIcon(Assets.Unity.UserInterface.General.SelectArea_svg, Offset.All(4f)).AddToolTip(Tr.Blueprint_NewFromSelectionTooltip).OnClick(() => m_blueprintCreationController.ActivateForSelection(new Action<ImmutableArray<EntityConfigData>>(OnNewBlueprintRequested))).SetVisibility(IsLocal).AppendTo(leftTopOf, num2);
+            Btn newFolderBtn = Builder.NewBtnGeneral("NewFolder", leftTopOf).SetIcon(Assets.Unity.UserInterface.General.NewFolder_svg, Offset.All(4f)).AddToolTip(Tr.NewFolder__Tooltip).OnClick(new Action(CreateNewFolder)).SetVisibility(IsLocal).AppendTo(leftTopOf, num2);
+            Btn fromStrBtn = Builder.NewBtnGeneral("FromString", leftTopOf).SetIcon(Assets.Unity.UserInterface.General.ImportFromString_svg, Offset.All(4f)).AddToolTip(Tr.Blueprint_NewFromStringTooltip).OnClick(() => m_blueprintCopyPasteDialog.ShowForStringImport()).SetVisibility(IsLocal).AppendTo(leftTopOf, num2);
+            Btn uploadBtn = Builder.NewBtnGeneral("UploadString", leftTopOf).SetIcon(IconPaths.General_Upload, Offset.All(4f)).AddToolTip("Upload a blueprint or folder").OnClick(() => m_blueprintCopyPasteDialog.ShowForStringUpload()).SetVisibility(!IsLocal).AppendTo(leftTopOf, num2);
+            Btn refreshBtn = Builder.NewBtnGeneral("Refresh", leftTopOf).SetIcon(Assets.Unity.UserInterface.General.Repeat_svg, Offset.All(4f)).AddToolTip("Refresh Store").OnClick(LoadData).SetVisibility(!IsLocal).AppendTo(leftTopOf, num2);
             m_rightTopBar = Builder.NewStackContainer("TopRightBar").SetStackingDirection(StackContainer.Direction.LeftToRight).SetSizeMode(StackContainer.SizeMode.Dynamic).SetItemSpacing(10f).PutToRightTopOf(mainPanel, new Vector2(0.0f, 30f), Offset.All(10f));
             m_placeItBtn = Builder.NewBtnPrimary("Place").SetIcon(Assets.Unity.UserInterface.General.Build_svg).OnClick(() => {
                 if (m_selectedItem.HasValue && !m_selectedItem.Value.IsLocked && m_selectedItem.Value.Blueprint.HasValue) m_controller.Value.StartBlueprintPlacement(m_selectedItem.Value.Blueprint.Value);
             }).AddToolTip(Tr.Blueprint_PlaceItTooltip).AppendTo(m_rightTopBar, num2);
 
-            Btn m_toStrBtn = Builder.NewBtnGeneral("ToString").SetIcon(Assets.Unity.UserInterface.General.ExportToString_svg).AddToolTip(Tr.Blueprint_ExportToStringTooltip).OnClick(new Action(exportSelectedItemToString)).AppendTo(m_rightTopBar, num2);
-            Btn m_updateDescBtn = Builder.NewBtnGeneral("UpdateDesc").SetIcon(Assets.Unity.UserInterface.General.EditDescription_svg).AddToolTip(Tr.UpdateDescription__Tooltip).OnClick(new Action(requestDescriptionEdit)).SetVisibility(isLocal).AppendTo(m_rightTopBar, num2);
-            Btn m_deleteBtn = Builder.NewBtnDanger("Delete").SetIcon(Assets.Unity.UserInterface.General.Trash128_png).AddToolTip(Tr.BlueprintDelete__Tooltip).OnClick(new Action(startBlueprintDelete)).SetVisibility(isLocal).AppendTo(m_rightTopBar, num2);
-            Btn m_downloadBtn = Builder.NewBtnGeneral("Download").SetIcon(IconPaths.General_Download).AddToolTip("Download the blueprint or folder").OnClick(new Action(downloadSelectedItem)).SetVisibility(!isLocal).AppendTo(m_rightTopBar, num2);
-            Btn m_starBtn = Builder.NewBtnGeneral("Star").SetIcon(IconPaths.General_Star).AddToolTip("Give it a Star (Coming Soon)").OnClick(new Action(starSelectedBlueprint)).SetVisibility(!isLocal).AppendTo(m_rightTopBar, num2); m_infoBtn = Builder.NewBtnGeneral("Info").SetIcon(Assets.Unity.UserInterface.General.Info128_png).SetEnabled(false).AppendTo(m_rightTopBar, num2); ;
+            Btn m_toStrBtn = Builder.NewBtnGeneral("ToString").SetIcon(Assets.Unity.UserInterface.General.ExportToString_svg).AddToolTip(Tr.Blueprint_ExportToStringTooltip).OnClick(new Action(ExportSelectedItemToString)).AppendTo(m_rightTopBar, num2);
+            Btn m_updateDescBtn = Builder.NewBtnGeneral("UpdateDesc").SetIcon(Assets.Unity.UserInterface.General.EditDescription_svg).AddToolTip(Tr.UpdateDescription__Tooltip).OnClick(new Action(RequestDescriptionEdit)).SetVisibility(IsLocal).AppendTo(m_rightTopBar, num2);
+            Btn m_deleteBtn = Builder.NewBtnDanger("Delete").SetIcon(Assets.Unity.UserInterface.General.Trash128_png).AddToolTip(Tr.BlueprintDelete__Tooltip).OnClick(new Action(StartBlueprintDelete)).SetVisibility(IsLocal).AppendTo(m_rightTopBar, num2);
+            Btn m_downloadBtn = Builder.NewBtnGeneral("Download").SetIcon(IconPaths.General_Download).AddToolTip("Download the blueprint or folder").OnClick(new Action(DownloadSelectedItem)).SetVisibility(!IsLocal).AppendTo(m_rightTopBar, num2);
+            Btn m_starBtn = Builder.NewBtnGeneral("Star").SetIcon(IconPaths.General_Star).AddToolTip("Give it a Star (Coming Soon)").OnClick(new Action(StarSelectedBlueprint)).SetVisibility(!IsLocal).AppendTo(m_rightTopBar, num2); m_infoBtn = Builder.NewBtnGeneral("Info").SetIcon(Assets.Unity.UserInterface.General.Info128_png).SetEnabled(false).AppendTo(m_rightTopBar, num2); ;
             m_infoBtnTooltip = m_infoBtn.AddToolTipAndReturn();
             m_locationView = Builder.NewTxt("Navigation").SetTextStyle(Builder.Style.Global.TextMediumBold).SetAlignment(TextAnchor.MiddleLeft).PutToTopOf(mainPanel, 20f, Offset.Top(50f) + Offset.Left(30f));
 
             Builder.NewPanel("Home").SetBackground(Assets.Unity.UserInterface.General.Home_svg).OnClick(() => CurrentFolder = _blueprintsLibrary.Root).PutToLeftOf(m_locationView, 18f, Offset.Left(-22f));
-            Txt m_saveStatusTxt = Builder.NewTxt("Status", mainPanel).SetTextStyle(Builder.Style.Global.TextMediumBold).SetAlignment(TextAnchor.MiddleLeft).SetVisibility(isLocal).PutToRightTopOf(mainPanel, new Vector2(0.0f, 20f), Offset.Top(50f) + Offset.Right(41f));
-            Tooltip statusTooltip = Builder.AddTooltipFor(Builder.NewPanel("Info", m_saveStatusTxt).SetBackground(Assets.Unity.UserInterface.General.Info128_png).SetVisibility(isLocal).PutToRightMiddleOf(m_saveStatusTxt, 15.Vector2(), Offset.Right(-18f)));
+            Txt m_saveStatusTxt = Builder.NewTxt("Status", mainPanel).SetTextStyle(Builder.Style.Global.TextMediumBold).SetAlignment(TextAnchor.MiddleLeft).SetVisibility(IsLocal).PutToRightTopOf(mainPanel, new Vector2(0.0f, 20f), Offset.Top(50f) + Offset.Right(41f));
+            Tooltip statusTooltip = Builder.AddTooltipFor(Builder.NewPanel("Info", m_saveStatusTxt).SetBackground(Assets.Unity.UserInterface.General.Info128_png).SetVisibility(IsLocal).PutToRightMiddleOf(m_saveStatusTxt, 15.Vector2(), Offset.Right(-18f)));
             m_scrollableContainer = Builder.NewScrollableContainer("ScrollableContainer").AddVerticalScrollbar().PutTo(mainPanel, Offset.Top(num1 + 40));
             m_gridContainer = Builder.NewGridContainer("Container").SetCellSize(BlueprintView.SIZE).SetCellSpacing(SPACING).SetDynamicHeightMode(COLUMNS_COUNT).SetInnerPadding(Offset.All(5f));
             m_scrollableContainer.AddItemTopLeft(m_gridContainer);
@@ -178,19 +172,19 @@ namespace DoubleQoL.Game.Blueprints {
             Builder.NewIconContainer("RightArrow", m_insertPanel).SetIcon(Assets.Unity.UserInterface.General.Return_svg, colorRgba).PutToRightOf(m_insertPanel, 22f, Offset.Right(-32f)).AddOutline();
             mainPanel.OnClick(() => {
                 m_selectedItem.ValueOrNull?.CommitRenamingIfCan();
-                clearSelectedItem();
+                ClearSelectedItem();
             });
             mainPanel.PutTo(this);
             this.SetSize(SIZE);
             UpdaterBuilder updaterBuilder = UpdaterBuilder.Start();
-            updaterBuilder.Observe(() => CurrentFolder.Folders, CompareFixedOrder<IBlueprintsFolder>.Instance).Observe(() => CurrentFolder.Blueprints, CompareFixedOrder<IBlueprint>.Instance).Do(new Action<Lyst<IBlueprintsFolder>, Lyst<IBlueprint>>(updateItems));
+            updaterBuilder.Observe(() => CurrentFolder.Folders, CompareFixedOrder<IBlueprintsFolder>.Instance).Observe(() => CurrentFolder.Blueprints, CompareFixedOrder<IBlueprint>.Instance).Do(new Action<Lyst<IBlueprintsFolder>, Lyst<IBlueprint>>(UpdateItems));
             updaterBuilder.Observe(() => _blueprintsLibrary.LibraryStatus).Observe(() => _blueprintsLibrary.NumberOfBackupsAvailable).Do((status, backupsTotal) => {
                 ColorRgba color2 = Builder.Style.Global.TextMediumBold.Color;
                 ColorRgba dangerClr = Builder.Style.Global.DangerClr;
                 bool enabled = status != BlueprintsLibrary.Status.LoadingInProgress;
                 fromSelectionBtn.SetEnabled(enabled);
                 newFolderBtn.SetEnabled(enabled);
-                fromStrBtn.SetEnabled(!isLocal || enabled);
+                fromStrBtn.SetEnabled(!IsLocal || enabled);
                 string str1 = "";
                 switch (status) {
                     case BlueprintsLibrary.Status.NoLibraryFound:
@@ -262,22 +256,22 @@ namespace DoubleQoL.Game.Blueprints {
             void setColor(ColorRgba color) => m_saveStatusTxt.SetColor(color);
         }
 
-        private void requestDescriptionEdit() {
+        private void RequestDescriptionEdit() {
             if (m_selectedItem.IsNone) return;
             m_blueprintDescDialog.ShowForEdit(m_selectedItem.Value.Item.ValueOrNull?.Desc ?? "");
         }
 
-        private void onNewBlueprintRequested(ImmutableArray<EntityConfigData> data) {
+        private void OnNewBlueprintRequested(ImmutableArray<EntityConfigData> data) {
             m_newItem = _blueprintsLibrary.AddBlueprint(CurrentFolder, data).As<IBlueprintItem>();
             m_inputMgr.ActivateNewController(m_controller.Value);
         }
 
-        private void createNewFolder() => m_newItem = _blueprintsLibrary.AddNewFolder(CurrentFolder).CreateOption().As<IBlueprintItem>();
+        private void CreateNewFolder() => m_newItem = _blueprintsLibrary.AddNewFolder(CurrentFolder).CreateOption().As<IBlueprintItem>();
 
-        private void updateItems(
+        private void UpdateItems(
           IIndexable<IBlueprintsFolder> folders,
           IIndexable<IBlueprint> blueprints) {
-            clearSelectedItem();
+            ClearSelectedItem();
             m_gridContainer.StartBatchOperation();
             m_gridContainer.ClearAll();
             m_viewsCache.ReturnAll();
@@ -313,22 +307,22 @@ namespace DoubleQoL.Game.Blueprints {
             m_locationView.SetText(text);
         }
 
-        private void onItemSelected(BlueprintView blueprintView) {
-            clearSelectedItem();
+        private void OnItemSelected(BlueprintView blueprintView) {
+            ClearSelectedItem();
             m_selectedItem = blueprintView;
             blueprintView.SetIsSelected(true);
-            updateRightBars();
+            UpdateRightBars();
             m_placeItBtn.SetEnabled(!m_selectedItem.Value.IsLocked);
         }
 
-        private void clearSelectedItem() {
+        private void ClearSelectedItem() {
             m_selectedItem.ValueOrNull?.CancelRenamingIfCan();
             m_selectedItem.ValueOrNull?.SetIsSelected(false);
             m_selectedItem = Option.None;
-            updateRightBars();
+            UpdateRightBars();
         }
 
-        private void updateRightBars() {
+        private void UpdateRightBars() {
             m_rightTopBar.SetVisibility(m_selectedItem.HasValue);
             if (m_selectedItem.IsNone) return;
             bool hasValue = m_selectedItem.Value.Blueprint.HasValue;
@@ -337,51 +331,51 @@ namespace DoubleQoL.Game.Blueprints {
             m_infoBtnTooltip.SetText(hasValue ? Tr.MadeInVersion.Format(m_selectedItem.Value.Blueprint.Value.GameVersion ?? "").Value : "");
         }
 
-        private void onBlueprintDoubleClick(BlueprintView blueprintView) {
+        private void OnBlueprintDoubleClick(BlueprintView blueprintView) {
             if (blueprintView.Blueprint.HasValue) m_controller.Value.StartBlueprintPlacement(blueprintView.Blueprint.Value);
             else if (blueprintView.BlueprintsFolder.HasValue) CurrentFolder = blueprintView.BlueprintsFolder.Value;
         }
 
-        private void exportSelectedItemToString() {
+        private void ExportSelectedItemToString() {
             if (m_selectedItem.IsNone) return;
             if (m_selectedItem.Value.Blueprint.HasValue) m_blueprintCopyPasteDialog.ShowForStringExport(_blueprintsLibrary.ConvertToString(m_selectedItem.Value.Blueprint.Value));
             else if (m_selectedItem.Value.BlueprintsFolder.HasValue) m_blueprintCopyPasteDialog.ShowForStringExport(_blueprintsLibrary.ConvertToString(m_selectedItem.Value.BlueprintsFolder.Value));
         }
 
-        private void startBlueprintDelete() {
-            if (m_selectedItem.IsNone || !isLocal) return;
-            if ((m_selectedItem.Value.Item.ValueOrNull is IBlueprintsFolder valueOrNull) && valueOrNull.IsEmpty) onDeleteConfirm();
+        private void StartBlueprintDelete() {
+            if (m_selectedItem.IsNone || !IsLocal) return;
+            if ((m_selectedItem.Value.Item.ValueOrNull is IBlueprintsFolder valueOrNull) && valueOrNull.IsEmpty) OnDeleteConfirm();
             else m_confirmDeleteDialog.SetNameAndShow(m_selectedItem.Value.Title);
         }
 
-        private void downloadSelectedItem() {
-            if (m_selectedItem.IsNone || isLocal) return;
+        private void DownloadSelectedItem() {
+            if (m_selectedItem.IsNone || IsLocal) return;
             var bl = _parent.BlueprintsLocalView._blueprintsLibrary;
             if ((m_selectedItem.Value.Item.ValueOrNull is IBlueprintItem valueOrNull)) bl.TryAddBlueprintFromString(bl.Root, _blueprintsLibrary.ConvertItemString(valueOrNull), out _);
         }
 
-        private void starSelectedBlueprint() {
-            if (m_selectedItem.IsNone || isLocal) return;
+        private void StarSelectedBlueprint() {
+            if (m_selectedItem.IsNone || IsLocal) return;
 
             if ((m_selectedItem.Value.Item.ValueOrNull is IBlueprint valueOrNull)) {
             }
         }
 
-        private bool onStringImportClick(string data) {
+        private bool OnStringImportClick(string data) {
             if (string.IsNullOrEmpty(data)) return false;
-            if (isLocal) return _blueprintsLibrary.TryAddBlueprintFromString(CurrentFolder, data, out _);
+            if (IsLocal) return _blueprintsLibrary.TryAddBlueprintFromString(CurrentFolder, data, out _);
             try {
                 string id = SteamClient.SteamId + "";
                 string name = SteamClient.Name;
                 _blueprintsLibrary.TryParseFromString(data, out string error, out var result);
                 if (!string.IsNullOrEmpty(error)) return false;
                 Task.Run(async () => {
-                    RequestResult response = await _server.Value.PostDataRequest(id, name, data);
+                    var response = await _server.Value.UploadBlueprint(data);
                     if (response.IsSuccess) {
                         await LoadDataAsync();
                         m_blueprintCopyPasteDialog.OnUploadSuccess();
                     }
-                    else m_blueprintCopyPasteDialog.OnUploadFailed(response.Message);
+                    else m_blueprintCopyPasteDialog.OnUploadFailed(response.Error);
                 });
                 return true;
             }
@@ -391,33 +385,42 @@ namespace DoubleQoL.Game.Blueprints {
             return false;
         }
 
-        private void onDeleteConfirm() {
-            if (m_selectedItem.IsNone || !m_selectedItem.Value.Item.HasValue || !isLocal) return;
+        private void OnDeleteConfirm() {
+            if (m_selectedItem.IsNone || !m_selectedItem.Value.Item.HasValue || !IsLocal) return;
             _blueprintsLibrary.DeleteItem(CurrentFolder, m_selectedItem.Value.Item.Value);
         }
 
-        private void onDescriptionApply(string newDescription) {
+        private void OnDescriptionApply(string newDescription) {
             if (m_selectedItem.IsNone || !m_selectedItem.Value.Item.HasValue) return;
             _blueprintsLibrary.SetDescription(m_selectedItem.Value.Item.Value, newDescription);
             m_selectedItem.Value.UpdateDesc();
         }
 
+        private void StartSearch() {
+            if (IsLocal) return;
+            var text = m_searchField.GetText();
+            if (string.IsNullOrEmpty(text)) {
+                _blueprintsLibrary.RestoreSavedRoot();
+                return;
+            }
+            _blueprintsLibrary.UpdateRoot(_blueprintsLibrary.SearchItems(text));
+            CurrentFolder = _blueprintsLibrary.Root;
+        }
+
         public bool InputUpdate(IInputScheduler inputScheduler) {
             if (IsVisible && m_newItem.HasValue) {
-                foreach (BlueprintView allExistingOne in m_viewsCache.AllExistingOnes()) {
-                    if (m_newItem == allExistingOne.Item) {
-                        onItemSelected(allExistingOne);
-                        allExistingOne.StartRenamingSession();
-                        m_newItem = (Option<IBlueprintItem>)Option.None;
-                        m_scrollableContainer.ScrollToElement(allExistingOne.RectTransform);
-                        break;
+                foreach (BlueprintView existingOne in m_viewsCache.AllExistingOnes()) {
+                    if (m_newItem == existingOne.Item) {
+                        OnItemSelected(existingOne);
+                        existingOne.StartRenamingSession();
+                        m_newItem = Option.None;
+                        m_scrollableContainer.ScrollToElement(existingOne.RectTransform);
+                        return true;
                     }
                 }
             }
-            if (m_blueprintCopyPasteDialog.IsVisible() && m_blueprintCopyPasteDialog.InputUpdate())
-                return true;
-            if (m_confirmDeleteDialog.IsVisible() && m_confirmDeleteDialog.InputUpdate())
-                return true;
+            if (m_blueprintCopyPasteDialog.IsVisible() && m_blueprintCopyPasteDialog.InputUpdate()) return true;
+            if (m_confirmDeleteDialog.IsVisible() && m_confirmDeleteDialog.InputUpdate()) return true;
             if (Input.GetKeyDown(KeyCode.Escape)) {
                 if (m_blueprintCopyPasteDialog.IsVisible()) {
                     m_blueprintCopyPasteDialog.Hide();
@@ -431,31 +434,22 @@ namespace DoubleQoL.Game.Blueprints {
                     m_blueprintDescDialog.Hide();
                     return true;
                 }
-                foreach (BlueprintView allExistingOne in m_viewsCache.AllExistingOnes()) {
-                    if (allExistingOne.CancelRenamingIfCan())
-                        return true;
-                }
-                return false;
+                foreach (BlueprintView existingOne in m_viewsCache.AllExistingOnes()) if (existingOne.CancelRenamingIfCan()) return true;
             }
-            if (m_blueprintCopyPasteDialog.IsVisible() || m_confirmDeleteDialog.IsVisible() || m_blueprintDescDialog.IsVisible())
-                return true;
+            if (m_blueprintCopyPasteDialog.IsVisible() || m_confirmDeleteDialog.IsVisible() || m_blueprintDescDialog.IsVisible()) return true;
             if (Input.GetKeyDown(KeyCode.Backspace) && CurrentFolder.ParentFolder.HasValue) {
                 CurrentFolder = CurrentFolder.ParentFolder.Value;
                 return true;
             }
-            if (UnityEngine.Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter)) {
-                foreach (BlueprintView allExistingOne in m_viewsCache.AllExistingOnes()) {
-                    if (allExistingOne.CommitRenamingIfCan())
-                        return true;
-                }
-            }
+            if (Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter))
+                foreach (BlueprintView existingOne in m_viewsCache.AllExistingOnes()) if (existingOne.CommitRenamingIfCan()) return true;
             if (m_selectedItem.HasValue) {
                 if (Input.GetKeyDown(KeyCode.F2)) {
                     m_selectedItem.Value.StartRenamingSession();
                     return true;
                 }
                 if (Input.GetKeyDown(KeyCode.Delete)) {
-                    startBlueprintDelete();
+                    StartBlueprintDelete();
                     return true;
                 }
             }
@@ -463,14 +457,14 @@ namespace DoubleQoL.Game.Blueprints {
         }
 
         public void OnDragStart(BlueprintView viewDragged) {
-            if (!isLocal) return;
+            if (!IsLocal) return;
             m_viewBeingDragged = (Option<BlueprintView>)viewDragged;
             m_viewBeingDragged.Value.SetScale(new Vector2(0.7f, 0.7f));
             m_viewBeingDragged.Value.SetParent(this);
         }
 
         public void OnDragDone() {
-            if (m_viewBeingDragged.IsNone || !isLocal) return;
+            if (m_viewBeingDragged.IsNone || !IsLocal) return;
             if (m_indexToMoveTo >= 0) {
                 _blueprintsLibrary.TryReorderItem(m_viewBeingDragged.Value.Item.Value, CurrentFolder, m_indexToMoveTo);
                 m_indexToMoveTo = -1;
@@ -490,12 +484,12 @@ namespace DoubleQoL.Game.Blueprints {
             m_lastHoveredView = Option<BlueprintView>.None;
             m_viewBeingDragged = (Option<BlueprintView>)Option.None;
             m_insertPanel.Hide();
-            updateItems(CurrentFolder.Folders, CurrentFolder.Blueprints);
-            clearSelectedItem();
+            UpdateItems(CurrentFolder.Folders, CurrentFolder.Blueprints);
+            ClearSelectedItem();
         }
 
         public void OnDragMove(Vector2 screenPoint) {
-            if (m_viewBeingDragged.IsNone || !isLocal) return;
+            if (m_viewBeingDragged.IsNone || !IsLocal) return;
             BlueprintView parent = m_viewsCache.AllExistingOnes().FirstOrDefault(x => x != m_viewBeingDragged && (RectTransformUtility.RectangleContainsScreenPoint(x.RectTransform, screenPoint) || RectTransformUtility.RectangleContainsScreenPoint(x.RectTransform, screenPoint - new Vector2(2f, 0.0f))));
             if (parent == null) {
                 m_lastHoveredView.ValueOrNull?.SetHovered(false);
@@ -515,8 +509,7 @@ namespace DoubleQoL.Game.Blueprints {
                     m_lastHoveredView.ValueOrNull?.SetHovered(false);
                     m_lastHoveredView = (Option<BlueprintView>)Option.None;
                     m_indexToMoveTo = m_viewsCache.AllExistingOnes().IndexOf(parent);
-                    if (CurrentFolder.ParentFolder.HasValue)
-                        --m_indexToMoveTo;
+                    if (CurrentFolder.ParentFolder.HasValue) --m_indexToMoveTo;
                     if (flag2) m_insertPanel.PutToLeftOf(parent, m_insertPanel.GetWidth(), Offset.Left(-m_insertPanel.GetWidth())).Show();
                     else {
                         m_insertPanel.PutToRightOf(parent, m_insertPanel.GetWidth(), Offset.Right(-m_insertPanel.GetWidth())).Show();
@@ -533,8 +526,7 @@ namespace DoubleQoL.Game.Blueprints {
                         m_lastHoveredView = (Option<BlueprintView>)Option.None;
                     }
                     else {
-                        if (parent == m_lastHoveredView || !(parent != m_lastHoveredView))
-                            return;
+                        if (parent == m_lastHoveredView || !(parent != m_lastHoveredView)) return;
                         m_lastHoveredView.ValueOrNull?.SetHovered(false);
                         m_lastHoveredView = (Option<BlueprintView>)parent;
                         parent.SetHovered(true);

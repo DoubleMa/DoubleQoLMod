@@ -9,75 +9,113 @@ namespace DoubleQoL.QoL.UI.Blueprint {
 
     internal static class BlueprintService {
 
-        public static async Task<RequestResult> CheckRequestResult(HttpResponseMessage response) {
+        internal class RequestResult<T> {
+            public bool IsSuccess { get; set; }
+            public string Error { get; set; }
+            public T Data { get; set; }
+        }
+
+        internal class LoginData {
+
+            [JsonProperty("token")]
+            public string Token { get; set; }
+
+            [JsonProperty("userId")]
+            public string UserId { get; set; }
+        }
+
+        internal class BlueprintsData {
+
+            [JsonProperty("blueprints")]
+            public List<BlueprintData> Blueprints { get; set; }
+
+            [JsonProperty("owners")]
+            public Dictionary<string, string> Owners { get; set; }
+        }
+
+        internal class BlueprintData {
+
+            [JsonProperty("id")]
+            public int Id { get; set; }
+
+            [JsonProperty("owner_id")]
+            public int Owner_id { get; set; }
+
+            [JsonProperty("download_count")]
+            private int Download_count { get; set; }
+
+            [JsonProperty("like_count")]
+            public int Like_count { get; set; }
+
+            [JsonProperty("data")]
+            public string Data { get; set; }
+
+            public override string ToString() {
+                return $"ID: {Id}, Owner ID: {Owner_id}, Download Count: {Download_count}, Like Count: {Like_count}, Data: {Data}";
+            }
+        }
+
+        internal class EmptyData {
+        }
+
+        public static async Task<RequestResult<T>> CheckRequestResult<T>(HttpResponseMessage response) {
             try {
-                var result = new RequestResult();
+                var result = new RequestResult<T>();
+
                 if (response.IsSuccessStatusCode) {
                     var content = await response.Content.ReadAsStringAsync();
                     var jsonResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
-
-                    if (jsonResponse.TryGetValue("success", out var successValue) && successValue is bool success) {
-                        result.IsSuccess = success;
-                        result.Message = jsonResponse.TryGetValue("message", out var messageValue) ? messageValue?.ToString() : string.Empty;
-                    }
+                    if (jsonResponse.TryGetValue("success", out var successValue) && successValue is bool success) result.IsSuccess = success;
+                    if (jsonResponse.TryGetValue("data", out var data)) result.Data = JsonConvert.DeserializeObject<T>(data?.ToString());
+                    if (jsonResponse.TryGetValue("error", out var error)) result.Error = error?.ToString();
                 }
-                else result.Message = await response.Content.ReadAsStringAsync();
+                else {
+                    result.IsSuccess = false;
+                    result.Error = await response.Content.ReadAsStringAsync();
+                }
                 return result;
             }
             catch (Exception ex) {
                 Logging.Log.Error($"An unexpected error occurred: {ex.Message}");
-                return new RequestResult { IsSuccess = false, Message = string.Empty };
+                return new RequestResult<T> { IsSuccess = false, Error = string.Empty };
             }
         }
 
-        public static async Task<RequestResult> PostDataRequest(this ServerInfo server, string id, string name, string data) {
+        public static async Task<RequestResult<T>> PostDataRequest<T>(this ServerInfo server, string action, Dictionary<string, string> additionalData = null) {
+            if (string.IsNullOrEmpty(server.Token)) await server.Login();
             using (HttpClient httpClient = new HttpClient()) {
-                var postData = new Dictionary<string, string>(server.AdditionalData)
-                {
-                    { "id", id },
-                    { "name", name },
-                    { "data", data }
-                };
+                var postData = new Dictionary<string, string>(server.AdditionalData);
+                if (additionalData != null) foreach (var kvp in additionalData) postData[kvp.Key] = kvp.Value;
+                postData["action"] = action;
                 httpClient.Timeout = TimeSpan.FromSeconds(10);
-                return await CheckRequestResult(await httpClient.PostAsync(server.Url, new FormUrlEncodedContent(postData)));
+                httpClient.DefaultRequestHeaders.Add("Authorization", server.Token);
+                var response = await httpClient.PostAsync(server.Url, new FormUrlEncodedContent(postData));
+                return await CheckRequestResult<T>(response);
             }
         }
 
-        public static async Task<Dictionary<string, BlueprintApiData>> ReadAndParseJsonFromUrlAsync(this ServerInfo server) {
-            using (HttpClient client = new HttpClient()) {
-                try {
-                    var queryParameters = new FormUrlEncodedContent(server.AdditionalData);
-                    var urlWithAdditionalData = $"{server.Url}?{await queryParameters.ReadAsStringAsync()}";
-                    HttpResponseMessage response = await client.GetAsync(urlWithAdditionalData);
-                    if (response.IsSuccessStatusCode) {
-                        string jsonString = await response.Content.ReadAsStringAsync();
-                        var data = JsonConvert.DeserializeObject<Dictionary<string, BlueprintApiData>>(jsonString);
-                        return data;
-                    }
-                    else Logging.Log.Warning($"Failed to retrieve data from {urlWithAdditionalData}. Status code: {response.StatusCode}");
-                }
-                catch (HttpRequestException ex) {
-                    Logging.Log.Warning($"HttpRequestException when calling {server.Url}: {ex.Message}");
-                }
-                catch (JsonException ex) {
-                    Logging.Log.Error($"Error parsing JSON from {server.Url}: {ex.Message}");
-                }
-                catch (Exception ex) {
-                    Logging.Log.Error($"An unexpected error occurred: {ex.Message}");
-                }
-
-                return null;
-            }
+        public static async Task<RequestResult<BlueprintsData>> GetAllBlueprints(this ServerInfo server) {
+            return await server.PostDataRequest<BlueprintsData>("GetAllBlueprints");
         }
 
-        internal class RequestResult {
-            public bool IsSuccess { get; set; }
-            public string Message { get; set; }
+        public static async Task<RequestResult<EmptyData>> LikeBlueprint(this ServerInfo server, string blueprintId) {
+            return await server.PostDataRequest<EmptyData>("like", new Dictionary<string, string> { { "blueprintId", blueprintId } });
         }
 
-        internal class BlueprintApiData {
-            public string Name { get; set; }
-            public List<string> Data { get; set; }
+        public static async Task<RequestResult<EmptyData>> DownloadBlueprint(this ServerInfo server, string blueprintId) {
+            return await server.PostDataRequest<EmptyData>("download", new Dictionary<string, string> { { "blueprintId", blueprintId } });
+        }
+
+        public static async Task<RequestResult<EmptyData>> ModifyBlueprint(this ServerInfo server, string blueprintId, string data) {
+            return await server.PostDataRequest<EmptyData>("modify", new Dictionary<string, string> { { "blueprintId", blueprintId }, { "data", data } });
+        }
+
+        public static async Task<RequestResult<EmptyData>> DeleteBlueprint(this ServerInfo server, string blueprintId) {
+            return await server.PostDataRequest<EmptyData>("delete", new Dictionary<string, string> { { "blueprintId", blueprintId } });
+        }
+
+        public static async Task<RequestResult<EmptyData>> UploadBlueprint(this ServerInfo server, string data) {
+            return await server.PostDataRequest<EmptyData>("upload", new Dictionary<string, string> { { "data", data } });
         }
     }
 }

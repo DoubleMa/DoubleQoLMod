@@ -1,5 +1,4 @@
-﻿using Mafi.Localization;
-using Mafi.Unity;
+﻿using Mafi.Unity;
 using Mafi.Unity.UserInterface;
 using System;
 using UnityEngine;
@@ -14,8 +13,8 @@ namespace DoubleQoL.Game.Blueprints {
 
         public DeleteBlueprintConfirmDialog(UiBuilder builder, Action onConfirm) : base(builder) {
             OnConfirm = onConfirm;
-            AppendBtnDanger((LocStrFormatted)Tr.BlueprintDelete__Action).OnClick(Confirm);
-            AppendBtnGeneral((LocStrFormatted)Tr.Cancel).OnClick(new Action(this.Hide));
+            AppendBtnDanger(Tr.BlueprintDelete__Action).OnClick(Confirm);
+            AppendBtnGeneral(Tr.Cancel).OnClick(Hide);
             HighlightAsDanger();
         }
 

@@ -25,38 +25,37 @@ namespace DoubleQoL.Game.Blueprints {
         public static readonly int WIDTH = 160;
         public static readonly Vector2 SIZE = new Vector2(WIDTH, 160f);
         private static readonly ColorRgba BG_ICON_COLOR = 4348266;
-        private readonly BlueprintsView m_owner;
-        private readonly UnlockedProtosDbForUi m_unlockedProtosDb;
-        private readonly Btn m_container;
-        private readonly GridContainer m_gridContainer;
-        private readonly ViewsCacheHomogeneous<IconWithCount> m_iconsCache;
-        private readonly Tooltip m_lockedIconTooltip;
-        private readonly IconContainer m_bg;
-        private bool m_isParentFolder;
-        private bool m_isHovered;
-        private readonly Set<Proto> m_lockedProtosCache;
-        private readonly Dict<IProto, IProto> m_downgradesMap;
-        private readonly StringBuilder m_sb;
-        private bool m_isInRenamingSession;
-        private readonly Txt m_title;
-        private readonly Btn m_textEditBtn;
-        private readonly TxtField m_txtInput;
-        private readonly Btn m_textSaveBtn;
-        private readonly Panel m_hoveredBorder;
-        private readonly Panel m_titleBar;
-        private readonly Tooltip m_descTooltip;
-        private readonly IconContainer m_missingProtosIcon;
-        private readonly Tooltip m_missingProtosTooltip;
-        private readonly Panel m_lockedOverlay;
-        private readonly Panel m_selectedBorder;
-        private readonly IconContainer m_downgradeIcon;
-        private readonly Tooltip m_downgradeIconTooltip;
-
         public GameObject GameObject => m_container.GameObject;
 
         public RectTransform RectTransform => m_container.RectTransform;
-
         public IUiUpdater Updater { get; }
+
+        private readonly BlueprintsView m_owner;
+        private readonly UnlockedProtosDbForUi m_unlockedProtosDb;
+        private readonly ViewsCacheHomogeneous<IconWithCount> m_iconsCache;
+        private readonly GridContainer m_gridContainer;
+        private readonly Txt m_title;
+        private readonly TxtField m_txtInput;
+        private readonly Btn m_container;
+        private readonly Btn m_textEditBtn;
+        private readonly Btn m_textSaveBtn;
+        private readonly IconContainer m_bg;
+        private readonly IconContainer m_missingProtosIcon;
+        private readonly IconContainer m_downgradeIcon;
+        private readonly Panel m_hoveredBorder;
+        private readonly Panel m_titleBar;
+        private readonly Panel m_lockedOverlay;
+        private readonly Panel m_selectedBorder;
+        private readonly Tooltip m_descTooltip;
+        private readonly Tooltip m_missingProtosTooltip;
+        private readonly Tooltip m_downgradeIconTooltip;
+        private readonly Tooltip m_lockedIconTooltip;
+        private bool m_isParentFolder;
+        private bool m_isHovered;
+        private bool m_isInRenamingSession;
+        private readonly Set<Proto> m_lockedProtosCache;
+        private readonly Dict<IProto, IProto> m_downgradesMap;
+        private readonly StringBuilder m_sb;
 
         public Option<IBlueprintItem> Item => ((IBlueprintItem)Blueprint.ValueOrNull ?? BlueprintsFolder.ValueOrNull).CreateOption();
 
@@ -74,26 +73,24 @@ namespace DoubleQoL.Game.Blueprints {
             m_lockedProtosCache = new Set<Proto>();
             m_downgradesMap = new Dict<IProto, IProto>();
             m_sb = new StringBuilder();
-            BlueprintView blueprintView = this;
             m_owner = owner;
             m_unlockedProtosDb = unlockedProtosDb;
             m_container = builder.NewBtn("Container", parent).SetButtonStyle(builder.Style.Global.ListMenuBtnDarker())
-                .OnClick(() => onClick(blueprintView))
-                .OnDoubleClick(() => { if (!blueprintView.m_lockedOverlay.IsVisible()) onDoubleClick(blueprintView); })
+                .OnClick(() => onClick(this))
+                .OnDoubleClick(() => { if (!m_lockedOverlay.IsVisible()) onDoubleClick(this); })
                 .SetOnMouseEnterLeaveActions(() => {
-                    blueprintView.m_isHovered = true;
-                    blueprintView.m_textEditBtn.SetVisibility(isLocal && !blueprintView.m_isParentFolder && !blueprintView.m_isInRenamingSession);
+                    m_isHovered = true;
+                    m_textEditBtn.SetVisibility(isLocal && !m_isParentFolder && !m_isInRenamingSession);
                 }, () => {
-                    blueprintView.m_isHovered = false;
-                    blueprintView.m_textEditBtn.Hide();
+                    m_isHovered = false;
+                    m_textEditBtn.Hide();
                 });
             m_descTooltip = m_container.AddToolTipAndReturn();
             m_bg = builder.NewIconContainer("Bg").PutTo(m_container, Offset.All(20f));
             m_hoveredBorder = builder.NewPanel("border").PutTo(m_container).SetBorderStyle(new BorderStyle(10461087)).Hide();
             m_selectedBorder = builder.NewPanel("border").PutTo(m_container).SetBorderStyle(new BorderStyle(10123554)).Hide();
-            int coord = (WIDTH - 10) / 3 - 2;
-            m_gridContainer = builder.NewGridContainer("Container").SetCellSize(coord.Vector2()).SetCellSpacing(2f).SetDynamicHeightMode(3).SetInnerPadding(Offset.All(5f) + Offset.Top(5f)).PutToLeftTopOf(this, Vector2.zero);
-            m_iconsCache = new ViewsCacheHomogeneous<IconWithCount>(() => new IconWithCount(blueprintView.m_gridContainer, builder));
+            m_gridContainer = builder.NewGridContainer("Container").SetCellSize(((WIDTH - 10) / 3 - 2).Vector2()).SetCellSpacing(2f).SetDynamicHeightMode(3).SetInnerPadding(Offset.All(5f) + Offset.Top(5f)).PutToLeftTopOf(this, Vector2.zero);
+            m_iconsCache = new ViewsCacheHomogeneous<IconWithCount>(() => new IconWithCount(m_gridContainer, builder));
             m_lockedOverlay = builder.NewPanel("LockedOverlay").SetBackground(new ColorRgba(3355443, 120)).PutTo(m_container);
             IconContainer centerMiddleOf = builder.NewIconContainer("LockedIcon").SetIcon(Assets.Unity.UserInterface.General.Locked128_png, new ColorRgba(11447982, 200)).PutToCenterMiddleOf(m_lockedOverlay, 40.Vector2());
             m_lockedIconTooltip = builder.AddTooltipFor(centerMiddleOf);
@@ -118,8 +115,7 @@ namespace DoubleQoL.Game.Blueprints {
             Blueprint = blueprint.CreateOption();
             updateTitle();
             UpdateDesc();
-            m_bg.SetIcon(Assets.Unity.UserInterface.General.Blueprint_svg, BG_ICON_COLOR);
-            m_bg.PutTo(m_container, Offset.All(20f));
+            m_bg.SetIcon(Assets.Unity.UserInterface.General.Blueprint_svg, BG_ICON_COLOR).PutTo(m_container, Offset.All(20f));
             m_lockedProtosCache.Clear();
             m_downgradesMap.Clear();
             m_sb.Clear();
@@ -157,16 +153,15 @@ namespace DoubleQoL.Game.Blueprints {
             m_gridContainer.StartBatchOperation();
             m_gridContainer.ClearAll();
             m_iconsCache.ReturnAll();
-            int num1 = 6;
-            int num2 = 0;
+            int i = 0;
             foreach (KeyValuePair<Proto, int> mostFrequentProto in blueprint.MostFrequentProtos) {
-                if (num2 < num1) {
+                if (i < 6) {
                     Proto key = mostFrequentProto.Key;
                     if (key is LayoutEntityProto layoutEntityProto) {
                         IconWithCount view = m_iconsCache.GetView();
                         m_gridContainer.Append(view);
                         view.SetIconAndCount(layoutEntityProto.Graphics.IconPath, mostFrequentProto.Value);
-                        ++num2;
+                        ++i;
                     }
                     else if (key is TransportProto transportProto) {
                         IconWithCount view = m_iconsCache.GetView();
@@ -226,7 +221,7 @@ namespace DoubleQoL.Game.Blueprints {
             if (m_isInRenamingSession) stopRenamingSession();
             if (Item.HasValue) m_title.SetText(m_isParentFolder ? "" : Item.Value.Name);
             m_textEditBtn.SetVisibility(!m_isParentFolder && m_isHovered);
-            m_titleBar.SetWidth(((float)((double)m_title.GetPreferedWidth() + 18.0 + 2.0)).Min(WIDTH - 10));
+            m_titleBar.SetWidth(((float)(m_title.GetPreferedWidth() + 18.0 + 2.0)).Min(WIDTH - 10));
         }
 
         internal void UpdateDesc() => m_descTooltip.SetText(Item.ValueOrNull?.Desc ?? "");
@@ -291,7 +286,7 @@ namespace DoubleQoL.Game.Blueprints {
 
             public IconWithCount(IUiElement parent, UiBuilder builder) {
                 m_container = builder.NewPanel("Container", parent);
-                m_icon = builder.NewIconContainer("Icon", parent).PutTo<IconContainer>(m_container, Offset.Right(5f) + Offset.Bottom(5f));
+                m_icon = builder.NewIconContainer("Icon", parent).PutTo(m_container, Offset.Right(5f) + Offset.Bottom(5f));
                 m_count = builder.NewTxt("Txt").SetTextStyle(builder.Style.Global.Title).SetAlignment(TextAnchor.LowerLeft).AddOutline().PutToBottomOf(m_container, 25f, Offset.Left(2f));
             }
 

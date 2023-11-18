@@ -8,7 +8,6 @@ using Mafi.Core.Entities.Static;
 using Mafi.Core.Factory.Transports;
 using Mafi.Core.Input;
 using Mafi.Core.Prototypes;
-using Mafi.Localization;
 using Mafi.Unity;
 using Mafi.Unity.Entities;
 using Mafi.Unity.InputControl;
@@ -31,7 +30,8 @@ namespace DoubleQoL.Game.Blueprints {
     /// </summary>
     [GlobalDependency(RegistrationMode.AsEverything, false, false)]
     internal class BlueprintCreationController : BaseEntityCursorInputController<IStaticEntity> {
-        private static readonly ColorRgba HOVER_HIGHLIGHT;
+        private static readonly ColorRgba HOVER_HIGHLIGHT = new ColorRgba(16766738);
+
         private readonly EntitiesCloneConfigHelper m_configCloneHelper;
         private readonly IUnityInputMgr m_inputManager;
         private readonly BlueprintToolbox m_toolbox;
@@ -50,7 +50,7 @@ namespace DoubleQoL.Game.Blueprints {
           AreaSelectionToolFactory areaSelectionToolFactory,
           NewInstanceOf<EntityHighlighter> highlighter,
           NewInstanceOf<TransportTrajectoryHighlighter> transportTrajectoryHighlighter,
-          EntitiesManager entitiesManager) : base(protosDb, unlockedProtosDb, shortcutsManager, inputManager, cursorPickingManager, cursorManager, areaSelectionToolFactory, entitiesManager, highlighter, (Option<NewInstanceOf<TransportTrajectoryHighlighter>>)transportTrajectoryHighlighter, new Proto.ID?()) {
+          EntitiesManager entitiesManager) : base(protosDb, unlockedProtosDb, shortcutsManager, inputManager, cursorPickingManager, cursorManager, areaSelectionToolFactory, entitiesManager, highlighter, transportTrajectoryHighlighter, new Proto.ID?()) {
             m_configCloneHelper = configCloneHelper;
             m_inputManager = inputManager;
             m_toolbox = new BlueprintToolbox(toolbarController);
@@ -78,8 +78,7 @@ namespace DoubleQoL.Game.Blueprints {
             m_toolbox.Show();
         }
 
-        public void ActivateForSelection(
-          Action<ImmutableArray<EntityConfigData>> onSelectionDone) {
+        public void ActivateForSelection(Action<ImmutableArray<EntityConfigData>> onSelectionDone) {
             m_onSelectionDone = onSelectionDone.SomeOption();
             m_inputManager.ActivateNewController(this);
         }
@@ -103,18 +102,13 @@ namespace DoubleQoL.Game.Blueprints {
             foreach (IStaticEntity selectedEntity in selectedEntities) lyst.Add(m_configCloneHelper.CreateConfigFrom(selectedEntity));
             foreach (SubTransport partialTransport in selectedPartialTransports) {
                 EntityConfigData configFrom = m_configCloneHelper.CreateConfigFrom(partialTransport.OriginalTransport);
-                configFrom.Trajectory = (Option<TransportTrajectory>)partialTransport.SubTrajectory;
+                configFrom.Trajectory = partialTransport.SubTrajectory;
                 lyst.Add(configFrom);
             }
             m_inputManager.DeactivateController(this);
             Action<ImmutableArray<EntityConfigData>> valueOrNull = m_onSelectionDone.ValueOrNull;
-            if (valueOrNull == null)
-                return;
+            if (valueOrNull == null) return;
             valueOrNull(lyst.ToImmutableArray());
-        }
-
-        static BlueprintCreationController() {
-            HOVER_HIGHLIGHT = new ColorRgba(16766738);
         }
 
         private class BlueprintToolbox : Toolbox, IUnityUi {
@@ -124,7 +118,7 @@ namespace DoubleQoL.Game.Blueprints {
             }
 
             protected override void BuildCustomItems(UiBuilder builder) {
-                PrimaryActionBtn = AddToggleButton("SelectArea", Assets.Unity.UserInterface.Toolbox.SelectArea_svg, _ => { }, m => m.PrimaryAction, (LocStrFormatted)Tr.Blueprint_NewFromSelectionTooltip);
+                PrimaryActionBtn = AddToggleButton("SelectArea", Assets.Unity.UserInterface.Toolbox.SelectArea_svg, _ => { }, m => m.PrimaryAction, Tr.Blueprint_NewFromSelectionTooltip);
                 Toolbar.AddToolbox(this, this.GetWidth());
             }
         }

@@ -8,7 +8,7 @@ using Mafi.Unity.InputControl;
 namespace DoubleQoL.QoL.UI.Blueprint {
 
     internal class BlueprintsLocalView : BlueprintsView {
-        public override bool isLocal => true;
+        public override bool IsLocal => true;
 
         public BlueprintsLocalView(IUnityInputMgr inputMgr, LazyResolve<BlueprintsController> controller,
            NewInstanceOf<QoLBlueprintsLibrary> blueprintsLibrary,

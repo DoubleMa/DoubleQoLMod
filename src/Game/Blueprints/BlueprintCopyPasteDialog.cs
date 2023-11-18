@@ -22,15 +22,14 @@ namespace DoubleQoL.Game.Blueprints {
 
         private readonly Txt m_title;
         private readonly Txt m_txt;
+        private readonly Txt m_errorText;
         private readonly Btn m_importBtn;
         private readonly Btn m_uploadBtn;
-        private readonly Btn m_closeBtn;
-        private readonly Txt m_errorText;
-        private string m_textToCopy;
         private readonly Btn m_exportBtn;
-        private Mode m_mode;
         private readonly UiBuilder m_builder;
         private readonly Func<string, bool> m_onImport;
+        private string m_textToCopy;
+        private Mode m_mode;
 
         public BlueprintCopyPasteDialog(UiBuilder builder, Func<string, bool> onImport) : base(builder) {
             m_textToCopy = "";
@@ -48,10 +47,10 @@ namespace DoubleQoL.Game.Blueprints {
             AppendCustomElement(panel2);
             m_errorText = builder.NewTxt("Error").SetTextStyle(builder.Style.Global.TextMediumBold).SetAlignment(TextAnchor.MiddleLeft).PutTo(panel2).Hide();
             string iconPath = Assets.Unity.UserInterface.General.Clipboard_svg;
-            m_importBtn = AppendBtnPrimary((LocStrFormatted)Tr.PasteString__Action, iconPath).AddToolTip(Tr.PasteString__Tooltip).OnClick(new Action(importString));
-            m_uploadBtn = AppendBtnPrimary(new LocStrFormatted("Upload"), iconPath).AddToolTip(Tr.PasteString__Tooltip).OnClick(new Action(importString));
-            m_exportBtn = AppendBtnPrimary((LocStrFormatted)Tr.CopyString__Action, iconPath).AddToolTip(Tr.CopyString__Tooltip).OnClick(new Action(exportString));
-            m_closeBtn = AppendBtnGeneral((LocStrFormatted)Tr.Close).OnClick(new Action(Hide));
+            m_importBtn = AppendBtnPrimary(Tr.PasteString__Action, iconPath).AddToolTip(Tr.PasteString__Tooltip).OnClick(importString);
+            m_uploadBtn = AppendBtnPrimary(new LocStrFormatted("Upload"), iconPath).AddToolTip(Tr.PasteString__Tooltip).OnClick(importString);
+            m_exportBtn = AppendBtnPrimary(Tr.CopyString__Action, iconPath).AddToolTip(Tr.CopyString__Tooltip).OnClick(exportString);
+            Btn closeBtn = AppendBtnGeneral(Tr.Close).OnClick(Hide);
             HighlightAsSettings();
         }
 
@@ -60,12 +59,12 @@ namespace DoubleQoL.Game.Blueprints {
             setStringToPreview(systemCopyBuffer);
             m_errorText.Show();
             if (m_onImport(systemCopyBuffer)) {
-                m_errorText.SetText((LocStrFormatted)Tr.ImportBlueprint__Success);
+                m_errorText.SetText(Tr.ImportBlueprint__Success);
                 m_errorText.SetColor(m_builder.Style.Global.GreenForDark);
                 m_importBtn.Hide();
             }
             else {
-                m_errorText.SetText((LocStrFormatted)Tr.ImportBlueprint__Fail);
+                m_errorText.SetText(Tr.ImportBlueprint__Fail);
                 m_errorText.SetColor(m_builder.Style.Global.DangerClr);
             }
         }
@@ -73,7 +72,7 @@ namespace DoubleQoL.Game.Blueprints {
         private void exportString() {
             GUIUtility.systemCopyBuffer = m_textToCopy;
             m_errorText.Show();
-            m_errorText.SetText((LocStrFormatted)Tr.CopyString__Success);
+            m_errorText.SetText(Tr.CopyString__Success);
             m_errorText.SetColor(m_builder.Style.Global.GreenForDark);
         }
 
@@ -106,7 +105,7 @@ namespace DoubleQoL.Game.Blueprints {
 
         public void ShowForStringImport() {
             m_mode = Mode.Import;
-            m_title.SetText((LocStrFormatted)Tr.ImportBlueprint__Title);
+            m_title.SetText(Tr.ImportBlueprint__Title);
             m_txt.SetText("");
             SetBtnVisibility(m_exportBtn, false);
             SetBtnVisibility(m_importBtn, true);
@@ -118,7 +117,7 @@ namespace DoubleQoL.Game.Blueprints {
         public void ShowForStringExport(string text) {
             m_mode = Mode.Export;
             m_textToCopy = text;
-            m_title.SetText((LocStrFormatted)Tr.ExportBlueprint__Title);
+            m_title.SetText(Tr.ExportBlueprint__Title);
             setStringToPreview(text);
             SetBtnVisibility(m_exportBtn, true);
             SetBtnVisibility(m_importBtn, false);

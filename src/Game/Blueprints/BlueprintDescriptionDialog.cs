@@ -1,5 +1,4 @@
-﻿using Mafi.Localization;
-using Mafi.Unity;
+﻿using Mafi.Unity;
 using Mafi.Unity.UiFramework;
 using Mafi.Unity.UiFramework.Components;
 using Mafi.Unity.UserInterface;
@@ -15,20 +14,18 @@ namespace DoubleQoL.Game.Blueprints {
         private readonly TxtField m_txtField;
 
         public BlueprintDescriptionDialog(UiBuilder builder, Action<string> onApplyChanges) : base(builder) {
-            BlueprintDescriptionDialog descriptionDialog = this;
             HideMessage();
             Width = 400f;
-            Txt element = builder.NewTitle("Title").SetText((LocStrFormatted)Tr.UpdateDescription__Title).SetAlignment(TextAnchor.MiddleLeft).SetTextStyle(builder.Style.Global.TitleBig);
+            Txt element = builder.NewTitle("Title").SetText(Tr.UpdateDescription__Title).SetAlignment(TextAnchor.MiddleLeft).SetTextStyle(builder.Style.Global.TitleBig);
             element.SetSize(element.GetPreferredSize(0, 0));
             AppendCustomElement(element);
-            m_txtField = builder.NewTxtField("TxtField").SetStyle(builder.Style.Global.LightTxtFieldStyle).SetPlaceholderText(string.Format("{0} ...", Tr.UpdateDescription__Placeholder)).SetCharLimit(0)
-                .EnableSelectionOnFocus().MakeMultiline().SetHeight(250f);
+            m_txtField = builder.NewTxtField("TxtField").SetStyle(builder.Style.Global.LightTxtFieldStyle).SetPlaceholderText(string.Format("{0} ...", Tr.UpdateDescription__Placeholder)).SetCharLimit(0).EnableSelectionOnFocus().MakeMultiline().SetHeight(250f);
             AppendCustomElement(m_txtField);
-            AppendBtnPrimary((LocStrFormatted)Tr.ApplyChanges).OnClick(() => {
-                onApplyChanges(descriptionDialog.m_txtField.GetText());
-                descriptionDialog.Hide();
+            AppendBtnPrimary(Tr.ApplyChanges).OnClick(() => {
+                onApplyChanges(m_txtField.GetText());
+                Hide();
             });
-            AppendBtnGeneral((LocStrFormatted)Tr.Cancel).OnClick(new Action(Hide));
+            AppendBtnGeneral(Tr.Cancel).OnClick(Hide);
             HighlightAsSettings();
         }
 

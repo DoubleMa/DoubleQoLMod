@@ -97,6 +97,7 @@ namespace DoubleQoL.Config {
     internal class ServerInfo {
         public string Url { get; set; }
         public string Name { get; set; }
+        public string Token { get; set; }
         public Dictionary<string, string> AdditionalData { get; set; }
     }
 }

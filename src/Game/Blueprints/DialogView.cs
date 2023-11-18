@@ -17,9 +17,9 @@ namespace DoubleQoL.Game.Blueprints {
         public float Width;
         private readonly UiBuilder m_builder;
         private readonly StackContainer m_itemsContainer;
+        private readonly StackContainer m_btnsContainer;
         private readonly PanelWithShadow m_container;
         private readonly Txt m_text;
-        private readonly StackContainer m_btnsContainer;
         private readonly Panel m_btnsHolder;
 
         protected StackContainer ItemsContainer => m_itemsContainer;
@@ -51,7 +51,7 @@ namespace DoubleQoL.Game.Blueprints {
 
         public void SetMessage(LocStrFormatted message) {
             m_text.SetText(message);
-            m_itemsContainer.UpdateItemHeight(m_text, m_text.GetPreferedHeight((float)(Width - 80)).Max(35f));
+            m_itemsContainer.UpdateItemHeight(m_text, m_text.GetPreferedHeight(Width - 80).Max(35f));
         }
 
         protected void HideMessage() => m_itemsContainer.HideItem(m_text);

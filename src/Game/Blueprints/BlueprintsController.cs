@@ -41,15 +41,8 @@ namespace DoubleQoL.Game.Blueprints {
 
         public ControllerConfig Config => !m_entityPlacer.IsActive ? ControllerConfig.Window : ControllerConfig.Tool;
 
-        public BlueprintsController(
-          NewInstanceOf<StaticEntityMassPlacer> entityPlacer,
-          UnlockedProtosDb unlockedProtosDb,
-          UnlockedProtosDbForUi unlockedProtosDbForUi,
-          ProtosDb protosDb,
-          IUnityInputMgr inputManager,
-          BlueprintsWindowView view,
-          IGameLoopEvents gameLoop,
-          ToolbarController toolbarController) {
+        public BlueprintsController(NewInstanceOf<StaticEntityMassPlacer> entityPlacer, UnlockedProtosDb unlockedProtosDb, UnlockedProtosDbForUi unlockedProtosDbForUi, ProtosDb protosDb,
+          IUnityInputMgr inputManager, BlueprintsWindowView view, IGameLoopEvents gameLoop, ToolbarController toolbarController) {
             m_copiedConfigs = new Lyst<EntityConfigData>();
             BlueprintsController controller = this;
             m_entityPlacer = entityPlacer.Instance;
@@ -69,14 +62,14 @@ namespace DoubleQoL.Game.Blueprints {
             m_view.BuildUi(builder);
             m_entityPlacer.RegisterUi(builder);
             if (IsVisible) return;
-            m_unlockedProtosDb.OnUnlockedSetChanged.AddNonSaveable(this, new Action(onProtosUnlocked));
+            m_unlockedProtosDb.OnUnlockedSetChanged.AddNonSaveable(this, onProtosUnlocked);
             m_inputManager.RemoveGlobalShortcut(this);
         }
 
         private void onProtosUnlocked() {
             IsVisible = m_unlockedProtosDb.IsUnlocked(m_blueprintsTech);
             if (!IsVisible) return;
-            m_unlockedProtosDb.OnUnlockedSetChanged.RemoveNonSaveable(this, new Action(onProtosUnlocked));
+            m_unlockedProtosDb.OnUnlockedSetChanged.RemoveNonSaveable(this, onProtosUnlocked);
             m_inputManager.RegisterGlobalShortcut(m => m.ToggleBlueprints, this);
             Action<IToolbarItemInputController> visibilityChanged = VisibilityChanged;
             if (visibilityChanged == null) return;
@@ -84,16 +77,16 @@ namespace DoubleQoL.Game.Blueprints {
         }
 
         public void Activate() {
-            m_gameLoop.SyncUpdate.AddNonSaveable(this, new Action<GameTime>(syncUpdate));
-            m_gameLoop.RenderUpdate.AddNonSaveable(this, new Action<GameTime>(renderUpdate));
+            m_gameLoop.SyncUpdate.AddNonSaveable(this, syncUpdate);
+            m_gameLoop.RenderUpdate.AddNonSaveable(this, renderUpdate);
             m_view.Show();
         }
 
         public void Deactivate() {
             if (m_entityPlacer.IsActive) m_entityPlacer.Deactivate();
             m_view.Hide();
-            m_gameLoop.SyncUpdate.RemoveNonSaveable(this, new Action<GameTime>(syncUpdate));
-            m_gameLoop.RenderUpdate.RemoveNonSaveable(this, new Action<GameTime>(renderUpdate));
+            m_gameLoop.SyncUpdate.RemoveNonSaveable(this, syncUpdate);
+            m_gameLoop.RenderUpdate.RemoveNonSaveable(this, renderUpdate);
         }
 
         public bool InputUpdate(IInputScheduler inputScheduler) => m_entityPlacer.IsActive ? m_entityPlacer.InputUpdate(inputScheduler) : m_view.InputUpdate(inputScheduler);
@@ -116,7 +109,7 @@ namespace DoubleQoL.Game.Blueprints {
             }
             if (m_copiedConfigs.IsEmpty) return;
             m_view.Hide();
-            m_entityPlacer.Activate(this, new Action(blueprintPlaced), new Action(blueprintPlacementCancelled));
+            m_entityPlacer.Activate(this, blueprintPlaced, blueprintPlacementCancelled);
             m_entityPlacer.SetEntitiesToClone(m_copiedConfigs, StaticEntityMassPlacer.ApplyConfigMode.ApplyIfNotDisabled, true);
         }
 
