@@ -50,7 +50,7 @@ namespace DoubleQoL.Game.Blueprints {
         private readonly Tooltip m_missingProtosTooltip;
         private readonly Tooltip m_downgradeIconTooltip;
         private readonly Tooltip m_lockedIconTooltip;
-        private bool m_isParentFolder;
+        internal bool m_isParentFolder;
         private bool m_isHovered;
         private bool m_isInRenamingSession;
         private readonly Set<Proto> m_lockedProtosCache;

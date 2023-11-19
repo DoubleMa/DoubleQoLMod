@@ -42,7 +42,7 @@ namespace DoubleQoL.QoL.UI.Blueprint {
             public int Owner_id { get; set; }
 
             [JsonProperty("download_count")]
-            private int Download_count { get; set; }
+            public int Download_count { get; set; }
 
             [JsonProperty("like_count")]
             public int Like_count { get; set; }
@@ -52,6 +52,10 @@ namespace DoubleQoL.QoL.UI.Blueprint {
 
             public override string ToString() {
                 return $"ID: {Id}, Owner ID: {Owner_id}, Download Count: {Download_count}, Like Count: {Like_count}, Data: {Data}";
+            }
+
+            public string ToStringData() {
+                return $"ID:{Id},OwnerID:{Owner_id},DownloadCount:{Download_count},LikeCount:{Like_count}";
             }
         }
 

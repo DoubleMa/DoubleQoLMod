@@ -23,7 +23,6 @@ using Mafi.Unity.UiFramework.Components.Tabs;
 using Mafi.Unity.UserInterface.Components;
 using Steamworks;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -70,6 +69,7 @@ namespace DoubleQoL.Game.Blueprints {
         public abstract bool IsLocal { get; }
         private IBlueprintsFolder CurrentFolder { get; set; }
         private int m_indexToMoveTo;
+        internal StupidBlueprintManager BlueprintManager;
 
         internal BlueprintsView(IUnityInputMgr inputMgr,
             LazyResolve<BlueprintsController> controller,
@@ -79,6 +79,7 @@ namespace DoubleQoL.Game.Blueprints {
             BlueprintCreationController blueprintCreationController,
             CaptainOfficeManager captainOfficeManager,
             BlueprintsWindowView parent) : base("Blueprints") {
+            BlueprintManager = new StupidBlueprintManager();
             _parent = parent;
             m_inputMgr = inputMgr;
             m_controller = controller;
@@ -102,31 +103,34 @@ namespace DoubleQoL.Game.Blueprints {
             LoadData();
         }
 
+        private void LoadData() {
+            Task.Run(async () => await LoadDataAsync());
+        }
+
         private async Task LoadDataAsync() {
             try {
                 if (IsLocal) return;
                 var respond = await _server.Value.GetAllBlueprints();
                 if (!respond.IsSuccess) return;
                 _blueprintsLibrary.Clear();
+                BlueprintManager.Clear();
                 m_searchField.ClearInput();
                 CurrentFolder = _blueprintsLibrary.Root;
-                Dictionary<int, IBlueprintsFolder> players = new Dictionary<int, IBlueprintsFolder>();
                 foreach (var blueprint in respond.Data.Blueprints) {
-                    if (!players.TryGetValue(blueprint.Owner_id, out var folder)) {
+                    if (!BlueprintManager.GetRootItem(blueprint.Owner_id, out var folder)) {
                         folder = _blueprintsLibrary.AddNewFolder(_blueprintsLibrary.Root);
                         folder.InvokeSetter("Name", respond.Data.Owners[blueprint.Owner_id + ""]);
+                        BlueprintManager.AddRoot(folder, blueprint.Owner_id);
                     }
-                    _blueprintsLibrary.TryAddBlueprintFromString(folder, blueprint.Data, out _);
+                    if (_blueprintsLibrary.TryAddBlueprintFromString((IBlueprintsFolder)folder, blueprint.Data, out var result)) {
+                        BlueprintManager.AddItem(result, blueprint);
+                    }
                 }
                 _blueprintsLibrary.SaveCurrentRoot();
             }
             catch (Exception ex) {
                 Logging.Log.Warning($"Error: {ex.Message}");
             }
-        }
-
-        private void LoadData() {
-            Task.Run(async () => await LoadDataAsync());
         }
 
         protected override void BuildUi() {

@@ -98,6 +98,7 @@ namespace DoubleQoL.Config {
         public string Url { get; set; }
         public string Name { get; set; }
         public string Token { get; set; }
+        public string UserId { get; set; }
         public Dictionary<string, string> AdditionalData { get; set; }
     }
 }
