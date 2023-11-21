@@ -55,7 +55,7 @@ namespace DoubleQoL.Config {
         public XKeyWithComment<bool> DefaultState_statusbar { get; }
         public XKeyWithComment<string> DefaultState_trucktoshow { get; }
         public XKeyWithComment<string> DefaultState_nontrucktoshow { get; }
-        public IEnumerable<ServerInfo> blueprint_Servers { get; }
+        public IEnumerable<ServerInfo> Blueprint_Servers { get; }
 
         private ConfigManager() {
             AppSettings = new XSectionWithComment("AppSettings");
@@ -90,7 +90,7 @@ namespace DoubleQoL.Config {
             DefaultState_trucktoshow = new XKeyWithComment<string>(DefaultState, "trucktoshow", AcceptedTrucks, "TruckT1, TruckT2, TruckT3Loose, TruckT3Fluid", "\r\n\t\tType of trucks to show in the statusbar.\r\n\t\tAccepted values: TruckT1, TruckT2, TruckT3Loose, TruckT3Fluid\r\n\t\tDefault: TruckT1, TruckT2, TruckT3Loose, TruckT3Fluid\r\n\t");
             DefaultState_nontrucktoshow = new XKeyWithComment<string>(DefaultState, "nontrucktoshow", AcceptedNonTrucks, "ExcavatorT1, ExcavatorT2, ExcavatorT3, TreeHarvesterT1, TreeHarvesterT2, TreePlanterT1", "\r\n\t\tType of non-trucks to show in the statusbar.\r\n\t\tAccepted values: ExcavatorT1, ExcavatorT2, ExcavatorT3, TreeHarvesterT1, TreeHarvesterT2, TreePlanterT1\r\n\t\tDefault: ExcavatorT1, ExcavatorT2, ExcavatorT3, TreeHarvesterT1, TreeHarvesterT2, TreePlanterT1\r\n\t");
 
-            blueprint_Servers = ConfigLoader.Instance.GetAllServers();
+            Blueprint_Servers = ConfigLoader.Instance.GetAllServers();
         }
     }
 

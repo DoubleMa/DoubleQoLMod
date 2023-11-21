@@ -1,4 +1,5 @@
-﻿using DoubleQoL.QoL.UI.Blueprint;
+﻿using DoubleQoL.Config;
+using DoubleQoL.QoL.UI.Blueprint;
 using Mafi;
 using Mafi.Collections;
 using Mafi.Core;
@@ -15,6 +16,7 @@ using Mafi.Unity.InputControl.Toolbar;
 using Mafi.Unity.UiFramework;
 using Mafi.Unity.UserInterface;
 using System;
+using System.Linq;
 
 namespace DoubleQoL.Game.Blueprints {
 
@@ -57,6 +59,7 @@ namespace DoubleQoL.Game.Blueprints {
         }
 
         public void RegisterUi(UiBuilder builder) {
+            if (ConfigManager.Instance.Blueprint_Servers.Count() == 0) return;
             IsVisible = m_unlockedProtosDb.IsUnlocked(m_blueprintsTech);
             m_toolbarController.AddMainMenuButton(Tr.Blueprints.TranslatedString, this, Assets.Unity.UserInterface.Toolbar.Blueprints_svg, 430f, _ => _.ToggleBlueprints);
             m_view.BuildUi(builder);

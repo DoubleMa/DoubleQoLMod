@@ -32,7 +32,7 @@ namespace DoubleQoL.QoL.UI.Blueprint {
             _tabsContainer = Builder.NewTabsContainer(size.x.RoundToInt(), size.y.RoundToInt()).PutTo(GetContentPanel());
             BlueprintsLocalView = _dependencyResolver.Instantiate<BlueprintsLocalView>();
             _tabsContainer.AddTab("Local", null, BlueprintsLocalView);
-            foreach (var server in ConfigManager.Instance.blueprint_Servers) {
+            foreach (var server in ConfigManager.Instance.Blueprint_Servers) {
                 var t = _dependencyResolver.Instantiate<BlueprintsStoreView>();
                 t.SetServer(server);
                 _tabsContainer.AddTab(server.Name, null, t);

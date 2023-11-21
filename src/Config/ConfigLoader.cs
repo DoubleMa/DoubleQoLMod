@@ -78,6 +78,7 @@ namespace DoubleQoL.Config {
 
         public IEnumerable<ServerInfo> GetAllServers() {
             try {
+                GetSectionOrCreate(new XSectionWithComment("BlueprintServers", "Add a private or public server for the BlueprintQoL"));
                 var servers = root.Descendants("server").Select(serverElement => {
                     var serverInfo = new ServerInfo {
                         Name = serverElement.Elements("add").FirstOrDefault(e => e.Attribute("key")?.Value == "name")?.Attribute("value")?.Value,

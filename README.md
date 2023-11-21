@@ -28,7 +28,10 @@ A mod for [Captain of Industry game](https://www.captain-of-industry.com/).
 
     <img src="./images/VehicleTool.png" alt="TowerArea" width="auto" height="300">
   
+- Add an in-game Blueprint store where you can share and download blueprints.
 
+    <img src="./images/blueprints_store.png" alt="TowerArea" width="auto" height="300">
+  
 ## Installation
 
 1. Download the latest zip file from the GitHub Release.
@@ -43,7 +46,7 @@ The zip file includes a `DoubleQoL.dll.config` file. You can enable/disable any 
 1. The "QoLs" section allows you to enable or disable a QoL.
 2. The "KeyCodes" section allows you to change the KeyCode for each supported QoL.
 3. The "DefaultState" section lets you set the default state for specific QoL features when you start the game.
-
+4. The "BlueprintServers" section allows you to add a private or public server for the BlueprintQoL.
   
 
 ## Disclaimers
