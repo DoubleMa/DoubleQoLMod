@@ -14,8 +14,8 @@ namespace DoubleQoL.QoL.UI.Blueprint {
 
     [GlobalDependency(RegistrationMode.AsEverything, false, false)]
     internal class BlueprintsWindowView : WindowView {
-        private TabsContainer _tabsContainer;
         private readonly DependencyResolver _dependencyResolver;
+        public TabsContainer _tabsContainer;
         public BlueprintsLocalView BlueprintsLocalView { get; private set; }
 
         internal BlueprintsWindowView(DependencyResolver dependencyResolver) : base("Blueprints") {
@@ -50,5 +50,7 @@ namespace DoubleQoL.QoL.UI.Blueprint {
         }
 
         internal bool InputUpdate(IInputScheduler inputScheduler) => ((IInputUpdate)_tabsContainer.ActiveTab.Value).InputUpdate(inputScheduler);
+
+        public bool IsTabActive(Tab tab) => _tabsContainer.ActiveTab.Value == tab;
     }
 }

@@ -2,7 +2,9 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DoubleQoL.QoL.UI.Blueprint {
@@ -13,6 +15,13 @@ namespace DoubleQoL.QoL.UI.Blueprint {
             public bool IsSuccess { get; set; }
             public string Error { get; set; }
             public T Data { get; set; }
+
+            public override string ToString() {
+                return $"IsSuccess: {IsSuccess}, Error: {Error}, Data: {Data}";
+            }
+        }
+
+        internal class EmptyData {
         }
 
         internal class LoginData {
@@ -33,7 +42,7 @@ namespace DoubleQoL.QoL.UI.Blueprint {
             public Dictionary<string, string> Owners { get; set; }
         }
 
-        internal class BlueprintData {
+        internal class BlueprintData : IComparable<BlueprintData> {
 
             [JsonProperty("id")]
             public int Id { get; set; }
@@ -50,16 +59,31 @@ namespace DoubleQoL.QoL.UI.Blueprint {
             [JsonProperty("data")]
             public string Data { get; set; }
 
-            public override string ToString() {
-                return $"ID: {Id}, Owner ID: {Owner_id}, Download Count: {Download_count}, Like Count: {Like_count}, Data: {Data}";
+            public int CompareTo(BlueprintData other) {
+                if (other == null) return 1;
+                if (Id != other.Id) return Id.CompareTo(other.Id);
+                if (Owner_id != other.Owner_id) return Owner_id.CompareTo(other.Owner_id);
+                if (Like_count != other.Like_count) return Like_count.CompareTo(other.Like_count);
+                if (Download_count != other.Download_count) return Download_count.CompareTo(other.Download_count);
+                return string.Compare(Data, other.Data, StringComparison.Ordinal);
             }
 
-            public string ToStringData() {
-                return $"ID:{Id},OwnerID:{Owner_id},DownloadCount:{Download_count},LikeCount:{Like_count}";
+            public string GetRelevantPartRegx() => Regex.Match(Data, @"^[BF]\d+:")?.Value ?? string.Empty;
+
+            public string GetRelevantPartSplit() => Data?.Split(':')?.FirstOrDefault() ?? string.Empty;
+
+            public override string ToString() {
+                return $"BlueprintData{{Id={Id}, Owner_id={Owner_id}, Download_count={Download_count}, Like_count={Like_count}, Data='{GetRelevantPartRegx()}'}}";
             }
         }
 
-        internal class EmptyData {
+        internal class LikeData {
+
+            [JsonProperty("liked")]
+            public bool Liked { get; set; }
+
+            [JsonProperty("unliked")]
+            public string UnLiked { get; set; }
         }
 
         public static async Task<RequestResult<T>> CheckRequestResult<T>(HttpResponseMessage response) {
@@ -102,8 +126,8 @@ namespace DoubleQoL.QoL.UI.Blueprint {
             return await server.PostDataRequest<BlueprintsData>("GetAllBlueprints");
         }
 
-        public static async Task<RequestResult<EmptyData>> LikeBlueprint(this ServerInfo server, string blueprintId) {
-            return await server.PostDataRequest<EmptyData>("like", new Dictionary<string, string> { { "blueprintId", blueprintId } });
+        public static async Task<RequestResult<LikeData>> LikeBlueprint(this ServerInfo server, string blueprintId) {
+            return await server.PostDataRequest<LikeData>("like", new Dictionary<string, string> { { "blueprintId", blueprintId } });
         }
 
         public static async Task<RequestResult<EmptyData>> DownloadBlueprint(this ServerInfo server, string blueprintId) {

@@ -1,5 +1,4 @@
 ﻿using DoubleQoL.Extensions;
-using DoubleQoL.Game.Patcher.Helper;
 using HarmonyLib;
 using Mafi;
 using System;
@@ -90,5 +89,17 @@ namespace DoubleQoL.Game.Patcher {
         protected void AddMethod(Type t, string method, HarmonyMethod postfix, bool allow = false) => AddMethod(t.GetHarmonyMethod(method), postfix, allow);
 
         protected void AddMethod<T>(string method, HarmonyMethod postfix, bool allow = false) => AddMethod(typeof(T), method, postfix, allow);
+
+        internal class MethodToPatch {
+            public HarmonyMethod ToPatch { get; }
+            public HarmonyMethod Prefix { get; }
+            public HarmonyMethod Postfix { get; }
+
+            public MethodToPatch(HarmonyMethod toPatch, HarmonyMethod prefix, HarmonyMethod postfix) {
+                ToPatch = toPatch;
+                Prefix = prefix;
+                Postfix = postfix;
+            }
+        }
     }
 }

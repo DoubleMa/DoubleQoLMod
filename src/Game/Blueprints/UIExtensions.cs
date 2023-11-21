@@ -66,6 +66,15 @@ namespace DoubleQoL.Game.Blueprints {
 
         internal static BtnStyle IconBtnWhite(this GlobalUiStyle globalUiStyle) => globalUiStyle.InvokeGetter<BtnStyle>("IconBtnWhite");
 
+        internal static BtnStyle IconBtnOrange(this GlobalUiStyle globalUiStyle) => globalUiStyle.InvokeGetter<BtnStyle>("IconBtnOrange");
+
+        internal static BtnStyle IconBtnBrightOrange(this GlobalUiStyle globalUiStyle) {
+            TextStyle? text = new TextStyle(globalUiStyle.OrangeText);
+            ColorRgba? normalMaskClr = 0xFDD017FF;
+            ColorRgba? hoveredMaskClr = ColorRgba.White;
+            return new BtnStyle(text, null, null, normalMaskClr, hoveredMaskClr);
+        }
+
         internal static Btn SetDragEnabled(this Btn btn, bool isEnabled) {
             Option<DragDropHandlerMb> m_dragListener = btn.GetField<Option<DragDropHandlerMb>>("m_dragListener");
             if (m_dragListener.HasValue) m_dragListener.Value.enabled = isEnabled;

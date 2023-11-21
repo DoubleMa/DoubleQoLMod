@@ -1,4 +1,5 @@
-﻿using Mafi;
+﻿using DoubleQoL.Global;
+using Mafi;
 using Mafi.Collections;
 using Mafi.Core.Entities.Blueprints;
 using Mafi.Core.Entities.Static.Layout;
@@ -56,7 +57,9 @@ namespace DoubleQoL.Game.Blueprints {
         private readonly Set<Proto> m_lockedProtosCache;
         private readonly Dict<IProto, IProto> m_downgradesMap;
         private readonly StringBuilder m_sb;
-
+        private readonly StackContainer likePanel;
+        private readonly Txt m_likeTxt;
+        private readonly Btn _likeBtn;
         public Option<IBlueprintItem> Item => ((IBlueprintItem)Blueprint.ValueOrNull ?? BlueprintsFolder.ValueOrNull).CreateOption();
 
         public Option<IBlueprint> Blueprint { get; private set; }
@@ -67,6 +70,8 @@ namespace DoubleQoL.Game.Blueprints {
 
         public string Title => m_title.Text;
         private readonly bool IsLocal;
+        private bool test = false;
+        private BlueprintsView.BlueprintItemConditions itemConditions;
 
         public BlueprintView(IUiElement parent, BlueprintsView owner, UnlockedProtosDbForUi unlockedProtosDb, UiBuilder builder, Action<BlueprintView> onClick, Action<BlueprintView> onDoubleClick, bool isLocal) {
             IsLocal = isLocal;
@@ -96,15 +101,20 @@ namespace DoubleQoL.Game.Blueprints {
             m_lockedIconTooltip = builder.AddTooltipFor(centerMiddleOf);
             m_titleBar = builder.NewPanel("TitleBar", m_container).PutToCenterBottomOf(m_container, new Vector2(0.0f, 25f), Offset.LeftRight(5f) + Offset.Bottom(5f));
             m_title = builder.NewTxt(nameof(Title), m_titleBar).SetTextStyle(builder.Style.Global.TextMedium).SetAlignment(TextAnchor.LowerCenter).PutTo(m_titleBar, Offset.Right(20f));
-            m_textEditBtn = builder.NewBtn("Rename", m_titleBar).SetButtonStyle(builder.Style.Global.IconBtnWhite()).SetIcon(Assets.Unity.UserInterface.General.Rename_svg, Offset.LeftRight(3f)).SetEnabled(isLocal).OnClick(new Action(StartRenamingSession)).PutToRightBottomOf(m_titleBar, 18.Vector2()).Hide();
+            m_textEditBtn = builder.NewBtn("Rename", m_titleBar).SetButtonStyle(builder.Style.Global.IconBtnWhite()).SetIcon(Assets.Unity.UserInterface.General.Rename_svg, Offset.LeftRight(3f)).SetEnabled(isLocal).OnClick(StartRenamingSession).PutToRightBottomOf(m_titleBar, 18.Vector2()).Hide();
+            likePanel = builder.NewStackContainer("likePanel").SetStackingDirection(StackContainer.Direction.LeftToRight).SetSizeMode(StackContainer.SizeMode.Dynamic).SetItemSpacing(2f).SetVisibility(false).PutToRightBottomOf(m_container, new Vector2(0.0f, 25f), Offset.Right(2f));
+            m_likeTxt = builder.NewTxt(nameof(m_likeTxt), likePanel).SetTextStyle(builder.Style.Global.TextMedium).SetAlignment(TextAnchor.MiddleRight).AppendTo(likePanel).SetText("0");
+            _likeBtn = builder.NewBtn("Star", likePanel).SetButtonStyle(builder.Style.Global.IconBtnBrightOrange()).SetIcon(IconPaths.General_Star, Offset.LeftRight(3f)).OnClick(() => { m_owner.OnLike(itemConditions); test = !test; }).AppendTo(likePanel, 25f);
             m_txtInput = builder.NewTxtField("SaveNameInput", m_container).SetStyle(builder.Style.Global.LightTxtFieldStyle).SetCharLimit(60).PutToBottomOf(m_container, 25f, Offset.Left(5f) + Offset.Right(25f) + Offset.Bottom(5f)).Hide();
             m_missingProtosIcon = builder.NewIconContainer("MissingProtosWarning").SetIcon(Assets.Unity.UserInterface.General.Warning128_png, builder.Style.Global.OrangeText).PutToRightTopOf(this, 22.Vector2(), Offset.TopRight(5f, 5f));
             m_missingProtosTooltip = builder.AddTooltipFor(m_missingProtosIcon);
             m_downgradeIcon = builder.NewIconContainer("Downgrade").SetIcon(Assets.Unity.UserInterface.General.Downgrade_svg, 12352540).PutToRightTopOf(this, 22.Vector2(), Offset.TopRight(5f, 5f));
             m_downgradeIconTooltip = builder.AddTooltipFor(m_downgradeIcon);
-            m_textSaveBtn = builder.NewBtn("Save", m_txtInput).SetButtonStyle(builder.Style.Global.IconBtnWhite()).SetIcon(Assets.Unity.UserInterface.General.Save_svg, Offset.LeftRight(3f)).OnClick(new Action(commitRenamingSession)).PutToRightOf(m_txtInput, 20f, Offset.Right(-22f)).Hide();
-            Updater = UpdaterBuilder.Start().Build();
-            if (IsLocal) m_container.SetupDragDrop(new Action(onBeginDrag), new Action(onDrag), new Action(onEndDrag));
+            m_textSaveBtn = builder.NewBtn("Save", m_txtInput).SetButtonStyle(builder.Style.Global.IconBtnWhite()).SetIcon(Assets.Unity.UserInterface.General.Save_svg, Offset.LeftRight(3f)).OnClick(commitRenamingSession).PutToRightOf(m_txtInput, 20f, Offset.Right(-22f)).Hide();
+            UpdaterBuilder updaterBuilder = UpdaterBuilder.Start();
+            updaterBuilder.Observe(() => itemConditions?.Data?.Like_count).Do((e) => { if (e != null) m_likeTxt.SetText(e + ""); });
+            Updater = updaterBuilder.Build();
+            if (IsLocal) m_container.SetupDragDrop(onBeginDrag, onDrag, onEndDrag);
         }
 
         public void SetBlueprint(IBlueprint blueprint) {
@@ -113,6 +123,7 @@ namespace DoubleQoL.Game.Blueprints {
             m_container.SetDragEnabled(IsLocal);
             BlueprintsFolder = Option.None;
             Blueprint = blueprint.CreateOption();
+            updateData();
             updateTitle();
             UpdateDesc();
             m_bg.SetIcon(Assets.Unity.UserInterface.General.Blueprint_svg, BG_ICON_COLOR).PutTo(m_container, Offset.All(20f));
@@ -180,6 +191,7 @@ namespace DoubleQoL.Game.Blueprints {
             m_container.SetDragEnabled(IsLocal && !m_isParentFolder);
             Blueprint = Option.None;
             BlueprintsFolder = folder.CreateOption();
+            updateData();
             updateTitle();
             UpdateDesc();
             m_bg.SetIcon(m_isParentFolder ? Assets.Unity.UserInterface.General.NavigateUp_svg : (folder.IsEmpty ? Assets.Unity.UserInterface.General.FolderEmpty_svg : Assets.Unity.UserInterface.General.Folder_svg), BG_ICON_COLOR);
@@ -213,6 +225,26 @@ namespace DoubleQoL.Game.Blueprints {
             }
         }
 
+        private void updateData() {
+            if (!IsLocal && m_owner._server.HasValue) {
+                itemConditions = new BlueprintsView.BlueprintItemConditions(m_owner.BlueprintManager, m_owner._server.Value);
+                itemConditions.SetView(this);
+                m_likeTxt.SetText(itemConditions.Data?.Like_count + "" ?? "0");
+                _likeBtn.SetEnabled(!itemConditions.IsOwned && itemConditions.IsUpload);
+                updateLikeVisibility();
+            }
+            //m_owner._blueprintsLibrary.ConvertItemToString(Item.Value);
+        }
+
+        public string ConvertItemString() {
+            if (!Item.HasValue) return null;
+            return m_owner._blueprintsLibrary.ConvertItemToString(Item.Value);
+        }
+
+        private void updateLikeVisibility() {
+            likePanel.SetVisibility(!IsLocal && itemConditions != null && itemConditions.HasItem && !itemConditions.IsParentFolder && !itemConditions.IsUnknown);
+        }
+
         public void SetHovered(bool isHovered) => m_hoveredBorder.SetVisibility(isHovered);
 
         public void SetIsSelected(bool isSelected) => m_selectedBorder.SetVisibility(isSelected);
@@ -220,7 +252,7 @@ namespace DoubleQoL.Game.Blueprints {
         private void updateTitle() {
             if (m_isInRenamingSession) stopRenamingSession();
             if (Item.HasValue) m_title.SetText(m_isParentFolder ? "" : Item.Value.Name);
-            m_textEditBtn.SetVisibility(!m_isParentFolder && m_isHovered);
+            m_textEditBtn.SetVisibility(!m_isParentFolder && m_isHovered && IsLocal);
             m_titleBar.SetWidth(((float)(m_title.GetPreferedWidth() + 18.0 + 2.0)).Min(WIDTH - 10));
         }
 
@@ -241,8 +273,9 @@ namespace DoubleQoL.Game.Blueprints {
             m_isInRenamingSession = false;
             m_txtInput.Hide();
             m_textSaveBtn.Hide();
-            m_textEditBtn.SetVisibility(m_isHovered);
+            m_textEditBtn.SetVisibility(m_isHovered && IsLocal);
             m_title.Show();
+            updateLikeVisibility();
         }
 
         public void StartRenamingSession() {
@@ -255,6 +288,7 @@ namespace DoubleQoL.Game.Blueprints {
             m_textSaveBtn.Show();
             m_textEditBtn.Hide();
             m_title.Hide();
+            likePanel.SetVisibility(false);
         }
 
         private void commitRenamingSession() {

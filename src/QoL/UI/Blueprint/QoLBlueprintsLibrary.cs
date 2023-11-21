@@ -54,7 +54,7 @@ namespace DoubleQoL.QoL.UI.Blueprint {
             return matchingItems;
         }
 
-        public string ConvertItemString(IBlueprintItem item) {
+        public string ConvertItemToString(IBlueprintItem item) {
             if (item is IBlueprint blueprint) return ConvertToString(blueprint);
             return ConvertToString((IBlueprintsFolder)item);
         }
@@ -63,7 +63,7 @@ namespace DoubleQoL.QoL.UI.Blueprint {
             foreach (var item in items.AsEnumerable()) {
                 if (item.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                     item.Desc.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) {
-                    matchingItems.Add(ConvertItemString(item));
+                    matchingItems.Add(ConvertItemToString(item));
                 }
                 if (item is IBlueprintsFolder subfolder) {
                     SearchInItems(subfolder.Folders, searchTerm, matchingItems);
