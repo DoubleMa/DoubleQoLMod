@@ -14,7 +14,7 @@ namespace DoubleQoL.Game.Patcher {
 
         public LogisticsStatusBarPatcher() : base("LogisticsStatusBar") {
             Typ = Assembly.Load("Mafi.Unity").GetType("Mafi.Unity.InputControl.Levelling.LogisticsStatusBarView");
-            AddMethod(Typ, "Mafi.Unity.UiFramework.IUnityUi.RegisterUi", this.GetHarmonyMethod("MyPostfix"));
+            AddMethod(Typ, "RegisterIntoStatusBar", this.GetHarmonyMethod("MyPostfix"));
         }
 
         private static void MyPostfix(IUnityUi __instance) => GetResolvedInstance<LogisticsStatusBarView>()?.OnClick(__instance.GetField<Action>("m_onClick"));

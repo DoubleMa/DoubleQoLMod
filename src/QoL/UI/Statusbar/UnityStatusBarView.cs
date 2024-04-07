@@ -20,7 +20,7 @@ namespace DoubleQoL.QoL.UI.Statusbar {
 
         private readonly UpointsManager _upointsManager;
 
-        public UnityStatusBarView(IGameLoopEvents gameLoop, StatusBar statusBar, UpointsManager upointsManager) : base(gameLoop, statusBar) {
+        public UnityStatusBarView(IGameLoopEvents gameLoop, StatusBar statusBar, UiBuilder builder, UpointsManager upointsManager) : base(gameLoop, statusBar, builder) {
             _upointsManager = upointsManager;
         }
 
@@ -36,13 +36,14 @@ namespace DoubleQoL.QoL.UI.Statusbar {
         /// <summary>
         /// This method is adapted from code provided in <see cref="Mafi.Unity.InputControl.Population.SettlementSummaryWindow/>.
         /// </summary>
-        protected override void OnRegisteringUi(UiBuilder builder, UpdaterBuilder updaterBuilder) {
-            InfoTileExp = new InfoTileExpended(builder, "Assets/Unity/UserInterface/General/Unity.svg").Build();
+        protected override void RegisterIntoStatusBar(StatusBar statusBar) {
+            InfoTileExp = new InfoTileExpended(_builder, "Assets/Unity/UserInterface/General/Unity.svg").Build();
 
             Dict<UpointsCategoryProto, UpointsEntry> upointsIncomes = new Dict<UpointsCategoryProto, UpointsEntry>();
             Dict<UpointsCategoryProto, UpointsEntry> upointsDemands = new Dict<UpointsCategoryProto, UpointsEntry>();
 
-            updaterBuilder.Observe(() => _upointsManager.Stats.ThisMonthRecords, CompareFixedOrder<UpointsStats.Entry>.Instance).Do(entries => {
+            _updaterBuilder = UpdaterBuilder.Start();
+            _updaterBuilder.Observe(() => _upointsManager.Stats.ThisMonthRecords, CompareFixedOrder<UpointsStats.Entry>.Instance).Do(entries => {
                 StartBatchEdits();
                 foreach (UpointsEntry upointsEntry in upointsIncomes.Values) upointsEntry.Reset();
                 foreach (UpointsEntry upointsEntry in upointsDemands.Values)
@@ -54,14 +55,14 @@ namespace DoubleQoL.QoL.UI.Statusbar {
                     }
                 }
                 foreach (UpointsEntry upointsEntry in upointsIncomes.Values)
-                    if (upointsEntry.Count != 0) InfoTileExp.Append(new IconTextView(builder, "Assets/Unity/UserInterface/General/Unity.svg", upointsEntry.GetName(), upointsEntry.Exchanged.Value.ToFloat(), (e) => e.AddSignAndFormat()).Build());
+                    if (upointsEntry.Count != 0) InfoTileExp.Append(new IconTextView(_builder, "Assets/Unity/UserInterface/General/Unity.svg", upointsEntry.GetName(), upointsEntry.Exchanged.Value.ToFloat(), (e) => e.AddSignAndFormat()).Build());
                 foreach (UpointsEntry upointsEntry in upointsDemands.Values)
-                    if (upointsEntry.Count != 0) InfoTileExp.Append(new IconTextView(builder, "Assets/Unity/UserInterface/General/Unity.svg", upointsEntry.GetName(), upointsEntry.Exchanged.Value.ToFloat(), (e) => e.AddSignAndFormat()).Build());
+                    if (upointsEntry.Count != 0) InfoTileExp.Append(new IconTextView(_builder, "Assets/Unity/UserInterface/General/Unity.svg", upointsEntry.GetName(), upointsEntry.Exchanged.Value.ToFloat(), (e) => e.AddSignAndFormat()).Build());
 
                 FinishBatchOperation();
             });
 
-            updaterBuilder.Observe(() => _upointsManager.Quantity).Observe(() => _upointsManager.PossibleDiffForLastMonth).Do((quantity, lastDiff) => {
+            _updaterBuilder.Observe(() => _upointsManager.Quantity).Observe(() => _upointsManager.PossibleDiffForLastMonth).Do((quantity, lastDiff) => {
                 InfoTileExp.PopInfoTile.SetText(_upointsManager.Quantity.Upoints().FormatWithUnitySuffix().Value);
                 if (lastDiff.IsNegative) {
                     if (quantity.IsZero) InfoTileExp.PopInfoTile.SetCriticalColor();

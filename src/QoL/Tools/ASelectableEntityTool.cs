@@ -21,6 +21,7 @@ namespace DoubleQoL.QoL.Tools {
 
     internal abstract class ASelectableEntityTool : ABaseEntityCursorInputController<IAreaSelectableEntity> {
         protected readonly ToolbarController _toolbarController;
+        protected readonly UiBuilder _builder;
         protected AToolbox Toolbox { get; private set; }
         protected virtual bool IgnoreModifiers => true;
 
@@ -36,14 +37,16 @@ namespace DoubleQoL.QoL.Tools {
             NewInstanceOf<EntityHighlighter> highlighter,
             ToolbarController toolbarController,
             TerrainCursor terrainCursor,
+            UiBuilder builder,
             Lyst<ToolToggleBtn> toolToggleBtns = null) :
             base(protosDb, unlockedProtosDb, shortcutsManager, inputManager, cursorPickingManager, cursorManager, areaSelectionToolFactory, entitiesManager, highlighter, terrainCursor, Option.None, null) {
             _toolbarController = toolbarController;
+            _builder = builder;
             SetToolbox(toolToggleBtns);
         }
 
         protected void SetToolbox(Lyst<ToolToggleBtn> toolToggleBtns) {
-            if (!(toolToggleBtns is null || toolToggleBtns.IsEmpty)) Toolbox = new AToolbox(_toolbarController, toolToggleBtns);
+            if (!(toolToggleBtns is null || toolToggleBtns.IsEmpty)) Toolbox = new AToolbox(_toolbarController, _builder, toolToggleBtns);
         }
 
         public override void Activate() {
@@ -57,7 +60,7 @@ namespace DoubleQoL.QoL.Tools {
         }
 
         public override void RegisterUi(UiBuilder builder) {
-            Toolbox?.RegisterUi(builder);
+            //Toolbox?.RegisterUi(builder);
             base.RegisterUi(builder);
         }
 
@@ -87,16 +90,18 @@ namespace DoubleQoL.QoL.Tools {
             }
         }
 
-        protected class AToolbox : Toolbox, IUnityUi {
+        protected class AToolbox : Toolbox {
             private readonly Lyst<ToolToggleBtn> ToolToggleBtns;
 
-            public AToolbox(ToolbarController toolbar, Lyst<ToolToggleBtn> toolToggleBtns) : base(toolbar) {
+            public AToolbox(ToolbarController toolbar, UiBuilder builder, Lyst<ToolToggleBtn> toolToggleBtns) : base(toolbar, builder) {
                 ToolToggleBtns = toolToggleBtns;
             }
 
             protected override void BuildCustomItems(UiBuilder builder) {
+                StackContainer cont = this.GetField<StackContainer>("m_stackingContainer");
                 ToolToggleBtns.ForEach(b => b.ToggleBtn = AddToggleButton(b.Name, b.Icon, b.OnClick, m => b.KeyBindings, new LocStrFormatted(b.Tooltip)));
-                Toolbar.AddToolbox(this, this.GetWidth());
+                Toolbar.AddToolbox(cont, cont.GetWidth());
+                AddToToolbar();
             }
 
             public void CheckIsOn(bool ignoreModifier = false) => ToolToggleBtns.ForEach(b => b.ToggleBtn?.SetIsOn(b.KeyBindings.IsPrimaryOn(ignoreModifier || b.ForceIgnoreModifier)));

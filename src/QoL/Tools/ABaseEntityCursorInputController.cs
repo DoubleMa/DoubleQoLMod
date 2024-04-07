@@ -14,7 +14,6 @@ using Mafi.Unity.InputControl.AreaTool;
 using Mafi.Unity.InputControl.Cursors;
 using Mafi.Unity.InputControl.Factory;
 using Mafi.Unity.InputControl.Toolbar;
-using Mafi.Unity.UiFramework;
 using Mafi.Unity.UiFramework.Styles;
 using Mafi.Unity.UserInterface;
 using System;
@@ -26,7 +25,7 @@ namespace DoubleQoL.QoL.Tools {
     /// <summary>
     /// This class is adapted from code provided in <see cref="Mafi.Unity.InputControl.Tools.BaseEntityCursorInputController{T}"/>.
     /// </summary>
-    internal abstract class ABaseEntityCursorInputController<T> : IToolbarItemInputController, IUnityInputController, IUnityUi where T : class, IRenderedEntity, IAreaSelectableEntity {
+    internal abstract class ABaseEntityCursorInputController<T> : IToolbarItemController, IUnityInputController, IToolbarItemRegistrar where T : class, IRenderedEntity, IAreaSelectableEntity {
         protected virtual RelTile1i MAX_AREA_EDGE_SIZE => new RelTile1i(300);
         protected readonly ShortcutsManager ShortcutsManager;
         private readonly UnlockedProtosDbForUi m_unlockedProtosDb;
@@ -58,7 +57,7 @@ namespace DoubleQoL.QoL.Tools {
         private bool m_clearSelectionOnDeactivateOnly;
         private readonly Option<Proto> m_lockedByProto;
 
-        public event Action<IToolbarItemInputController> VisibilityChanged;
+        public event Action<IToolbarItemController> VisibilityChanged;
 
         public virtual ControllerConfig Config => ControllerConfig.Tool;
         public bool IsVisible { get; private set; }
@@ -100,6 +99,27 @@ namespace DoubleQoL.QoL.Tools {
             m_areaSelectionTool.SetEdgeSizeLimit(MAX_AREA_EDGE_SIZE);
         }
 
+        protected abstract void RegisterToolbar(ToolbarController controller);
+
+        public void RegisterIntoToolbar(ToolbarController controller) {
+            IsVisible = m_lockedByProto.IsNone || m_unlockedProtosDb.IsUnlocked(m_lockedByProto.Value);
+            if (!IsVisible) m_unlockedProtosDb.OnUnlockedSetChangedForUi += new Action(updateIsVisible);
+            else {
+                Action<IToolbarItemController> visibilityChanged = VisibilityChanged;
+                if (visibilityChanged != null) visibilityChanged(this);
+            }
+            RegisterToolbar(controller);
+        }
+
+        private void updateIsVisible() {
+            bool flag = m_unlockedProtosDb.IsUnlocked(m_lockedByProto.Value);
+            if (IsVisible == flag) return;
+            IsVisible = flag;
+            Action<IToolbarItemController> visibilityChanged = VisibilityChanged;
+            if (visibilityChanged == null) return;
+            visibilityChanged(this);
+        }
+
         protected void InitializeUi(UiBuilder builder, CursorStyle? cursorStyle, AudioInfo successSound, ColorRgba colorHighlight, ColorRgba colorConfirm) {
             m_builder = builder;
             m_successSound = successSound;
@@ -133,7 +153,7 @@ namespace DoubleQoL.QoL.Tools {
             IsVisible = m_lockedByProto.IsNone || m_unlockedProtosDb.IsUnlocked((IProto)m_lockedByProto.Value);
             if (!IsVisible) m_unlockedProtosDb.OnUnlockedSetChangedForUi += new Action(UpdateIsVisible);
             else {
-                Action<IToolbarItemInputController> visibilityChanged = VisibilityChanged;
+                Action<IToolbarItemController> visibilityChanged = VisibilityChanged;
                 if (visibilityChanged == null) return;
                 visibilityChanged(this);
             }
@@ -143,7 +163,7 @@ namespace DoubleQoL.QoL.Tools {
             bool flag = m_unlockedProtosDb.IsUnlocked(m_lockedByProto.Value);
             if (IsVisible == flag) return;
             IsVisible = flag;
-            Action<IToolbarItemInputController> visibilityChanged = VisibilityChanged;
+            Action<IToolbarItemController> visibilityChanged = VisibilityChanged;
             if (visibilityChanged == null) return;
             visibilityChanged(this);
         }

@@ -56,7 +56,8 @@ namespace DoubleQoL.Game.Patcher {
 
             var productDropdown = Builder
                 .NewDropdown("ProductDropdown")
-                .AddOptions(_looseProductProtos.Select(x => x.Id.ToString().Replace("Product_", "")).ToList())
+                //.AddOptions(_looseProductProtos.Select(x => x.Id.ToString().Replace("Product_", "")).ToList())
+                .AddOptions(_looseProductProtos.Select(x => x.Strings.Name.TranslatedString).ToList())
                 .OnValueChange(i => _selectedLooseProductProto = _looseProductProtos.ElementAt(i));
 
             productDropdown.AppendTo(mineTowerContainer, new Vector2(200, 28f), ContainerPosition.MiddleOrCenter);

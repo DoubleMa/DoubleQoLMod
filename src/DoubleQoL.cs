@@ -10,10 +10,12 @@ using System;
 namespace DoubleQoL {
 
     public sealed class DoubleQoL : IMod {
-        public static Version ModVersion = new Version(1, 4, 1);
+        public static Version ModVersion = new Version(1, 5, 0);
         public string Name => "DoubleQoL";
         public int Version => 1;
         public bool IsUiOnly => false;
+
+        public Option<IConfig> ModConfig { get; }
 
         public void Initialize(DependencyResolver resolver, bool gameWasLoaded) {
             Logging.Log.Info($"Current {Name} version v{ModVersion.ToString(3)}");
@@ -37,7 +39,10 @@ namespace DoubleQoL {
             LogisticsStatusBarPatcher.Instance?.Init(resolver);
             PopulationStatusBarPatcher.Instance?.Init(resolver);
             ResearchPopupControllerPatcher.Instance?.Init(resolver);
-            BlueprintsControllerPatcher.Instance?.Init(resolver);
+            //BlueprintsControllerPatcher.Instance?.Init(resolver);
+        }
+
+        public void EarlyInit(DependencyResolver resolver) {
         }
     }
 }

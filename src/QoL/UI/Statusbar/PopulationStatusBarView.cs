@@ -19,7 +19,7 @@ namespace DoubleQoL.QoL.UI.Statusbar {
         protected override bool IsEnabled => PopulationStatusBarPatcher.Instance?.Enabled ?? false;
         private readonly PopsHealthManager _popsHealthManager;
 
-        public PopulationStatusBarView(IGameLoopEvents gameLoop, StatusBar statusBar, PopsHealthManager popsHealthManager) : base(gameLoop, statusBar) {
+        public PopulationStatusBarView(IGameLoopEvents gameLoop, StatusBar statusBar, UiBuilder builder, PopsHealthManager popsHealthManager) : base(gameLoop, statusBar, builder) {
             _popsHealthManager = popsHealthManager;
         }
 
@@ -35,11 +35,12 @@ namespace DoubleQoL.QoL.UI.Statusbar {
         /// <summary>
         /// This method is adapted from code provided in <see cref="Mafi.Unity.InputControl.Population.SettlementSummaryWindow"/>.
         /// </summary>
-        protected override void OnRegisteringUi(UiBuilder builder, UpdaterBuilder updaterBuilder) {
-            InfoTileExp = new InfoTileExpended(builder, "Assets/Unity/UserInterface/General/Health.svg").Build();
+        protected override void RegisterIntoStatusBar(StatusBar statusBar) {
+            InfoTileExp = new InfoTileExpended(_builder, "Assets/Unity/UserInterface/General/Health.svg").Build();
             Dict<HealthPointsCategoryProto, HealthPointsEntry> healthIncomes = new Dict<HealthPointsCategoryProto, HealthPointsEntry>();
             Dict<HealthPointsCategoryProto, HealthPointsEntry> healthDemands = new Dict<HealthPointsCategoryProto, HealthPointsEntry>();
-            updaterBuilder.Observe(() => _popsHealthManager.HealthStats.LastMonthRecords, CompareFixedOrder<HealthStatistics.Entry>.Instance).Do(entries => {
+            _updaterBuilder = UpdaterBuilder.Start();
+            _updaterBuilder.Observe(() => _popsHealthManager.HealthStats.LastMonthRecords, CompareFixedOrder<HealthStatistics.Entry>.Instance).Do(entries => {
                 StartBatchEdits();
                 foreach (HealthPointsEntry healthPointsEntry in healthIncomes.Values) healthPointsEntry.Reset();
                 foreach (HealthPointsEntry healthPointsEntry in healthDemands.Values) healthPointsEntry.Reset();
@@ -48,18 +49,18 @@ namespace DoubleQoL.QoL.UI.Statusbar {
                     else healthIncomes.GetOrAdd(entry.Category, cat => new HealthPointsEntry(cat)).Add(entry);
                 }
                 foreach (HealthPointsEntry healthPointsEntry in healthIncomes.Values)
-                    if (healthPointsEntry.Count != 0) InfoTileExp.Append(new IconTextView(builder, "Assets/Unity/UserInterface/General/Health.svg", healthPointsEntry.GetName(), healthPointsEntry.Exchanged.ToIntPercentRounded()).Build());
+                    if (healthPointsEntry.Count != 0) InfoTileExp.Append(new IconTextView(_builder, "Assets/Unity/UserInterface/General/Health.svg", healthPointsEntry.GetName(), healthPointsEntry.Exchanged.ToIntPercentRounded()).Build());
                 foreach (HealthPointsEntry healthPointsEntry in healthDemands.Values)
-                    if (healthPointsEntry.Count != 0) InfoTileExp.Append(new IconTextView(builder, "Assets/Unity/UserInterface/General/Health.svg", healthPointsEntry.GetName(), healthPointsEntry.Exchanged.ToIntPercentRounded()).Build());
+                    if (healthPointsEntry.Count != 0) InfoTileExp.Append(new IconTextView(_builder, "Assets/Unity/UserInterface/General/Health.svg", healthPointsEntry.GetName(), healthPointsEntry.Exchanged.ToIntPercentRounded()).Build());
 
                 FinishBatchOperation();
             });
 
-            TextWithIcon healthSubText = new TextWithIcon(builder, 15);
-            healthSubText.SetTextStyle(builder.Style.Global.TextMediumBold).SetIcon("Assets/Unity/UserInterface/General/PopulationSmall.svg");
+            TextWithIcon healthSubText = new TextWithIcon(_builder, 15);
+            healthSubText.SetTextStyle(_builder.Style.Global.TextMediumBold).SetIcon("Assets/Unity/UserInterface/General/PopulationSmall.svg");
             InfoTileExp.PopInfoTile.AddCustomSubTextWithIcon(healthSubText);
 
-            updaterBuilder.Observe(() => _popsHealthManager.HealthStats.HealthLastMonth).Observe(() => _popsHealthManager.BirthStats.BirthRateLastMonth).Do((popHealth, birthRate) => {
+            _updaterBuilder.Observe(() => _popsHealthManager.HealthStats.HealthLastMonth).Observe(() => _popsHealthManager.BirthStats.BirthRateLastMonth).Do((popHealth, birthRate) => {
                 InfoTileExp.PopInfoTile.SetText(popHealth.ToIntPercentRounded().ToString());
                 if (popHealth <= PopsHealthManager.MIN_HEALTH - 10.Percent()) InfoTileExp.PopInfoTile.SetCriticalColor();
                 else if (popHealth <= PopsHealthManager.MIN_HEALTH) InfoTileExp.PopInfoTile.SetWarningColor();

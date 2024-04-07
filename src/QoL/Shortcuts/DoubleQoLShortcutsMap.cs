@@ -44,20 +44,20 @@ namespace DoubleQoL.QoL.Shortcuts {
         public KeyBindings DevKeyKb { get; set; }
 
         private DoubleQoLShortcutsMap() : base() {
-            IncSpeedKB = KeyBindings.FromKey(KbCategory.Speed, ConfigManager.Instance.KeyCodes_incSpeed.Value);
-            DecSpeedKb = KeyBindings.FromKey(KbCategory.Speed, ConfigManager.Instance.KeyCodes_decSpeed.Value);
-            FreeCameraKb = KeyBindings.FromKey(KbCategory.Camera, ConfigManager.Instance.KeyCodes_freeCamera.Value);
-            DisableFogKb = KeyBindings.FromKey(KbCategory.Camera, ConfigManager.Instance.KeyCodes_fog.Value);
-            VehicleToolKb = KeyBindings.FromKey(KbCategory.Tools, ConfigManager.Instance.KeyCodes_vehicletool.Value);
+            IncSpeedKB = KeyBindings.FromKey(KbCategory.Speed, ShortcutMode.Game, ConfigManager.Instance.KeyCodes_incSpeed.Value);
+            DecSpeedKb = KeyBindings.FromKey(KbCategory.Speed, ShortcutMode.Game, ConfigManager.Instance.KeyCodes_decSpeed.Value);
+            FreeCameraKb = KeyBindings.FromKey(KbCategory.Camera, ShortcutMode.Game, ConfigManager.Instance.KeyCodes_freeCamera.Value);
+            DisableFogKb = KeyBindings.FromKey(KbCategory.Camera, ShortcutMode.Game, ConfigManager.Instance.KeyCodes_fog.Value);
+            VehicleToolKb = KeyBindings.FromKey(KbCategory.Tools, ShortcutMode.Game, ConfigManager.Instance.KeyCodes_vehicletool.Value);
 
-            VehicleTrucksToolKb = KeyBindings.FromKey(KbCategory.Tools, KeyCode.Q);
-            VehicleExcavatorToolKb = KeyBindings.FromKey(KbCategory.Tools, KeyCode.E);
-            VehicleTankToolKb = KeyBindings.FromKey(KbCategory.Tools, KeyCode.R);
-            VehicleDumpToolKb = KeyBindings.FromKey(KbCategory.Tools, KeyCode.F);
-            RecoverVehicleToolKb = KeyBindings.FromPrimaryKeys(KbCategory.Tools, KeyCode.LeftShift, KeyCode.E);
-            ClearTruckCargoToolKb = KeyBindings.FromPrimaryKeys(KbCategory.Tools, KeyCode.LeftShift, KeyCode.R);
+            VehicleTrucksToolKb = KeyBindings.FromKey(KbCategory.Tools, ShortcutMode.Game, KeyCode.Q);
+            VehicleExcavatorToolKb = KeyBindings.FromKey(KbCategory.Tools, ShortcutMode.Game, KeyCode.E);
+            VehicleTankToolKb = KeyBindings.FromKey(KbCategory.Tools, ShortcutMode.Game, KeyCode.R);
+            VehicleDumpToolKb = KeyBindings.FromKey(KbCategory.Tools, ShortcutMode.Game, KeyCode.F);
+            RecoverVehicleToolKb = KeyBindings.FromPrimaryKeys(KbCategory.Tools, ShortcutMode.Game, KeyCode.LeftShift, KeyCode.E);
+            ClearTruckCargoToolKb = KeyBindings.FromPrimaryKeys(KbCategory.Tools, ShortcutMode.Game, KeyCode.LeftShift, KeyCode.R);
 
-            DevKeyKb = KeyBindings.FromKey(KbCategory.General, ConfigManager.Instance.KeyCodes_Dev.Value);
+            DevKeyKb = KeyBindings.FromKey(KbCategory.General, ShortcutMode.Game, ConfigManager.Instance.KeyCodes_Dev.Value);
         }
     }
 }

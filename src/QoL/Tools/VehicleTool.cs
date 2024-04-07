@@ -61,8 +61,9 @@ namespace DoubleQoL.QoL.Tools {
             NewInstanceOf<EntityHighlighter> highlighter,
             ToolbarController toolbarController,
             TerrainCursor terrainCursor,
-            IVehiclesManager vehiclesManager) :
-            base(protosDb, unlockedProtosDb, shortcutsManager, inputManager, cursorPickingManager, cursorManager, areaSelectionToolFactory, entitiesManager, highlighter, toolbarController, terrainCursor) {
+            IVehiclesManager vehiclesManager,
+            UiBuilder builder) :
+            base(protosDb, unlockedProtosDb, shortcutsManager, inputManager, cursorPickingManager, cursorManager, areaSelectionToolFactory, entitiesManager, highlighter, toolbarController, terrainCursor, builder) {
             _vehiclesManager = vehiclesManager;
             Vehicles = new Lyst<Vehicle>();
             MovedVehicles = new Lyst<Vehicle>();
@@ -188,6 +189,15 @@ namespace DoubleQoL.QoL.Tools {
                     .AddTooltip(new LocStrFormatted("Select One or multiple vehicles to move them"));
                 InitializeUi(builder, new Mafi.Unity.UiFramework.Styles.CursorStyle(nameof(Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg), Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg, new UnityEngine.Vector2(14f, 14f)), builder.Audio.ButtonClick, COLOR_HIGHLIGHT, COLOR_HIGHLIGHT_CONFIRM);
                 base.RegisterUi(builder);
+            }
+        }
+
+        protected override void RegisterToolbar(ToolbarController controller) {
+            if (ConfigManager.Instance.QoLs_vehicletool.Value) {
+                _toolbarController
+                    .AddLeftMenuButton(Loc.Str("VehicleTool", "Vehicle Tool", "title of a tool that is used to select and move vehicles").TranslatedString, this, Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg, 80f, m => DoubleQoLShortcutsMap.Instance.VehicleToolKb)
+                    .AddTooltip(new LocStrFormatted("Select One or multiple vehicles to move them"));
+                InitializeUi(_builder, new Mafi.Unity.UiFramework.Styles.CursorStyle(nameof(Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg), Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg, new UnityEngine.Vector2(14f, 14f)), _builder.Audio.ButtonClick, COLOR_HIGHLIGHT, COLOR_HIGHLIGHT_CONFIRM);
             }
         }
 

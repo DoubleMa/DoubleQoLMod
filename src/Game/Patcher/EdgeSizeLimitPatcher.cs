@@ -36,6 +36,6 @@ namespace DoubleQoL.Game.Patcher {
             if (relTile2i.Y > MaxSize) maxCoord = maxCoord.SetY(minCoord.Y + MaxSize);
         }
 
-        private static void MyEdgePostfix(AreaSelectionTool __instance) => __instance.SetField("m_maxEdgeSize", new RelTile1i(MaxSize));
+        private static void MyEdgePostfix(AreaSelectionTool __instance) => __instance.InvokeSetter("MaxEdgeSize", new RelTile1i(MaxSize));
     }
 }

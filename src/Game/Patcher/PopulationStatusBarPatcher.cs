@@ -14,7 +14,7 @@ namespace DoubleQoL.Game.Patcher {
 
         public PopulationStatusBarPatcher() : base("PopulationStatusBar") {
             Typ = Assembly.Load("Mafi.Unity").GetType("Mafi.Unity.InputControl.Levelling.PopulationStatusBarView");
-            AddMethod(Typ, "Mafi.Unity.UiFramework.IUnityUi.RegisterUi", this.GetHarmonyMethod("MyPostfix"));
+            AddMethod(Typ, "RegisterIntoStatusBar", this.GetHarmonyMethod("MyPostfix"));
         }
 
         private static void MyPostfix(IUnityUi __instance) {

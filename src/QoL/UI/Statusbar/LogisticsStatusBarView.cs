@@ -25,7 +25,7 @@ namespace DoubleQoL.QoL.UI.Statusbar {
         private readonly EntitiesManager _entitiesManager;
         private readonly VehicleBuffersRegistry _vehicleBuffersRegistry;
 
-        public LogisticsStatusBarView(IGameLoopEvents gameLoop, StatusBar statusBar, EntitiesManager entitiesManager, VehiclesManager vehiclesManager, VehicleBuffersRegistry vehicleBuffersRegistry) : base(gameLoop, statusBar) {
+        public LogisticsStatusBarView(IGameLoopEvents gameLoop, StatusBar statusBar, UiBuilder builder, EntitiesManager entitiesManager, VehiclesManager vehiclesManager, VehicleBuffersRegistry vehicleBuffersRegistry) : base(gameLoop, statusBar, builder) {
             _vehiclesManager = vehiclesManager;
             _entitiesManager = entitiesManager;
             _vehicleBuffersRegistry = vehicleBuffersRegistry;
@@ -34,22 +34,22 @@ namespace DoubleQoL.QoL.UI.Statusbar {
         /// <summary>
         /// This method is adapted from code provided in <see cref="Mafi.Unity.InputControl.Levelling.LogisticsStatusBarView"/>.
         /// </summary>
-        protected override void OnRegisteringUi(UiBuilder builder, UpdaterBuilder updaterBuilder) {
-            VehicleDetailedStatsView detailedStatsView = new VehicleDetailedStatsView(_entitiesManager, _vehiclesManager, builder, VehicleExtension.GetVehicleIconPath(Ids.Vehicles.TruckT2.Id))
+        protected override void RegisterIntoStatusBar(StatusBar statusBar) {
+            VehicleDetailedStatsView detailedStatsView = new VehicleDetailedStatsView(_entitiesManager, _vehiclesManager, _builder, VehicleExtension.GetVehicleIconPath(Ids.Vehicles.TruckT2.Id))
                 .SetProtoIds(ConfigManager.Instance.DefaultState_trucktoshow)
                 .Build();
-            VehicleDetailedStatsView detailedStatsView2 = new VehicleDetailedStatsView(_entitiesManager, _vehiclesManager, builder, VehicleExtension.GetVehicleIconPath(Ids.Vehicles.ExcavatorT3))
+            VehicleDetailedStatsView detailedStatsView2 = new VehicleDetailedStatsView(_entitiesManager, _vehiclesManager, _builder, VehicleExtension.GetVehicleIconPath(Ids.Vehicles.ExcavatorT3))
                 .SetProtoIds(ConfigManager.Instance.DefaultState_nontrucktoshow)
                 .Build();
-            InfoTileExp = new InfoTileExpended(builder, "Assets/Unity/UserInterface/Toolbar/Vehicles.svg")
+            InfoTileExp = new InfoTileExpended(_builder, "Assets/Unity/UserInterface/Toolbar/Vehicles.svg")
                .Build()
                .AddTooltip(Tr.LogisticsStatus__Tooltip.AsFormatted.Value)
                .MakeAsSingleText()
                .Append(detailedStatsView, detailedStatsView.SizeExtended())
                .Append(detailedStatsView2, detailedStatsView2.SizeExtended());
-
-            updaterBuilder.DoOnSyncPeriodically(() => { detailedStatsView.ToObserve(); detailedStatsView2.ToObserve(); }, Duration.FromTicks(2));
-            updaterBuilder.Observe(() => _vehicleBuffersRegistry.GetBalancingLatency()).Do(latency => {
+            _updaterBuilder = UpdaterBuilder.Start();
+            _updaterBuilder.DoOnSyncPeriodically(() => { detailedStatsView.ToObserve(); detailedStatsView2.ToObserve(); }, Duration.FromTicks(2));
+            _updaterBuilder.Observe(() => _vehicleBuffersRegistry.GetBalancingLatency()).Do(latency => {
                 if (latency > Duration.FromSec(400)) InfoTileExp.PopInfoTile.SetCriticalColor().SetText(Tr.LogisticsStatus__ExtremelyBusy);
                 else if (latency > Duration.FromSec(140)) InfoTileExp.PopInfoTile.SetText(Tr.LogisticsStatus__VeryBusy).SetCriticalColor();
                 else if (latency > Duration.FromSec(40)) InfoTileExp.PopInfoTile.SetText(Tr.LogisticsStatus__Busy).SetWarningColor();
