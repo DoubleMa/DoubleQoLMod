@@ -24,6 +24,9 @@
 		<PackageReference ExcludeAssets="system" />
 	</ItemDefinitionGroup>
 	<ItemGroup>
+	  <None Remove="Game\Patcher\ProductsDisplaysPatcher.cs~RF2e40fb42.TMP" />
+	</ItemGroup>
+	<ItemGroup>
 	  <PackageReference Include="Lib.Harmony" Version="2.2.2" />
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>

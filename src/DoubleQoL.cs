@@ -10,7 +10,7 @@ using System;
 namespace DoubleQoL {
 
     public sealed class DoubleQoL : IMod {
-        public static Version ModVersion = new Version(1, 5, 0);
+        public static Version ModVersion = new Version(1, 5, 1);
         public string Name => "DoubleQoL";
         public int Version => 1;
         public bool IsUiOnly => false;
@@ -39,6 +39,7 @@ namespace DoubleQoL {
             LogisticsStatusBarPatcher.Instance?.Init(resolver);
             PopulationStatusBarPatcher.Instance?.Init(resolver);
             ResearchPopupControllerPatcher.Instance?.Init(resolver);
+            ProductsDisplaysPatcher.Instance?.Init(resolver);
             //BlueprintsControllerPatcher.Instance?.Init(resolver);
         }
 
