@@ -10,6 +10,7 @@ using Mafi.Core.Entities.Static.Layout;
 using Mafi.Core.Mods;
 using Mafi.Core.Prototypes;
 using Mafi.Localization;
+using System;
 
 namespace DoubleQoL.Game.Prototypes {
 
@@ -32,26 +33,28 @@ namespace DoubleQoL.Game.Prototypes {
             try {
                 StaticEntityProto.ID mineTowerID = Ids.Buildings.MineTower;
                 registrator.PrototypesDb.RemoveOrThrow(mineTowerID);
-                registrator.MineTowerProtoBuilder
-                    .Start("Mine control tower+", mineTowerID)
-                    .Description("Enables assignment of excavators and trucks to designated mine areas. Only designated mining areas within the influence of the tower can be mined.")
-                    .SetCost(Costs.Buildings.MineTower)
-                    .ShowTerrainDesignatorsOnCreation()
-                    .SetLayout("(3)(3)(8)(8)", "(3)(8)(9)(9)", "(3)(8)(9)(9)", "(3)(3)(8)(8)")
-                    .SetMineArea(new MineTowerProto.MineArea(new RelTile2i(5, 2), new RelTile2i(60, 60), new RelTile1i(ConfigManager.Instance.DefaultState_towerarea.Value * 128)))
-                    .SetCategories(Ids.ToolbarCategories.BuildingsForVehicles)
-                    .SetPrefabPath("Assets/Base/Buildings/MineTower.prefab")
-                    .BuildAndAdd()
-                    .AddParam(new DrawArrowWileBuildingProtoParam(4f));
+                var test = registrator.MineTowerProtoBuilder
+                     .Start("Mine control tower+", mineTowerID)
+                     .Description("Enables assignment of excavators and trucks to designated mine areas. Only designated mining areas within the influence of the tower can be mined.")
+                     .SetCost(Costs.Buildings.MineTower)
+                     .ShowTerrainDesignatorsOnCreation()
+                     .SetLayout("(3)(3)(8)(8)", "(3)(8)(9)(9)", "(3)(8)(9)(9)", "(3)(3)(8)(8)")
+                     .SetMineArea(new MineTowerProto.MineArea(new RelTile2i(5, 2), new RelTile2i(60, 60), new RelTile1i(ConfigManager.Instance.DefaultState_towerarea.Value * 128)))
+                     .SetCategories(Ids.ToolbarCategories.BuildingsForVehicles)
+                     .SetPrefabPath("Assets/Base/Buildings/MineTower.prefab")
+                     .BuildAndAdd()
+                     .AddParam(new DrawArrowWileBuildingProtoParam(4f));
             }
-            catch { }
+            catch (Exception ex) {
+                Logging.Log.Error(ex.Message);
+            }
         }
 
         private void TryChangeForestryTowerArea() {
             try {
                 StaticEntityProto.ID forestryTowerID = Ids.Buildings.ForestryTower;
                 registrator.PrototypesDb.RemoveOrThrow(forestryTowerID);
-                registrator.PrototypesDb
+                var test = registrator.PrototypesDb
                     .Add(new ForestryTowerProto(Ids.Buildings.ForestryTower, Proto.CreateStr((Proto.ID)Ids.Buildings.ForestryTower, "Forestry control tower+",
                     Loc.Str(Ids.Buildings.ForestryTower.Value + "__desc",
                         "Enables assignment of tree planters and tree harvesters to designated forestry areas. Only designated forestry areas within the influence of the tower can be used.",
@@ -64,7 +67,9 @@ namespace DoubleQoL.Game.Prototypes {
                     categories: new ImmutableArray<ToolbarCategoryProto>?(registrator.GetCategoriesProtos(Ids.ToolbarCategories.BuildingsForVehicles)), useInstancedRendering: true)))
                     .AddParam(new DrawArrowWileBuildingProtoParam(4f));
             }
-            catch { }
+            catch (Exception ex) {
+                Logging.Log.Error(ex.Message);
+            }
         }
     }
 }
