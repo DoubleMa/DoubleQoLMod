@@ -14,11 +14,12 @@ A mod for [Captain of Industry game](https://www.captain-of-industry.com/).
 
     <img src="./images/StatusBarDetails.png" alt="StatusBarDetails" width="auto" height="300">
 
-- Add a field in the MineTower view where you can prioritize a specific resource for all excavators
-- Add a btn in the vehicle view where you can cancel all jobs
+- Add a field to the MineTower view where you can prioritize a specific resource for all excavators
+- Add a btn to the vehicle view where you can cancel all jobs
+- Add btns to any vehicle assigner view allowing you to upgrade all assigned vehicles. (Right-click to reveal the buttons)
 
     
-    <img src="./images/MineTowerView.png" alt="MineTowerView" width="auto" height="400">    <img src="./images/VehicleView.png" alt="VehicleView" width="auto" height="400">
+    <img src="./images/MineTowerView.png" alt="MineTowerView" width="auto" height="400">    <img src="./images/VehicleView.png" alt="VehicleView" width="auto" height="400">  <img src="./images/VehicleUpgrade.png" alt="VehicleUpgrade" width="auto" height="400">
 
 - Change the area size of terrain designations, selection tools and towers (MineTower and ForestryTower)
 
