@@ -6,8 +6,7 @@ using Mafi.Unity.UserInterface;
 using System;
 using UnityEngine;
 
-namespace DoubleQoL.QoL.UI.Statusbar.Component
-{
+namespace DoubleQoL.QoL.UI.Statusbar.Component {
 
     internal class InfoTileExpended : IFixedSizeUiElement {
         private readonly StackContainer _container;

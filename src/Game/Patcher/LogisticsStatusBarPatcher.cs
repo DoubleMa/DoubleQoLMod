@@ -5,8 +5,7 @@ using Mafi.Unity.UiFramework;
 using System;
 using System.Reflection;
 
-namespace DoubleQoL.Game.Patcher
-{
+namespace DoubleQoL.Game.Patcher {
 
     internal class LogisticsStatusBarPatcher : APatcher<LogisticsStatusBarPatcher> {
         public override bool DefaultState => true;

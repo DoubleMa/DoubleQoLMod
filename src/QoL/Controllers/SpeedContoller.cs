@@ -17,8 +17,7 @@ using Mafi.Unity.UserInterface.Style;
 using System;
 using UnityEngine;
 
-namespace DoubleQoL.QoL.Controllers
-{
+namespace DoubleQoL.QoL.Controllers {
 
     [GlobalDependency(RegistrationMode.AsAllInterfaces, false)]
     internal class GameSpeedUi2 : AController {

@@ -8,8 +8,7 @@ using Mafi.Unity.UserInterface;
 using System;
 using UnityEngine;
 
-namespace DoubleQoL.QoL.UI.Statusbar
-{
+namespace DoubleQoL.QoL.UI.Statusbar {
 
     internal abstract class AStatusBarView : IStatusBarItem {
         private readonly IGameLoopEvents _gameLoop;

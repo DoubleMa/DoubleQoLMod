@@ -8,8 +8,7 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
-namespace DoubleQoL.Game.Patcher
-{
+namespace DoubleQoL.Game.Patcher {
 
     internal class ProductsDisplaysPatcher : APatcher<ProductsDisplaysPatcher> {
         public override bool DefaultState => true;

@@ -8,8 +8,7 @@ using Mafi.Unity.Camera;
 using Mafi.Unity.InputControl;
 using Mafi.Unity.InputControl.TopStatusBar;
 
-namespace DoubleQoL.QoL.Controllers
-{
+namespace DoubleQoL.QoL.Controllers {
 
     [GlobalDependency(RegistrationMode.AsAllInterfaces, false)]
     internal class CameraController : AToggleController {

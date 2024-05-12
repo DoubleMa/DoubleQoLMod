@@ -6,8 +6,7 @@ using Mafi.Core.GameLoop;
 using Mafi.Unity.InputControl;
 using Mafi.Unity.InputControl.TopStatusBar;
 
-namespace DoubleQoL.QoL.Controllers
-{
+namespace DoubleQoL.QoL.Controllers {
 
     [GlobalDependency(RegistrationMode.AsAllInterfaces, true)]
     internal class DevController : AToggleController {

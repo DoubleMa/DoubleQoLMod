@@ -12,8 +12,7 @@ using Mafi.Core.Prototypes;
 using Mafi.Localization;
 using System;
 
-namespace DoubleQoL.Game.Prototypes
-{
+namespace DoubleQoL.Game.Prototypes {
 
     public class PrototypeHelper {
         public static readonly PrototypeHelper Instance = new PrototypeHelper();

@@ -3,8 +3,7 @@ using DoubleQoL.QoL.UI.Statusbar;
 using DoubleQoL.XML.config;
 using Mafi.Unity.InputControl.Toolbar.MenuPopup;
 
-namespace DoubleQoL.Game.Patcher
-{
+namespace DoubleQoL.Game.Patcher {
 
     internal class ResearchPopupControllerPatcher : APatcher<ResearchPopupControllerPatcher> {
         public override bool DefaultState => true;

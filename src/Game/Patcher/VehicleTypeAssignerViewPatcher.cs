@@ -62,8 +62,6 @@ namespace DoubleQoL.Game.Patcher {
                     .SetText(buttonLabel)
                     .SetButtonStyle(builder.Style.Global.PrimaryBtn.Extend(null, null, ColorRgba.Green).ExtendText(ColorRgba.White, FontStyle.Bold, 18, true))
                     .OnClick(() => {
-                        Logging.Log.Info($"Upgrading to {version.Id}");
-                        Logging.Log.Info($"Upgrading to {_inputScheduler}");
                         foreach (var v in m_assignedVehicles) _inputScheduler.ScheduleInputCmd(new ReplaceVehicleCmd(v.Id, version.Id));
                     })
                     .PutToLeftMiddleOf(upgradePanel, btnSize, Offset.Left(buttonOffset));
@@ -78,7 +76,6 @@ namespace DoubleQoL.Game.Patcher {
                     .SetText(eqLabel)
                     .SetButtonStyle(builder.Style.Global.PrimaryBtn.Extend(null, null, isHydrogen ? ColorRgba.White : ColorRgba.Red).ExtendText(isHydrogen ? ColorRgba.Black : ColorRgba.Gold, FontStyle.Bold, 18, true))
                     .OnClick(() => {
-                        Logging.Log.Info($"Switching to {equivalentVersion.Id}");
                         foreach (var v in m_assignedVehicles) _inputScheduler.ScheduleInputCmd(new ReplaceVehicleCmd(v.Id, equivalentVersion.Id));
                     })
                     .PutToLeftMiddleOf(upgradePanel, btnSize, Offset.Left(buttonOffset));
@@ -108,8 +105,10 @@ namespace DoubleQoL.Game.Patcher {
                 int otherTierNumber = int.Parse(otherMatch.Groups[2].Value.TrimStart('T'));
                 string otherPostfix = otherMatch.Groups[3].Value;
                 string otherSuffix = otherMatch.Groups[4].Value;
-                if (otherPrefix == basePrefix && otherPostfix == basePostfix && otherSuffix == suffix && otherTierNumber > currentTierNumber && unlockedProtosDb.IsUnlocked(proto)) upgradableVersions.Add(proto);
-                if (otherPrefix == basePrefix && otherPostfix == basePostfix && otherTierNumber == currentTierNumber && otherSuffix != suffix && unlockedProtosDb.IsUnlocked(proto)) equivalentVersion = proto;
+                if (otherPrefix == basePrefix && otherPostfix == basePostfix && unlockedProtosDb.IsUnlocked(proto)) {
+                    if (otherSuffix == suffix && otherTierNumber > currentTierNumber) upgradableVersions.Add(proto);
+                    if (otherSuffix != suffix && otherTierNumber == currentTierNumber) equivalentVersion = proto;
+                }
             }
             return (upgradableVersions, equivalentVersion);
         }

@@ -6,8 +6,7 @@ using Mafi.Unity.InputControl.AreaTool;
 using Mafi.Unity.Mine;
 using System;
 
-namespace DoubleQoL.Game.Patcher
-{
+namespace DoubleQoL.Game.Patcher {
 
     internal class EdgeSizeLimitPatcher : APatcher<EdgeSizeLimitPatcher> {
         public override bool DefaultState => true;
