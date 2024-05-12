@@ -1,12 +1,13 @@
-﻿using DoubleQoL.Config;
-using DoubleQoL.Extensions;
+﻿using DoubleQoL.Extensions;
+using DoubleQoL.XML.config;
 using Mafi;
 using Mafi.Core.Terrain.Designation;
 using Mafi.Unity.InputControl.AreaTool;
 using Mafi.Unity.Mine;
 using System;
 
-namespace DoubleQoL.Game.Patcher {
+namespace DoubleQoL.Game.Patcher
+{
 
     internal class EdgeSizeLimitPatcher : APatcher<EdgeSizeLimitPatcher> {
         public override bool DefaultState => true;
@@ -16,8 +17,8 @@ namespace DoubleQoL.Game.Patcher {
         private static readonly int DEFAULT_MAX_AREA_SIZE_REMOVE = 191;
 
         public EdgeSizeLimitPatcher() : base("EdgeSizeLimit") {
-            AddMethod<TerrainDesignationsManager>("GetCanonicalDesignationRange", this.GetHarmonyMethod("MyPostfix"));
-            AddMethod(typeof(AreaSelectionTool), "SetEdgeSizeLimit", this.GetHarmonyMethod("MyEdgePostfix"));
+            AddMethod<TerrainDesignationsManager>("GetCanonicalDesignationRange", this.GetHarmonyMethod(nameof(MyPostfix)));
+            AddMethod(typeof(AreaSelectionTool), "SetEdgeSizeLimit", this.GetHarmonyMethod(nameof(MyEdgePostfix)));
         }
 
         protected override void Patch(bool enable = false) {

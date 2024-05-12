@@ -1,5 +1,5 @@
 ﻿using DoubleQoL.Extensions;
-using DoubleQoL.Game.Blueprints;
+using DoubleQoL.Game.UI;
 using Mafi.Unity;
 using Mafi.Unity.InputControl.RecipesBook;
 using Mafi.Unity.UiFramework;
@@ -8,7 +8,8 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
-namespace DoubleQoL.Game.Patcher {
+namespace DoubleQoL.Game.Patcher
+{
 
     internal class ProductsDisplaysPatcher : APatcher<ProductsDisplaysPatcher> {
         public override bool DefaultState => true;
@@ -19,9 +20,9 @@ namespace DoubleQoL.Game.Patcher {
         public ProductsDisplaysPatcher() : base("ProductsDisplaysPatcher") {
             Typ = Assembly.Load("Mafi.Unity").GetType("Mafi.Unity.InputControl.TopStatusBar.ProductsDisplays.ProductsDisplaysController");
             Type Typ2 = Assembly.Load("Mafi.Unity").GetType("Mafi.Unity.InputControl.TopStatusBar.ProductsDisplays.ProductDisplayPanel");
-            AddMethod(Typ, "RegisterUi", this.GetHarmonyMethod("MyPostfix"));
-            AddMethod(Typ2, "BuildUi", this.GetHarmonyMethod("MyPostfix2"), true);
-            AddMethod(Typ2, "refreshProducts", this.GetHarmonyMethod("MyPostfix2"), true);
+            AddMethod(Typ, "RegisterUi", this.GetHarmonyMethod(nameof(MyPostfix)));
+            AddMethod(Typ2, "BuildUi", this.GetHarmonyMethod(nameof(MyPostfix2)), true);
+            AddMethod(Typ2, "refreshProducts", this.GetHarmonyMethod(nameof(MyPostfix2)), true);
         }
 
         private static void MyPostfix(IUnityUi __instance, UiBuilder builder) {

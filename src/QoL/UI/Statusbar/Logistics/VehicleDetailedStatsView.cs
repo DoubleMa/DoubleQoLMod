@@ -1,7 +1,7 @@
-﻿using DoubleQoL.Config;
-using DoubleQoL.Extensions;
+﻿using DoubleQoL.Extensions;
 using DoubleQoL.Global;
 using DoubleQoL.QoL.UI.Statusbar.Component;
+using DoubleQoL.XML;
 using Mafi.Base;
 using Mafi.Collections;
 using Mafi.Core.Entities;
@@ -33,14 +33,21 @@ namespace DoubleQoL.QoL.UI.Statusbar.Logistics {
         private readonly Dict<string, Proto.ID> StringOfIds = new Dict<string, Proto.ID> {
             {"TruckT1",   Ids.Vehicles.TruckT1.Id},
             {"TruckT2",   Ids.Vehicles.TruckT2.Id},
+            {"TruckT2H",   Ids.Vehicles.TruckT2H.Id},
             {"TruckT3Loose",   Ids.Vehicles.TruckT3Loose.Id},
+            {"TruckT3LooseH",   Ids.Vehicles.TruckT3LooseH.Id},
             {"TruckT3Fluid",   Ids.Vehicles.TruckT3Fluid.Id},
+            {"TruckT3FluidH",   Ids.Vehicles.TruckT3FluidH.Id},
             {"ExcavatorT1",   Ids.Vehicles.ExcavatorT1},
             {"ExcavatorT2",   Ids.Vehicles.ExcavatorT2},
+            {"ExcavatorT2H",   Ids.Vehicles.ExcavatorT2H},
             {"ExcavatorT3",   Ids.Vehicles.ExcavatorT3},
+            {"ExcavatorT3H",   Ids.Vehicles.ExcavatorT3H},
             {"TreeHarvesterT1",   Ids.Vehicles.TreeHarvesterT1},
             {"TreeHarvesterT2",   Ids.Vehicles.TreeHarvesterT2},
+            {"TreeHarvesterT2H",   Ids.Vehicles.TreeHarvesterT2H},
             {"TreePlanterT1",   Ids.Vehicles.TreePlanterT1},
+            {"TreePlanterT1H",   Ids.Vehicles.TreePlanterT1H},
         };
 
         public VehicleDetailedStatsView(EntitiesManager entitiesManager, VehiclesManager vehiclesManager, UiBuilder builder, string icon, params Proto.ID[] protoIds) : base() {

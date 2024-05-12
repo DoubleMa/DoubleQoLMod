@@ -28,7 +28,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Include="Lib.Harmony" Version="2.2.2" />
-	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 	<ItemGroup>
 		<Reference Include="System" />
@@ -379,6 +378,9 @@
 	  <None Update="DoubleQoL.dll.config">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </None>
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="QoL\UI\VehiclesAssigner\" />
 	</ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 	  <Exec Command="del &quot;$(TargetDir)System.*.dll&quot;" />

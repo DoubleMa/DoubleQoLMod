@@ -21,5 +21,7 @@ namespace DoubleQoL.Extensions {
         public static Vector2 Extend(this Vector2 v, float? x = null, float? y = null) => new Vector2(v.x * (x ?? 1), v.y * (y ?? 1));
 
         public static Vector2 Modify(this Vector2 v, float? x = null, float? y = null) => new Vector2(x ?? v.x, y ?? v.y);
+
+        public static Vector2 toVector(this float f) => new Vector2(f, f);
     }
 }

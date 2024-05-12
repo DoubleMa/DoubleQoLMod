@@ -1,6 +1,7 @@
 ﻿using DoubleQoL.Extensions;
 using DoubleQoL.Global;
 using DoubleQoL.QoL.UI.Statusbar.Component;
+using DoubleQoL.XML.lang;
 using Mafi;
 using Mafi.Core.Prototypes;
 using Mafi.Unity;
@@ -95,10 +96,10 @@ namespace DoubleQoL.QoL.UI.Statusbar.Logistics {
 
         public void SetCount(int count) {
             //this.SetVisibility(count > 0);
-            _countTxt.SetText($"Count: {count}");
+            _countTxt.SetText($"{LanguageManager.Instance.tr_count.Value}: {count}");
         }
 
-        public void SetIdleCount(int count) => _idleCount.SetText($"Idle: {count}").SetColor(count > 0 ? 15048741 : 14935011);
+        public void SetIdleCount(int count) => _idleCount.SetText($"{LanguageManager.Instance.tr_idle.Value}: {count}").SetColor(count > 0 ? 15048741 : 14935011);
 
         public void SetCounts(int count, int idle) {
             SetCount(count);

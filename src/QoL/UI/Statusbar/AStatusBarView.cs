@@ -1,6 +1,6 @@
-﻿using DoubleQoL.Config;
-using DoubleQoL.Global;
+﻿using DoubleQoL.Global;
 using DoubleQoL.QoL.UI.Statusbar.Component;
+using DoubleQoL.XML.config;
 using Mafi.Core.GameLoop;
 using Mafi.Core.Syncers;
 using Mafi.Unity.InputControl.TopStatusBar;
@@ -8,7 +8,8 @@ using Mafi.Unity.UserInterface;
 using System;
 using UnityEngine;
 
-namespace DoubleQoL.QoL.UI.Statusbar {
+namespace DoubleQoL.QoL.UI.Statusbar
+{
 
     internal abstract class AStatusBarView : IStatusBarItem {
         private readonly IGameLoopEvents _gameLoop;

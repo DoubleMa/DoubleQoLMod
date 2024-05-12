@@ -28,7 +28,7 @@ A mod for [Captain of Industry game](https://www.captain-of-industry.com/).
 
     <img src="./images/VehicleTool.png" alt="TowerArea" width="auto" height="300">
   
-- Add an in-game Blueprint store where you can share and download blueprints.
+- ~~Add an in-game Blueprint store where you can share and download blueprints.~~ (Removed after the developer introduced their [hub](https://hub.coigame.com/). It might be added again if needed.)
 
     <img src="./images/blueprints_store.png" alt="TowerArea" width="auto" height="300">
   

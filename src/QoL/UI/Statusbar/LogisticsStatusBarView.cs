@@ -1,8 +1,8 @@
-﻿using DoubleQoL.Config;
-using DoubleQoL.Extensions;
+﻿using DoubleQoL.Extensions;
 using DoubleQoL.Game.Patcher;
 using DoubleQoL.QoL.UI.Statusbar.Component;
 using DoubleQoL.QoL.UI.Statusbar.Logistics;
+using DoubleQoL.XML.config;
 using Mafi;
 using Mafi.Base;
 using Mafi.Core.Entities;

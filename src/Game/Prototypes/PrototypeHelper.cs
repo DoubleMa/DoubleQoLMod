@@ -1,4 +1,4 @@
-﻿using DoubleQoL.Config;
+﻿using DoubleQoL.XML.config;
 using Mafi;
 using Mafi.Base;
 using Mafi.Collections.ImmutableCollections;
@@ -12,7 +12,8 @@ using Mafi.Core.Prototypes;
 using Mafi.Localization;
 using System;
 
-namespace DoubleQoL.Game.Prototypes {
+namespace DoubleQoL.Game.Prototypes
+{
 
     public class PrototypeHelper {
         public static readonly PrototypeHelper Instance = new PrototypeHelper();

@@ -10,7 +10,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DoubleQoL.Game.Blueprints {
+namespace DoubleQoL.Game.UI {
 
     public static class UIExtensions {
 

@@ -1,17 +1,18 @@
-﻿using DoubleQoL.Config;
-using DoubleQoL.Extensions;
+﻿using DoubleQoL.Extensions;
 using DoubleQoL.QoL.UI.Statusbar;
+using DoubleQoL.XML.config;
 using Mafi.Unity.InputControl.Toolbar.MenuPopup;
 
-namespace DoubleQoL.Game.Patcher {
+namespace DoubleQoL.Game.Patcher
+{
 
     internal class ResearchPopupControllerPatcher : APatcher<ResearchPopupControllerPatcher> {
         public override bool DefaultState => true;
         public override bool Enabled => ConfigManager.Instance.QoLs_statusbar.Value;
 
         public ResearchPopupControllerPatcher() : base("ResearchPopup") {
-            AddMethod<ResearchPopupController>("Activate", this.GetHarmonyMethod("MyPostActivatefix"), true);
-            AddMethod<ResearchPopupController>("Deactivate", this.GetHarmonyMethod("MyPostDeactivatefix"), true);
+            AddMethod<ResearchPopupController>("Activate", this.GetHarmonyMethod(nameof(MyPostActivatefix)), true);
+            AddMethod<ResearchPopupController>("Deactivate", this.GetHarmonyMethod(nameof(MyPostDeactivatefix)), true);
         }
 
         private static void MyPostActivatefix() {

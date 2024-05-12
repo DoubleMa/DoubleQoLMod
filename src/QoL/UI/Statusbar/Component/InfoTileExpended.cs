@@ -1,12 +1,13 @@
-﻿using DoubleQoL.Config;
-using DoubleQoL.Global;
+﻿using DoubleQoL.Global;
+using DoubleQoL.XML.config;
 using Mafi.Unity.UiFramework;
 using Mafi.Unity.UiFramework.Components;
 using Mafi.Unity.UserInterface;
 using System;
 using UnityEngine;
 
-namespace DoubleQoL.QoL.UI.Statusbar.Component {
+namespace DoubleQoL.QoL.UI.Statusbar.Component
+{
 
     internal class InfoTileExpended : IFixedSizeUiElement {
         private readonly StackContainer _container;

@@ -1,11 +1,12 @@
-﻿using DoubleQoL.Config;
-using DoubleQoL.Extensions;
+﻿using DoubleQoL.Extensions;
 using DoubleQoL.QoL.UI.Statusbar;
+using DoubleQoL.XML.config;
 using Mafi.Unity.UiFramework;
 using System;
 using System.Reflection;
 
-namespace DoubleQoL.Game.Patcher {
+namespace DoubleQoL.Game.Patcher
+{
 
     internal class PopulationStatusBarPatcher : APatcher<PopulationStatusBarPatcher> {
         public override bool DefaultState => true;
@@ -14,7 +15,7 @@ namespace DoubleQoL.Game.Patcher {
 
         public PopulationStatusBarPatcher() : base("PopulationStatusBar") {
             Typ = Assembly.Load("Mafi.Unity").GetType("Mafi.Unity.InputControl.Levelling.PopulationStatusBarView");
-            AddMethod(Typ, "RegisterIntoStatusBar", this.GetHarmonyMethod("MyPostfix"));
+            AddMethod(Typ, "RegisterIntoStatusBar", this.GetHarmonyMethod(nameof(MyPostfix)));
         }
 
         private static void MyPostfix(IUnityUi __instance) {

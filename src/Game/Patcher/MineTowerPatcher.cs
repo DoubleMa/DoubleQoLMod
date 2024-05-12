@@ -1,5 +1,6 @@
-﻿using DoubleQoL.Config;
-using DoubleQoL.Extensions;
+﻿using DoubleQoL.Extensions;
+using DoubleQoL.XML.config;
+using DoubleQoL.XML.lang;
 using Mafi;
 using Mafi.Core.Buildings.Mine;
 using Mafi.Core.Products;
@@ -28,7 +29,7 @@ namespace DoubleQoL.Game.Patcher {
 
         public MineTowerPatcher() : base("MineTower") {
             Typ = Assembly.Load("Mafi.Unity").GetType("Mafi.Unity.InputControl.Inspectors.Buildings.MineTowerWindowView");
-            AddMethod(Typ, "AddCustomItems", this.GetHarmonyMethod("MyPostfix"), true);
+            AddMethod(Typ, "AddCustomItems", this.GetHarmonyMethod(nameof(MyPostfix)), true);
         }
 
         public override void OnInit(DependencyResolver resolver) {
@@ -43,32 +44,25 @@ namespace DoubleQoL.Game.Patcher {
             .SetStackingDirection(StackContainer.Direction.TopToBottom)
             .SetSizeMode(StackContainer.SizeMode.Dynamic)
             .SetInnerPadding(Offset.Zero);
-            Builder.AddSectionTitle(tabContainer, "Prioritize resource for all exavators");
-            var mineTowerPanel = Builder.NewPanel("mineTowerPanel").SetBackground(Builder.Style.Panel.ItemOverlay);
-            mineTowerPanel.AppendTo(tabContainer, size: 45f, Offset.All(0));
-
+            Builder.AddSectionTitle(tabContainer, LanguageManager.Instance.tr_prioritize_resource.Value);
+            var mineTowerPanel = Builder.NewPanel("mineTowerPanel").SetBackground(Builder.Style.Panel.ItemOverlay).AppendTo(tabContainer, size: 45f, Offset.All(0));
             var mineTowerContainer = Builder
                 .NewStackContainer("secondRowContainer")
                 .SetStackingDirection(StackContainer.Direction.LeftToRight)
                 .SetSizeMode(StackContainer.SizeMode.StaticDirectionAligned)
                 .SetItemSpacing(10f)
                 .PutToLeftOf(mineTowerPanel, 0.0f, Offset.Left(10f));
-
             var productDropdown = Builder
                 .NewDropdown("ProductDropdown")
-                //.AddOptions(_looseProductProtos.Select(x => x.Id.ToString().Replace("Product_", "")).ToList())
                 .AddOptions(_looseProductProtos.Select(x => x.Strings.Name.TranslatedString).ToList())
-                .OnValueChange(i => _selectedLooseProductProto = _looseProductProtos.ElementAt(i));
-
-            productDropdown.AppendTo(mineTowerContainer, new Vector2(200, 28f), ContainerPosition.MiddleOrCenter);
-
+                .OnValueChange(i => _selectedLooseProductProto = _looseProductProtos.ElementAt(i))
+                .AppendTo(mineTowerContainer, new Vector2(200, 28f), ContainerPosition.MiddleOrCenter);
             var prioritizeBtn = Builder.NewBtnPrimary("button")
                 .SetButtonStyle(Builder.Style.Global.PrimaryBtn)
-                .SetText(new LocStrFormatted("prioritize"))
-                .AddToolTip("prioritize the product to all the excavators")
+                .SetText(new LocStrFormatted(LanguageManager.Instance.tr_prioritize.Value))
+                .AddToolTip(LanguageManager.Instance.tr_prioritize_product.Value)
                 .OnClick(() => SetProductPriority(__instance));
             prioritizeBtn.AppendTo(mineTowerContainer, prioritizeBtn.GetOptimalSize(), ContainerPosition.MiddleOrCenter);
-
             itemContainer.Add(999, tabContainer, 75f);
         }
 

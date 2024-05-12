@@ -1,6 +1,6 @@
-﻿using DoubleQoL.Config;
-using DoubleQoL.Extensions;
+﻿using DoubleQoL.Extensions;
 using DoubleQoL.QoL.Shortcuts;
+using DoubleQoL.XML.config;
 using Mafi;
 using Mafi.Base;
 using Mafi.Core.GameLoop;
@@ -8,7 +8,8 @@ using Mafi.Unity.InputControl;
 using Mafi.Unity.InputControl.TopStatusBar;
 using UnityEngine;
 
-namespace DoubleQoL.QoL.Controllers {
+namespace DoubleQoL.QoL.Controllers
+{
 
     [GlobalDependency(RegistrationMode.AsAllInterfaces, false)]
     internal class FogController : AToggleController {

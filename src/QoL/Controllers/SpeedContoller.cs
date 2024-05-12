@@ -1,6 +1,6 @@
-﻿using DoubleQoL.Config;
-using DoubleQoL.Extensions;
+﻿using DoubleQoL.Extensions;
 using DoubleQoL.QoL.Shortcuts;
+using DoubleQoL.XML.config;
 using Mafi;
 using Mafi.Core;
 using Mafi.Core.GameLoop;
@@ -17,7 +17,8 @@ using Mafi.Unity.UserInterface.Style;
 using System;
 using UnityEngine;
 
-namespace DoubleQoL.QoL.Controllers {
+namespace DoubleQoL.QoL.Controllers
+{
 
     [GlobalDependency(RegistrationMode.AsAllInterfaces, false)]
     internal class GameSpeedUi2 : AController {

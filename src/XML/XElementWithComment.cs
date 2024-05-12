@@ -5,7 +5,7 @@ using System.Linq;
 using System.Xml.Linq;
 using UnityEngine;
 
-namespace DoubleQoL.Config {
+namespace DoubleQoL.XML {
 
     internal class XElementWithComment {
         public string Tag { get; private set; }
@@ -18,10 +18,10 @@ namespace DoubleQoL.Config {
     }
 
     internal class XSectionWithComment : XElementWithComment {
-        public XElement Element { get; protected set; }
+        public XElement Element { get; private set; }
 
-        public XSectionWithComment(string tag, string comment = null) : base(tag, comment) {
-            Element = ConfigLoader.Instance.GetSectionOrCreate(this);
+        public XSectionWithComment(IXmlLoader loader, string tag, string comment = null) : base(tag, comment) {
+            Element = loader.GetSectionOrCreate(this);
         }
     }
 
@@ -29,25 +29,40 @@ namespace DoubleQoL.Config {
         public XSectionWithComment SectionWithComment { get; private set; }
         public string Key { get; private set; }
         public string StrValue { get; private set; }
-        private T[] AcceptedValues { get; }
+        private T[] AcceptedValues { get; set; }
         public T DefaultValue { get; private set; }
         public T Value { get; private set; }
 
-        public XKeyWithComment(XSectionWithComment xSectionWithComment, string key, T[] acceptedValues, T defaultValue, string comment = null) : base("add", comment) {
+        public XKeyWithComment(IXmlLoader loader, XSectionWithComment xSectionWithComment, string key, T[] acceptedValues, T defaultValue, string comment = null, string tag = "add") : base(tag, comment) {
             SectionWithComment = xSectionWithComment;
             Key = key;
             DefaultValue = defaultValue;
             AcceptedValues = acceptedValues;
-            StrValue = ConfigLoader.Instance.GetValueOrCreate(this);
+            StrValue = loader.GetValueOrCreate(this);
             Value = Convert(StrValue);
+        }
+
+        public XKeyWithComment(IXmlLoader loader, XSectionWithComment xSectionWithComment, string key, T defaultValue, string comment = null, string tag = "add") : base(tag, comment) {
+            SectionWithComment = xSectionWithComment;
+            Key = key;
+            DefaultValue = defaultValue;
+            StrValue = loader.GetValueOrCreate(this);
+            Value = Convert(StrValue);
+        }
+
+        private void HandleAcceptedValues(object acceptedValues) {
+            if (typeof(T).IsArray && acceptedValues is Array valuesArray) AcceptedValues = valuesArray.Cast<T>().ToArray();
+            else if (acceptedValues is T[] values) AcceptedValues = values;
+            else throw new ArgumentException("Accepted values must be of type T[]", nameof(acceptedValues));
+            if (AcceptedValues.Length == 0) throw new ArgumentException("Accepted values can't be empty");
         }
 
         private T Convert(string value) {
             try {
-                if (typeof(T) == typeof(KeyCode) && Enum.TryParse(value, out KeyCode keyCode) && AcceptedValues.Contains((T)(object)keyCode)) return (T)(object)keyCode;
-                else if (typeof(T) == typeof(bool) && bool.TryParse(value, out bool boolValue) && AcceptedValues.Contains((T)(object)boolValue)) return (T)(object)boolValue;
+                if (typeof(T) == typeof(string)) return (T)(object)value;
                 else if (typeof(T) == typeof(int) && int.TryParse(value, out int intValue)) return (T)(object)intValue.Between(System.Convert.ToInt32(AcceptedValues[0]), System.Convert.ToInt32(AcceptedValues[1]));
-                else if (typeof(T) == typeof(string)) return (T)(object)value;
+                else if (typeof(T) == typeof(bool) && bool.TryParse(value, out bool boolValue) && (AcceptedValues == null || AcceptedValues.Contains((T)(object)boolValue))) return (T)(object)boolValue;
+                else if (typeof(T) == typeof(KeyCode) && Enum.TryParse(value, out KeyCode keyCode) && (AcceptedValues == null || AcceptedValues.Contains((T)(object)keyCode))) return (T)(object)keyCode;
             }
             catch (Exception) {
                 Logging.Log.Warning($"Error while reading and converting the config value of {Key}");
@@ -73,6 +88,10 @@ namespace DoubleQoL.Config {
             }
 
             return acceptedValues;
+        }
+
+        public override string ToString() {
+            return Value.ToString();
         }
     }
 }

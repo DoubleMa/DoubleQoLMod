@@ -12,6 +12,10 @@ namespace DoubleQoL.Extensions {
 
         public static HarmonyMethod GetHarmonyMethod<T>(this T t, string method) => GetHarmonyMethod(t.GetType(), method);
 
+        public static MethodInfo GetGenericMethod<T>(this Type t, string method) => AccessTools.Method(t, method).MakeGenericMethod(typeof(T));
+
+        public static MethodInfo GetGenericMethod<T>(this object instance, string method) => GetGenericMethod<T>(instance.GetType(), method);
+
         public static FieldInfo ATGetField(this Type type, string fieldName) => AccessTools.Field(type, fieldName) ?? throw new MissingFieldException($"Field '{fieldName}' not found in type '{type.FullName}'.");
 
         public static MethodInfo ATGetMethod(this Type type, string methodName) => AccessTools.Method(type, methodName) ?? throw new MissingMethodException($"Method '{methodName}' not found in type '{type.FullName}'.");

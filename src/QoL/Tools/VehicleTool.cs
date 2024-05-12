@@ -1,8 +1,9 @@
-﻿using DoubleQoL.Config;
-using DoubleQoL.Extensions;
+﻿using DoubleQoL.Extensions;
 using DoubleQoL.Global;
 using DoubleQoL.Global.Utils;
 using DoubleQoL.QoL.Shortcuts;
+using DoubleQoL.XML.config;
+using DoubleQoL.XML.lang;
 using Mafi;
 using Mafi.Base;
 using Mafi.Collections;
@@ -43,10 +44,10 @@ namespace DoubleQoL.QoL.Tools {
 
         private readonly Lyst<VehicleTypeInfo> vehicleTypeInfos = new Lyst<VehicleTypeInfo>()
         {
-            new VehicleTypeInfo("Truck", DoubleQoLShortcutsMap.Instance.VehicleTrucksToolKb, Ids.Vehicles.TruckT1.Id, Ids.Vehicles.TruckT2.Id),
-            new VehicleTypeInfo("Excavator", DoubleQoLShortcutsMap.Instance.VehicleExcavatorToolKb, Ids.Vehicles.ExcavatorT1, Ids.Vehicles.ExcavatorT2, Ids.Vehicles.ExcavatorT3),
-            new VehicleTypeInfo("Tank Truck", DoubleQoLShortcutsMap.Instance.VehicleTankToolKb, Ids.Vehicles.TruckT3Loose.Id),
-            new VehicleTypeInfo("Dump Truck", DoubleQoLShortcutsMap.Instance.VehicleDumpToolKb, Ids.Vehicles.TruckT3Fluid.Id)
+            new VehicleTypeInfo("Truck", DoubleQoLShortcutsMap.Instance.VehicleTrucksToolKb, Ids.Vehicles.TruckT1.Id, Ids.Vehicles.TruckT2.Id, Ids.Vehicles.TruckT2H.Id),
+            new VehicleTypeInfo("Excavator", DoubleQoLShortcutsMap.Instance.VehicleExcavatorToolKb, Ids.Vehicles.ExcavatorT1, Ids.Vehicles.ExcavatorT2, Ids.Vehicles.ExcavatorT3, Ids.Vehicles.ExcavatorT2H, Ids.Vehicles.ExcavatorT3H),
+            new VehicleTypeInfo("Tank Truck", DoubleQoLShortcutsMap.Instance.VehicleTankToolKb, Ids.Vehicles.TruckT3Loose.Id, Ids.Vehicles.TruckT3LooseH.Id),
+            new VehicleTypeInfo("Dump Truck", DoubleQoLShortcutsMap.Instance.VehicleDumpToolKb, Ids.Vehicles.TruckT3Fluid.Id, Ids.Vehicles.TruckT3FluidH.Id)
         };
 
         public VehicleTool(
@@ -68,10 +69,10 @@ namespace DoubleQoL.QoL.Tools {
             Vehicles = new Lyst<Vehicle>();
             MovedVehicles = new Lyst<Vehicle>();
             ClearSelectionOnDeactivateOnly();
-            Lyst<ToolToggleBtn> toolToggleBtns = new Lyst<ToolToggleBtn>() { new ToolToggleBtn("Select", IconPaths.Tool_Select, _ => { }, shortcutsManager.PrimaryAction, "Select and move vehicles", true) };
-            vehicleTypeInfos.ForEach(vti => toolToggleBtns.Add(new ToolToggleBtn(vti.Name, vti.IconPath, _ => { }, vti.Trigger, $"Select/Move {vti.Name}s")));
-            toolToggleBtns.Add(new ToolToggleBtn("Clear truck cargo", Mafi.Unity.Assets.Unity.UserInterface.General.Trash128_png, _ => { }, DoubleQoLShortcutsMap.Instance.ClearTruckCargoToolKb, "Try to clear the cargo of selected trucks"));
-            toolToggleBtns.Add(new ToolToggleBtn("Recover vehicle", Mafi.Unity.Assets.Unity.UserInterface.General.RecoverVehicle_svg, _ => { }, DoubleQoLShortcutsMap.Instance.RecoverVehicleToolKb, "Recover the selected vehicles"));
+            Lyst<ToolToggleBtn> toolToggleBtns = new Lyst<ToolToggleBtn>() { new ToolToggleBtn(LanguageManager.Instance.tr_select.Value, IconPaths.Tool_Select, _ => { }, shortcutsManager.PrimaryAction, LanguageManager.Instance.tr_select_vehicles.Value, true) };
+            vehicleTypeInfos.ForEach(vti => toolToggleBtns.Add(new ToolToggleBtn(vti.Name, vti.IconPath, _ => { }, vti.Trigger, $"{LanguageManager.Instance.tr_select_move.Value} {vti.Name}s")));
+            toolToggleBtns.Add(new ToolToggleBtn(LanguageManager.Instance.tr_clear_cargo_name.Value, Mafi.Unity.Assets.Unity.UserInterface.General.Trash128_png, _ => { }, DoubleQoLShortcutsMap.Instance.ClearTruckCargoToolKb, LanguageManager.Instance.tr_clear_cargo_tt.Value));
+            toolToggleBtns.Add(new ToolToggleBtn(LanguageManager.Instance.tr_recover_vehicle_name.Value, Mafi.Unity.Assets.Unity.UserInterface.General.RecoverVehicle_svg, _ => { }, DoubleQoLShortcutsMap.Instance.RecoverVehicleToolKb, LanguageManager.Instance.tr_recover_vehicle_tt.Value));
             SetToolbox(toolToggleBtns);
         }
 
@@ -185,8 +186,8 @@ namespace DoubleQoL.QoL.Tools {
         public override void RegisterUi(UiBuilder builder) {
             if (ConfigManager.Instance.QoLs_vehicletool.Value) {
                 _toolbarController
-                    .AddLeftMenuButton(Loc.Str("VehicleTool", "Vehicle Tool", "title of a tool that is used to select and move vehicles").TranslatedString, this, Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg, 80f, m => DoubleQoLShortcutsMap.Instance.VehicleToolKb)
-                    .AddTooltip(new LocStrFormatted("Select One or multiple vehicles to move them"));
+                    .AddLeftMenuButton(LanguageManager.Instance.tr_vehicles_tool.Value, this, Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg, 80f, m => DoubleQoLShortcutsMap.Instance.VehicleToolKb)
+                    .AddTooltip(new LocStrFormatted(LanguageManager.Instance.tr_vehicles_tool_tt.Value));
                 InitializeUi(builder, new Mafi.Unity.UiFramework.Styles.CursorStyle(nameof(Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg), Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg, new UnityEngine.Vector2(14f, 14f)), builder.Audio.ButtonClick, COLOR_HIGHLIGHT, COLOR_HIGHLIGHT_CONFIRM);
                 base.RegisterUi(builder);
             }
@@ -195,8 +196,8 @@ namespace DoubleQoL.QoL.Tools {
         protected override void RegisterToolbar(ToolbarController controller) {
             if (ConfigManager.Instance.QoLs_vehicletool.Value) {
                 _toolbarController
-                    .AddLeftMenuButton(Loc.Str("VehicleTool", "Vehicle Tool", "title of a tool that is used to select and move vehicles").TranslatedString, this, Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg, 80f, m => DoubleQoLShortcutsMap.Instance.VehicleToolKb)
-                    .AddTooltip(new LocStrFormatted("Select One or multiple vehicles to move them"));
+                    .AddLeftMenuButton(LanguageManager.Instance.tr_vehicles_tool.Value, this, Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg, 80f, m => DoubleQoLShortcutsMap.Instance.VehicleToolKb)
+                    .AddTooltip(new LocStrFormatted(LanguageManager.Instance.tr_vehicles_tool_tt.Value));
                 InitializeUi(_builder, new Mafi.Unity.UiFramework.Styles.CursorStyle(nameof(Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg), Mafi.Unity.Assets.Unity.UserInterface.Toolbar.Vehicles_svg, new UnityEngine.Vector2(14f, 14f)), _builder.Audio.ButtonClick, COLOR_HIGHLIGHT, COLOR_HIGHLIGHT_CONFIRM);
             }
         }

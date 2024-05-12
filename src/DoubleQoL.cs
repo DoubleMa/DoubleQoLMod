@@ -1,5 +1,6 @@
 ﻿using DoubleQoL.Game.Patcher;
 using DoubleQoL.Game.Prototypes;
+using DoubleQoL.XML.lang;
 using Mafi;
 using Mafi.Collections;
 using Mafi.Core.Game;
@@ -10,7 +11,7 @@ using System;
 namespace DoubleQoL {
 
     public sealed class DoubleQoL : IMod {
-        public static Version ModVersion = new Version(1, 5, 2);
+        public static Version ModVersion = new Version(1, 6, 0);
         public string Name => "DoubleQoL";
         public int Version => 1;
         public bool IsUiOnly => false;
@@ -33,6 +34,7 @@ namespace DoubleQoL {
         }
 
         private void InitializePatchers(DependencyResolver resolver) {
+            LanguageManager.Instance.INIT();
             MineTowerPatcher.Instance?.Init(resolver);
             VehiclePatcher.Instance?.Init(resolver);
             EdgeSizeLimitPatcher.Instance?.Init(resolver);
@@ -40,6 +42,7 @@ namespace DoubleQoL {
             PopulationStatusBarPatcher.Instance?.Init(resolver);
             ResearchPopupControllerPatcher.Instance?.Init(resolver);
             ProductsDisplaysPatcher.Instance?.Init(resolver);
+            VehicleTypeAssignerViewPatcher.Instance?.Init(resolver);
             //BlueprintsControllerPatcher.Instance?.Init(resolver);
         }
 

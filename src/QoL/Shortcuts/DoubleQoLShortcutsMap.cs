@@ -1,8 +1,9 @@
-﻿using DoubleQoL.Config;
+﻿using DoubleQoL.XML.config;
 using Mafi.Unity.InputControl;
 using UnityEngine;
 
-namespace DoubleQoL.QoL.Shortcuts {
+namespace DoubleQoL.QoL.Shortcuts
+{
 
     internal class DoubleQoLShortcutsMap {
         public static readonly DoubleQoLShortcutsMap Instance = new DoubleQoLShortcutsMap();
