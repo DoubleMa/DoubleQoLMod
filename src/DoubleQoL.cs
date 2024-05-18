@@ -10,7 +10,7 @@ using System;
 namespace DoubleQoL {
 
     public sealed class DoubleQoL : IMod {
-        public static Version ModVersion = new Version(1, 6, 1);
+        public static Version ModVersion = new Version(1, 6, 2);
         public string Name => "DoubleQoL";
         public int Version => 1;
         public bool IsUiOnly => false;
