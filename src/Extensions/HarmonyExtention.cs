@@ -12,7 +12,7 @@ namespace DoubleQoL.Extensions {
 
         public static HarmonyMethod GetHarmonyMethod<T>(this T t, string method) => GetHarmonyMethod(t.GetType(), method);
 
-        public static MethodInfo GetGenericMethod<T>(this Type t, string method) => AccessTools.Method(t, method).MakeGenericMethod(typeof(T));
+        public static MethodInfo GetGenericMethod<T>(this Type t, string method) => ATGetMethod(t, method).MakeGenericMethod(typeof(T));
 
         public static MethodInfo GetGenericMethod<T>(this object instance, string method) => GetGenericMethod<T>(instance.GetType(), method);
 

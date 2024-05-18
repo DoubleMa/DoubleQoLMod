@@ -7,6 +7,7 @@ using Mafi.Unity;
 using Mafi.Unity.Camera;
 using Mafi.Unity.InputControl;
 using Mafi.Unity.InputControl.TopStatusBar;
+using System;
 
 namespace DoubleQoL.QoL.Controllers {
 
@@ -27,11 +28,16 @@ namespace DoubleQoL.QoL.Controllers {
 
         protected override void OnToggle() {
             if (_cameraModel is null) return;
-            if (IsActive) _cameraModel.SetMode(CameraMode.DefaultGameplay);
-            else {
-                _cameraModel.SetMode(CameraMode.Unconstrained);
-                _cameraModel.SetField("m_maxPivotDistance", new RelTile1f(6000));
-                _cameraModel.SetField("m_minHeightAboveTerrain", new RelTile1f(-100));
+            try {// Lazy Fix, DefaultState may be useless now
+                if (IsActive) _cameraModel.SetMode(CameraMode.DefaultGameplay);
+                else {
+                    _cameraModel.SetMode(CameraMode.Unconstrained);
+                    _cameraModel.SetField("m_maxPivotDistance", new RelTile1f(6000));
+                    _cameraModel.SetField("m_minHeightAboveTerrain", new RelTile1f(-100));
+                }
+            }
+            catch (Exception ex) {
+                Logging.Log.Exception(ex, "SetMode Failed at OnToggle in DoubleQoL.QoL.Controllers.CameraController. Ignore this error if you see it ;)");
             }
         }
     }

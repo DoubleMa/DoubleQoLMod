@@ -3,7 +3,7 @@
 namespace DoubleQoL.Logging {
 
     public static class Log {
-        private const string Prefix = "DoubleQoL_Mod: ";
+        private const string Prefix = "[DoubleQoL_Mod]: ";
 
         public static string addPrefix(this string message) => $"{Prefix}{message}";
 

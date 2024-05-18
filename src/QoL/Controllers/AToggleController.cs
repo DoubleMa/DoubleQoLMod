@@ -26,7 +26,7 @@ namespace DoubleQoL.QoL.Controllers {
             if (IsEnabled) _gameLoopEvents.InputUpdate.AddNonSaveable(this, InputUpdate);
         }
 
-        protected void Init() {
+        protected virtual void Init() {
             if (IsEnabled && DefaultState != IsActive) Toggle();
         }
 

@@ -1,5 +1,4 @@
 ﻿using DoubleQoL.Game.Patcher;
-using DoubleQoL.Game.Prototypes;
 using DoubleQoL.XML.lang;
 using Mafi;
 using Mafi.Collections;
@@ -27,7 +26,6 @@ namespace DoubleQoL {
         }
 
         public void RegisterPrototypes(ProtoRegistrator registrator) {
-            PrototypeHelper.Instance.Init(registrator);
         }
 
         public void RegisterDependencies(DependencyResolverBuilder depBuilder, ProtosDb protosDb, bool wasLoaded) {
